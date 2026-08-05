@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect x="0" y="0" width="1200" height="105" fill="#e40303"/><rect x="0" y="105" width="1200" height="105" fill="#ff8c00"/><rect x="0" y="210" width="1200" height="105" fill="#ffd500"/><rect x="0" y="315" width="1200" height="105" fill="#008026"/><rect x="0" y="420" width="1200" height="105" fill="#24408e"/><rect x="0" y="525" width="1200" height="105" fill="#732982"/>
+<rect x="52" y="58" width="716" height="514" rx="26" fill="#F8F7F4"/>
+<g transform="translate(96,102) scale(0.9)"><defs><clipPath id="m"><path clip-rule="evenodd" d="M0,48 L12,0 L22,0 L34,48 L23.4,48 L21.2,38.6 L12.8,38.6 L10.6,48 Z M17,13 L13.9,29.4 L20.1,29.4 Z M40,0 L74,0 L74,10.5 L62.6,10.5 L62.6,48 L51.4,48 L51.4,10.5 L40,10.5 Z M80,0 L91.5,0 L97,10 L102.5,0 L114,0 L102.8,24 L114,48 L102.5,48 L97,38 L91.5,48 L80,48 L91.2,24 Z"/></clipPath></defs><path fill-rule="evenodd" d="M0,48 L12,0 L22,0 L34,48 L23.4,48 L21.2,38.6 L12.8,38.6 L10.6,48 Z M17,13 L13.9,29.4 L20.1,29.4 Z M40,0 L74,0 L74,10.5 L62.6,10.5 L62.6,48 L51.4,48 L51.4,10.5 L40,10.5 Z M80,0 L91.5,0 L97,10 L102.5,0 L114,0 L102.8,24 L114,48 L102.5,48 L97,38 L91.5,48 L80,48 L91.2,24 Z" fill="#141019"/><g clip-path="url(#m)"><rect x="0" y="16.000" width="114" height="2.75" fill="#e40303"/><rect x="0" y="18.667" width="114" height="2.75" fill="#ff8c00"/><rect x="0" y="21.334" width="114" height="2.75" fill="#ffd500"/><rect x="0" y="24.001" width="114" height="2.75" fill="#008026"/><rect x="0" y="26.668" width="114" height="2.75" fill="#24408e"/><rect x="0" y="29.335" width="114" height="2.75" fill="#732982"/></g></g>
+<text x="208" y="134" font-family="Poppins" font-size="19" font-weight="600" fill="#141019" letter-spacing="1.6">KEEP AUSTIN COLORFUL</text>
+<text x="96" y="272" font-family="Poppins" font-size="58" font-weight="600" fill="#141019" letter-spacing="-1.4">Let's put the color</text>
+<rect x="92" y="316" width="430" height="26" rx="3" fill="#FFE27A"/>
+<text x="96" y="340" font-family="Poppins" font-size="58" font-weight="600" fill="#141019" letter-spacing="-1.4">back on 4th St.</text>
+<text x="96" y="414" font-family="Lato" font-size="21" fill="#3A3540">San Antonio faced the same order and painted its</text>
+<text x="96" y="444" font-family="Lato" font-size="21" fill="#3A3540">sidewalks instead: two blocks of color, entirely legal,</text>
+<text x="96" y="474" font-family="Lato" font-size="21" fill="#3A3540">no council vote needed. Austin can do this too.</text>
+<text x="96" y="532" font-family="Poppins" font-size="17" font-weight="600" fill="#6A2578" letter-spacing="1.2">4TH &amp; COLORADO  ·  AUSTIN, DISTRICT 9</text>
+</svg>

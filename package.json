@@ -1,0 +1,14 @@
+{
+  "name": "keep-austin-colorful",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An advocacy pack for putting the color back on 4th & Colorado in Austin, Texas",
+  "scripts": {
+    "test": "node test/run.js",
+    "dev": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.0"
+  },
+  "license": "MIT"
+}
