@@ -70,6 +70,15 @@ Reporting drawn from the Texas Tribune, TPR, the San Antonio Report, KENS5, KUT,
 
 Not affiliated with the City of Austin. Not legal advice.
 
+## What this is for, and a request
+
+This was built to help a neighborhood ask its city for something specific and lawful. It works because every claim links to a source, and because it reads as an invitation rather than an accusation.
+
+If you fork it for your own city, please keep both of those. Check your facts and cite them, and write to your council as though they want to help, because most of the time they do. An advocacy tool that gets the facts wrong, or that treats officials as opponents, makes the next person's job harder.
+
 ## License
 
-MIT for the code. The written content is offered under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — take it, adapt it, point it at your own city.
+- **Code** — [Apache License 2.0](LICENSE). Note section 6: this does not grant rights to the project's name or wordmark, so please run your fork under its own name.
+- **Written content** — [CC BY-SA 4.0](LICENSE-CONTENT). Adapt it freely, credit the source, and keep your version open under the same terms so it stays available to the city after yours.
+
+Take it, adapt it, point it at your own corner.
