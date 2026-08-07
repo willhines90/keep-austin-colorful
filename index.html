@@ -263,6 +263,9 @@ em{font-style:italic}
 .stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sw,var(--accent))}
 .stat b{display:block; font-family:var(--sans); font-size:1.75rem; font-weight:var(--w-bold); letter-spacing:-.035em; line-height:1}
 .stat span{font-size:.79rem; color:var(--muted); display:block; margin-top:7px; line-height:1.4; font-family:var(--sans)}
+.stat{display:flex; flex-direction:column}
+.stat .srcs{margin-top:auto; padding-top:var(--s3); gap:5px}
+.stat .srcl{font-size:.655rem; padding:2px 7px; border-color:var(--line-2)}
 @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
 
 /* ─── timeline ─── */
@@ -732,12 +735,7 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
       <p><b>Notice what doesn't change.</b> The crosswalk bars on the road stay exactly as the state requires. Only the sidewalk turns, and the sidewalk is city property. That single distinction is the whole argument, and San Antonio has already proved it holds.</p>
     </div>
   </div>
-  <div class="stats">
-    <div class="stat" style="--sw:var(--r1)"><b>3</b><span>Texas cities that have already brought their color back</span></div>
-    <div class="stat" style="--sw:var(--r2)"><b>$170K</b><span>What San Antonio invested in two blocks of rainbow sidewalk</span></div>
-    <div class="stat" style="--sw:var(--r4)"><b>5,330</b><span>Austinites who signed the petition to keep the crosswalk</span></div>
-    <div class="stat" style="--sw:var(--r5)"><b>~75</b><span>Neighbors who gathered on the corner in July</span></div>
-  </div>
+  <div class="stats" id="statRow"></div>
 
   <section>
     <h2>How we got here</h2>
@@ -982,7 +980,7 @@ var SRC={
  kvue:['KVUE','https://www.kvue.com/article/news/local/austin-texas-fourth-colorado-streets-rainbow-crosswalk-removed/269-0218c935-2ca7-47b4-8199-8c0fbdf2df00'],
  calendar:['City of Austin calendar','https://services.austintexas.gov/edims/document.cfm?id=462100'],
  sixsquare:['Six Square','https://sixsquareatx.org/'],
- petition:['The petition (5,330 signatures)','https://www.change.org/p/city-of-austin-texas-approve-the-rainbow-crosswalks-in-austin-tx'],
+ petition:['Change.org petition','https://www.change.org/p/city-of-austin-texas-approve-the-rainbow-crosswalks-in-austin-tx'],
  pride:['Austin Pride','https://austinpride.org/pride2026/']
 };
 function srcLinks(keys){
@@ -2098,6 +2096,25 @@ $('#quickBtn').addEventListener('click',function(){
 $('#resetTrack').addEventListener('click',function(){S.done={}; save(); renderTodos(); ring(); toast('Progress reset')});
 
 
+/* ════════ the numbers ════════
+   Every figure on this row is cited. If a number cannot be sourced it does not
+   belong here, because the rest of the page depends on that being true. */
+var STATS=[
+ {n:'3', w:'Texas cities that have already brought their color back', c:'var(--r1)', s:['tribune']},
+ {n:'$170K', w:'What San Antonio invested in two blocks of rainbow sidewalk', c:'var(--r2)', s:['sareport','tpr']},
+ {n:'5,330', w:'Austinites who signed the petition to keep the crosswalk', c:'var(--r4)', s:['petition']},
+ {n:'~75', w:'Neighbors who gathered on the corner in July', c:'var(--r5)', s:['kut']}
+];
+function renderStats(){
+  var m=$('#statRow'); if(!m) return;
+  m.innerHTML='';
+  STATS.forEach(function(st){
+    var d=el('div','stat'); d.style.setProperty('--sw',st.c);
+    d.innerHTML='<b>'+st.n+'</b><span>'+st.w+'</span>'+srcLinks(st.s);
+    m.appendChild(d);
+  });
+}
+
 /* ════════ the calendar ════════
    Rendered from today's date, so whatever is next is always at the top and
    whatever has passed is marked rather than deleted. The site stays useful
@@ -2249,7 +2266,7 @@ function bindIcs(){ $$('[data-ics]').forEach(function(b){
     toast('Calendar file downloaded. Open it to add the event');
   });
 })}
-renderDates(); bindIcs();
+renderStats(); renderDates(); bindIcs();
 
 
 })();

@@ -53,6 +53,16 @@ ok('preconnect to the font host', html.includes('rel="preconnect" href="https://
 ok('tabular numerals on stats and counters', CSS.includes('font-variant-numeric:tabular-nums'));
 ok('optical sizing + kerning enabled', CSS.includes('font-optical-sizing:auto')&&CSS.includes('font-kerning:normal'));
 
+console.log('\n— every number is cited —');
+const cards=[...d.querySelectorAll('#statRow .stat')];
+ok('four stat cards render from data', cards.length===4);
+ok('every stat carries at least one source', cards.length>0 && cards.every(c=>c.querySelectorAll('.srcl').length>0));
+ok('stat sources are real links', cards.every(c=>[...c.querySelectorAll('.srcl')].every(a=>(a.getAttribute('href')||'').startsWith('https://'))));
+ok('the petition figure links the petition', (()=>{const c=cards.find(x=>x.querySelector('b').textContent==='5,330');
+  return c && c.querySelector('.srcl').getAttribute('href').includes('change.org')})());
+ok('the cost figure links the reporting that carried it', (()=>{const c=cards.find(x=>x.querySelector('b').textContent==='$170K');
+  return c && c.querySelectorAll('.srcl').length>=2})());
+
 console.log('\n— street labels —');
 ok('street names sit on their own plate', CSS!==null && html.includes('function roadLabel('));
 ok('plan labels moved off the centre line', html.includes("roadLabel(64,244,'W 4TH ST'")&&html.includes("roadLabel(348,332,'COLORADO ST'"));

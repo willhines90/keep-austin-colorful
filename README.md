@@ -40,7 +40,7 @@ npm install
 npm test
 ```
 
-271 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+276 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 
@@ -72,6 +72,7 @@ The structure generalizes. Most of what you'd change lives in clearly-marked dat
 | Address to district lookup | `lookupDistrict()` |
 | Letter phrasings, one pool per slot | `L`, `CONN_LINE`, `askSentence` |
 | Source links | `SRC` |
+| The stat row, each figure with its citation | `STATS` |
 
 Map pin positions are projected latitude/longitude in a 100 × 94.4 viewBox. If you swap in a different state, you'll need to regenerate the outline path and the pin coordinates together.
 
