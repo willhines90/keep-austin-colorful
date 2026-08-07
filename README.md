@@ -29,7 +29,7 @@ npm install
 npm test
 ```
 
-243 checks across seven suites. They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+258 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 

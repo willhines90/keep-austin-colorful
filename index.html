@@ -514,6 +514,11 @@ button.sm{padding:8px var(--s4); font-size:var(--fs-sm)}
 }
 .out.empty::before{display:none}
 .out.empty .big{font-size:1.7rem;opacity:.4}
+.out[contenteditable="true"]{cursor:text}
+.out[contenteditable="true"]:focus{outline:none; border-color:var(--accent-line); box-shadow:0 0 0 3px var(--accent-line)}
+.editnote{display:flex; gap:var(--s2); align-items:flex-start; margin-top:var(--s3); padding:var(--s3) var(--s4);
+  background:var(--amber-soft); border:1px solid var(--amber-line); border-radius:var(--r-sm);
+  font-family:var(--sans); font-size:var(--fs-sm); color:var(--amber); line-height:1.45}
 @media(max-width:600px){.out{padding:24px 22px;font-size:.965rem}}
 .wc{position:absolute; top:-9px; right:16px; background:var(--card); border:1px solid var(--line); border-radius:var(--r-pill); padding:3px 11px; font-family:var(--sans); font-size:.7rem; font-weight:var(--w-semi); color:var(--muted); box-shadow:var(--sh-1)}
 
@@ -840,12 +845,12 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
 
     <div class="btnrow">
       <button id="gen">Draft my letter</button>
-      <button class="ghost" id="regen" style="display:none">↻ Try another tone</button>
+      <button class="ghost" id="regen" style="display:none">↻ Write it differently</button>
     </div>
 
     <div class="outwrap">
       <div class="wc" id="wordCount" style="display:none">0 words</div>
-      <div class="out empty" id="letterOut" aria-live="polite"><span class="big">✉</span><span>Your letter will appear here</span></div>
+      <div class="out empty" id="letterOut" aria-live="polite" spellcheck="true"><span class="big">✉</span><span>Your letter will appear here</span></div>
     </div>
 
     <div class="btnrow" id="letterActions" style="display:none">
@@ -853,6 +858,7 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
       <button class="ghost" id="openForm">Copy &amp; open the council form ↗</button>
       <button class="ghost" id="dlLetter">Download .txt</button>
     </div>
+    <div class="editnote" id="editNote" hidden><span>✎</span><span><b>This letter is editable.</b> Click into it and change anything. Council offices log identical letters as a single contact, so even one sentence of your own is worth more than everything above it.</span></div>
     <p class="note" style="margin-top:14px">Austin routes council email through a web form rather than a plain address, so the flow is: copy, open the form, paste. Letters carrying a real name and street address are weighted more heavily than anonymous submissions.</p>
   </section>
 </div>
@@ -1742,22 +1748,137 @@ askLines,"",
   ].join('\n');
 }
 
+/* ════════ letter composition ════════
+   No model here. Instead: pools of alternative phrasings, chosen by a seed
+   derived from the writer's own inputs. The same person always gets the same
+   letter; two people almost never get the same one. That matters because
+   council offices log identical form letters as a single contact. */
+
+function seedFrom(str){ var h=2166136261; for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619) } return h>>>0 }
+function rng(seed){ var x=seed||1; return function(){ x^=x<<13; x^=x>>>17; x^=x<<5; return ((x>>>0)%100000)/100000 } }
+function pick(arr,r){ return arr[Math.floor(r()*arr.length)%arr.length] }
+function tonePool(pool,tone){ var t=pool.filter(function(v){return v.t==='any'||v.t===tone}); return (t.length?t:pool).map(function(v){return v.s}) }
+
+var L={
+ open:[
+  {t:'Measured and civic', s:"My name is {NAME} and I live at {ADDR}, in District {D}."},
+  {t:'Measured and civic', s:"I am writing as a resident of District {D}. My name is {NAME} and I live at {ADDR}."},
+  {t:'Personal and warm',  s:"My name is {NAME}. I live at {ADDR}, over in District {D}."},
+  {t:'Personal and warm',  s:"I am {NAME}, a District {D} resident at {ADDR}, and I wanted to write to you directly."},
+  {t:'Direct and urgent',  s:"I am {NAME}, District {D}, {ADDR}. I am writing about one specific thing."},
+  {t:'Direct and urgent',  s:"My name is {NAME} and I live in District {D} at {ADDR}."},
+  {t:'Plain-spoken Austin',s:"I am {NAME}, and I have been living at {ADDR} in District {D}."},
+  {t:'Plain-spoken Austin',s:"My name is {NAME}, District {D}, {ADDR}."}
+ ],
+ stake:[
+  {t:'Measured and civic', s:"I am writing about the rainbow crosswalk removed from Fourth and Colorado in July. I understand the city was placed in a genuinely difficult position by the state's funding threat, and I appreciate that staff moved quickly to find alternatives."},
+  {t:'Measured and civic', s:"I want to raise the corner of Fourth and Colorado. I recognize the city had little room to maneuver once the state tied road funding to the question, and I do not fault the decision to comply."},
+  {t:'Personal and warm',  s:"I am writing about the rainbow crosswalk that came up at Fourth and Colorado in July. I know the city's hands were tied, and I was glad to see the mural go up on Fourth Street in June. It mattered that the city responded at all."},
+  {t:'Personal and warm',  s:"This is about the corner of Fourth and Colorado. That crosswalk told a lot of us that Austin sees us, and I would love to see that signal back in some form."},
+  {t:'Direct and urgent',  s:"This is about Fourth and Colorado. The crosswalk came up in July under the state order, and there is a straightforward way to put color back on that corner."},
+  {t:'Direct and urgent',  s:"I am writing about the crosswalk at Fourth and Colorado, and specifically about what can happen next."},
+  {t:'Plain-spoken Austin',s:"I want to talk about Fourth and Colorado. Losing that crosswalk stung, and I know it was not the city's choice."},
+  {t:'Plain-spoken Austin',s:"Fourth and Colorado has been on my mind since July. The city did what it had to do, and there is still a good option on the table."}
+ ],
+ precedent:[
+  {t:'any', s:"Complying with the state does not have to be the end of it. When San Antonio was ordered to remove its own rainbow crosswalk, the city painted the sidewalks along North Main instead. The order covers roadways; sidewalks are city property. Their color is back, entirely legally, and it required no council vote, because that corridor had already been designated a Pride Cultural Heritage District."},
+  {t:'any', s:"San Antonio faced exactly this and found a way through. Rather than repaint the road, the city treated the sidewalks along North Main, which sit outside the state's order because they belong to the city. It cost about $170,000, was dedicated in March, survived a legal challenge, and needed no council vote thanks to the corridor's cultural heritage district status."},
+  {t:'any', s:"There is a precedent close to hand. San Antonio, under the same directive, put the color on its sidewalks instead of its roadway. Two blocks of North Main, dedicated last March, still there. The state's order reaches the road surface and stops at the kerb."},
+  {t:'any', s:"The route San Antonio took seems to me the obvious one. The state's order governs the roadway. Sidewalks do not fall under it, so the city painted those instead, and the result has stood since March without costing a cent of road funding."}
+ ],
+ lead:[
+  {t:'any', s:"I would like to ask the Council to consider the following."},
+  {t:'any', s:"So I am writing to ask for a few specific things."},
+  {t:'any', s:"With that in mind, here is what I am hoping the Council will take up."},
+  {t:'any', s:"What I would like to see is this."}
+ ],
+ close:[
+  {t:'Measured and civic', s:"San Antonio has shown this can be done well, and Austin is better placed than most to do it. I would welcome a response setting out what the Council intends."},
+  {t:'Measured and civic', s:"I appreciate the Council's attention to this, and I would be glad to hear what steps are being considered."},
+  {t:'Personal and warm',  s:"I know there is a lot competing for the Council's attention. This one is unusually achievable, and it would mean a great deal to a lot of people. Thank you for reading."},
+  {t:'Personal and warm',  s:"Thank you for taking the time. I would love to hear what the Council thinks is possible here."},
+  {t:'Direct and urgent',  s:"The budget is adopted in August, which makes this timely. I would appreciate a reply on whether the Council will take it up."},
+  {t:'Direct and urgent',  s:"This is achievable this budget cycle. Please let me know whether it is something the Council will pursue."},
+  {t:'Plain-spoken Austin',s:"Austin is good at this sort of thing. I would love to see us do it, and I would appreciate hearing back."},
+  {t:'Plain-spoken Austin',s:"Thanks for reading all this. I would genuinely like to know what you think."}
+ ]
+};
+
+/* one sentence per connection, so the chips actually shape the letter */
+var CONN_LINE={
+ 0:"", 
+ 1:"I live and work downtown, and I walk through that intersection most days.",
+ 2:"I run a business near that corner, and the character of the block matters to how it does.",
+ 3:"I am raising kids in this city, and I want them to grow up somewhere that shows plainly who it welcomes.",
+ 4:"I am LGBTQ+, and that district has been part of my life in this city for a long time.",
+ 5:"Places like that corner are part of why I moved to Austin in the first place.",
+ 6:"I walk past that corner most days, and I noticed immediately when the color went.",
+ 7:"I was at the gathering on the corner in July. Seventy-five or so of us stood there in the heat, which tells you something.",
+ 8:"When family visit, that street is one of the places I take them."
+};
+
+function askSentence(a){
+  var m={
+   sidewalk:"treat the sidewalks at Fourth and Colorado the way San Antonio treated North Main, with an interim installation now and a commitment to build it into whatever the street becomes after light rail",
+   district:"begin designating the West 4th corridor an LGBTQ+ cultural heritage district, which would carry forward on its own and cost no concrete at all",
+   furniture:"add rainbow bike racks, benches or planters on the block, which are city property and cost very little",
+   steps:"paint the steps of a nearby public building, as Dallas did at its Oak Lawn library",
+   lamps:"wrap the lamp posts on the block, which is what El Paso did and which nothing in the state's order touches",
+   light:"look at colored lighting across the intersection at night, since light changes no road surface at all",
+   marker:"follow through on the historical marker, and find a way to commemorate the lettering removed from East 11th as well",
+   commission:"design whatever happens with the LGBTQ+ Quality of Life Advisory Commission and the Austin LGBT Chamber, the way San Antonio worked with its advisory board"
+  };
+  return m[a.id]||strip(a.ttl).toLowerCase();
+}
+function fundSentence(f){
+  var m={
+   budget:"fund it in the FY2027 budget",
+   resolution:"pass a resolution directing staff to scope and cost it, which commits no money",
+   donations:"accept community donations toward it, as Dallas did, so cost need not be the obstacle",
+   arts:"route it through Art in Public Places rather than the transport budget"
+  };
+  return m[f.id]||strip(f.ttl).toLowerCase();
+}
+function joinList(a){
+  if(a.length===1) return a[0];
+  if(a.length===2) return a[0]+", and "+a[1];
+  return a.slice(0,-1).join("; ")+"; and "+a[a.length-1];
+}
+
+var letterNonce=0;
 function fallbackLetter(){
   var c=chosen();
   var name=$('#f-name').value.trim()||'[YOUR NAME]';
   var addr=$('#f-addr').value.trim()||'[YOUR ADDRESS]';
   var dist=$('#f-dist').value||'[#]';
   var story=$('#f-story').value.trim();
-  var askTxt=c.asks.map(function(a,i){return '('+(i+1)+') '+strip(a.ttl).toLowerCase()}).join('; ');
-  var fundTxt=c.funds.length?' On cost, I\'d point to '+c.funds.map(function(f){return strip(f.ttl).toLowerCase()}).join(', ')+'.':'';
-  return 'Dear Mayor Watson and Members of the City Council,\n\n'+
-  'My name is '+name+' and I live at '+addr+' in District '+dist+'.\n\n'+
-  'I\'m writing about the rainbow crosswalk removed from Fourth and Colorado in July. I know the city was placed in an impossible position by the state\'s funding threat, and I appreciate that staff worked to find alternatives. That crosswalk told Austin\'s LGBTQ+ community that this city sees us, and I would love to see that signal restored.\n\n'+
-  'Compliance doesn\'t have to be the end of the story. When San Antonio was forced to remove its crosswalk, the city painted the sidewalks along North Main instead. The state\'s order covers roadways; sidewalks are city property. Their rainbow is back, legally, and it needed no council vote because that corridor had already been designated a Pride Cultural Heritage District.\n\n'+
-  (story?story+'\n\n':'')+
-  'I\'m asking the Council to pursue: '+askTxt+'.'+fundTxt+'\n\n'+
-  'San Antonio has shown this can be done well, and Austin is better placed than most to do it. Please meet the community\'s energy with something permanent. I would welcome a response about the steps the Council intends to take.\n\n'+
-  'Sincerely,\n'+name+'\n'+addr;
+  var tone=$('#f-tone').value;
+  var conns=CONNS.map(function(_,i){return i}).filter(function(i){return connSel[i]});
+
+  var r=rng(seedFrom(name+'|'+addr+'|'+dist+'|'+tone+'|'+conns.join(',')+'|'+
+        c.asks.map(function(a){return a.id}).join(',')+'|'+letterNonce));
+
+  var fill=function(t){ return t.replace('{NAME}',name).replace('{ADDR}',addr).replace('{D}',dist) };
+  var P=[];
+  P.push(fill(pick(tonePool(L.open,tone),r)));
+  var stake=pick(tonePool(L.stake,tone),r);
+  var connLine=conns.map(function(i){return CONN_LINE[i]}).filter(Boolean);
+  if(connLine.length) stake+=' '+pick(connLine,r);
+  P.push(stake);
+  if(story) P.push(story);
+  P.push(pick(tonePool(L.precedent,tone),r));
+
+  var asks=c.asks.map(askSentence);
+  if(asks.length){
+    P.push(pick(tonePool(L.lead,tone),r)+' I would like the Council to '+joinList(asks)+'.');
+  }
+  if(c.funds.length){
+    P.push('On paying for it, the Council could '+joinList(c.funds.map(fundSentence))+'.');
+  }
+  P.push(pick(tonePool(L.close,tone),r));
+
+  return 'Dear Mayor Watson and Members of the City Council,\n\n'+P.join('\n\n')+
+         '\n\nSincerely,\n'+name+'\n'+addr;
 }
 
 var currentLetter='';
@@ -1767,12 +1888,14 @@ function setWordCount(t){
 }
 function typeOut(node,text,done){
   node.classList.remove('empty'); node.textContent='';
+  node.setAttribute('contenteditable','true'); node.setAttribute('role','textbox');
   if(reduceMotion()){node.textContent=text; setWordCount(text); if(done)done(); return}
   var i=0, chunk=Math.max(3,Math.round(text.length/140));
   var cur=el('span','cursor'); node.appendChild(cur);
   var iv=setInterval(function(){
     i+=chunk; node.textContent=text.slice(0,i); node.appendChild(cur);
-    if(i>=text.length){clearInterval(iv); node.textContent=text; setWordCount(text); if(done)done()}
+    if(i>=text.length){clearInterval(iv); node.textContent=text; setWordCount(text); if(done)done();
+      node.oninput=function(){ setWordCount(letterText(node)) }; }
   },14);
 }
 function generate(){
@@ -1784,7 +1907,7 @@ function generate(){
     currentLetter=text;
     btn.disabled=false; $('#regen').disabled=false; btn.innerHTML=old;
     $('#regen').style.display='inline-block';
-    typeOut(out,text,function(){$('#letterActions').style.display='flex'});
+    typeOut(out,text,function(){ $('#letterActions').style.display='flex'; $('#editNote').hidden=false; });
   }
   var api=(window.cowork&&typeof window.cowork.askClaude==='function')?window.cowork.askClaude:null;
   if(!api){ var pk=$('#pickedSummary'); if(pk && !pk.dataset.noted){ pk.dataset.noted='1';
@@ -1802,17 +1925,25 @@ function generate(){
 }
 $('#gen').addEventListener('click',generate);
 $('#regen').addEventListener('click',function(){
-  var s=$('#f-tone'); s.selectedIndex=(s.selectedIndex+1)%s.options.length;
-  toast('Rewriting, '+s.value.toLowerCase()); generate();
+  var sel=$('#f-tone'); sel.selectedIndex=(sel.selectedIndex+1)%sel.options.length;
+  letterNonce++;
+  toast('Rewriting, '+sel.value.toLowerCase()); generate();
 });
-$('#copyBtn').addEventListener('click',function(){copy(currentLetter,'Letter copied. Now open the council form and paste')});
+function letterText(node){ var t=(typeof node.innerText==='string')?node.innerText:node.textContent; return (t||'').replace(/\u00a0/g,' ') }
+function liveLetter(){
+  var o=$('#letterOut');
+  if(o.getAttribute('contenteditable')!=='true') return currentLetter;
+  var t=letterText(o).trim();
+  return t||currentLetter;
+}
+$('#copyBtn').addEventListener('click',function(){copy(liveLetter(),'Letter copied. Now open the council form and paste')});
 $('#openForm').addEventListener('click',function(){
-  copy(currentLetter,'Letter copied. Paste it into the form');
+  copy(liveLetter(),'Letter copied. Paste it into the form');
   window.open('https://www.austintexas.gov/email/all-council-members','_blank','noopener');
 });
 $('#dlLetter').addEventListener('click',function(){
   var n=($('#f-name').value.trim()||'letter').replace(/[^\w]+/g,'-').toLowerCase();
-  download('council-letter-'+n+'.txt',currentLetter); toast('Downloaded');
+  download('council-letter-'+n+'.txt',liveLetter()); toast('Downloaded');
 });
 
 /* ════════ tracker ════════ */
