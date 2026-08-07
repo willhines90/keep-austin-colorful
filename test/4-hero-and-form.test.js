@@ -63,6 +63,20 @@ addr.value='no zip here'; addr.dispatchEvent(new window.Event('input',{bubbles:t
 ok('no ZIP hides the hint', hint.hidden===true);
 ok('always links the official map', html.includes('austintexas.gov/council/district-map'));
 
+console.log('\n— address lookup + council contacts —');
+ok('address field has a lookup control', !!d.querySelector('#findDist'));
+ok('address field supports browser autofill', d.querySelector('#f-addr').getAttribute('autocomplete')==='street-address');
+ok('geocode + district endpoints are wired', html.includes('geocoding.geo.census.gov')&&html.includes('data.austintexas.gov/resource/w3v2-cj58'));
+ok('lookup uses the correct district field', html.includes('district_number'));
+ok('lookup degrades to the ZIP hint', html.includes('if(z) zipHint(z); else hintEl().hidden=true;'));
+ok('lookup has a timeout so it cannot hang', html.includes('AbortController')&&html.includes('7000'));
+ok('your-council-member block starts hidden', /<div class="contact" id="yourCM" hidden>/.test(html));
+(()=>{const sel=d.querySelector('#f-dist'); sel.value='5'; sel.dispatchEvent(new window.Event('change',{bubbles:true}));})();
+ok('choosing a district reveals their number', d.querySelector('#yourCMhow').textContent.includes('512-978-2105'));
+ok('and links that district\'s own page', d.querySelector('#yourCMhow').innerHTML.includes('/district-5/contact'));
+ok('verified Mayor number present', html.includes('tel:+15129782100'));
+ok('verified District 9 number present', html.includes('tel:+15129782109'));
+
 console.log('\n— source links —');
 ok('timeline entries cite sources', d.querySelectorAll('#timeline .srcs .srcl').length>=8);
 ok('city card cites sources', d.querySelectorAll('#citycard .srcl').length>=1);

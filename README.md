@@ -22,6 +22,17 @@ There is no build step. `index.html` is a single self-contained file with all CS
 python3 -m http.server 8000    # then open http://localhost:8000
 ```
 
+## The district lookup
+
+Typing an address looks up the writer's council district using two public endpoints, neither of which needs a key:
+
+1. The **US Census geocoder** turns the address into a coordinate.
+2. **Austin's own open data layer** (`w3v2-cj58`) says which council district contains that point.
+
+It is strictly progressive enhancement. If either endpoint is unreachable, blocked by CORS, or slow, it times out after seven seconds and falls back to a ZIP code hint that narrows the options but never picks one. The form always works without it.
+
+Once a district is known, the page shows that member's direct number, which is how a reader gets from "I care about this" to a phone call in one step.
+
 ## Tests
 
 ```bash
@@ -29,7 +40,7 @@ npm install
 npm test
 ```
 
-260 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+271 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 
@@ -57,7 +68,8 @@ The structure generalizes. Most of what you'd change lives in clearly-marked dat
 | The action list and its templates | `TODOS` |
 | Upcoming dates, which drive the "next up" banner | `DATES` |
 | Calendar file contents | `ICS` |
-| ZIP code hints for the district field | `ZIP_HINT` |
+| ZIP code fallback hints | `ZIP_HINT` |
+| Address to district lookup | `lookupDistrict()` |
 | Letter phrasings, one pool per slot | `L`, `CONN_LINE`, `askSentence` |
 | Source links | `SRC` |
 

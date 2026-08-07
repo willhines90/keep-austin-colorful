@@ -4,3 +4,6 @@ node_modules
 .netlify
 package-lock.json
 *.log
+
+# stray artifact, safe to delete
+test/*.add

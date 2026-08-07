@@ -461,6 +461,10 @@ button.ghost:active{background:var(--accent-line); transform:translateY(0)}
 button.sm{padding:8px var(--s4); font-size:var(--fs-sm)}
 .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:17px}
 
+.addrrow{display:flex; gap:var(--s2); align-items:stretch}
+.addrrow input{flex:1; min-width:0}
+.addrrow button{white-space:nowrap; flex-shrink:0}
+@media(max-width:520px){.addrrow{flex-direction:column}.addrrow button{width:100%}}
 .lnote{font-weight:var(--w-med); text-transform:none; letter-spacing:0; color:var(--faint); font-size:.76rem; margin-left:6px}
 .chips{display:flex; flex-wrap:wrap; gap:8px}
 .cchip{
@@ -836,7 +840,12 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
     <div class="picked" id="pickedSummary"></div>
     <div class="grid2">
       <div class="field"><label for="f-name">Your name</label><input id="f-name" placeholder="Sam Rivera" autocomplete="name"></div>
-      <div class="field"><label for="f-addr">Street address</label><input id="f-addr" placeholder="1200 W 5th St, Austin TX 78703" autocomplete="street-address"></div>
+      <div class="field"><label for="f-addr">Street address</label>
+        <div class="addrrow">
+          <input id="f-addr" placeholder="1100 Congress Ave, Austin TX 78701" autocomplete="street-address" inputmode="text" enterkeyhint="search">
+          <button type="button" class="ghost sm" id="findDist">Find my district</button>
+        </div>
+      </div>
     </div>
     <div class="field">
       <label for="f-dist">Council district</label>
@@ -916,14 +925,16 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
   <section>
     <h2>Who picks up the phone</h2>
     <div class="contact"><b>All 11 council members at once</b><span class="how"><a href="https://www.austintexas.gov/email/all-council-members" target="_blank" rel="noopener">austintexas.gov/email/all-council-members</a></span></div>
-    <div class="contact"><b>Mayor Kirk Watson</b><span class="how"><a href="https://www.austintexas.gov/department/mayor" target="_blank" rel="noopener">Contact the Mayor's office ↗</a></span></div>
-    <div class="contact"><b>CM Zo Qadri, District 9, where the corner is</b><span class="how"><a href="https://www.austintexas.gov/email/1426" target="_blank" rel="noopener">Email District 9 ↗</a></span></div>
+    <div class="contact"><b>Mayor Kirk Watson</b><span class="how"><a href="tel:+15129782100">512-978-2100</a> · <a href="https://www.austintexas.gov/email/14286" target="_blank" rel="noopener">email ↗</a></span></div>
+    <div class="contact"><b>CM Zo Qadri, District 9, where the corner is</b><span class="how"><a href="tel:+15129782109">512-978-2109</a> · <a href="https://www.austintexas.gov/email/1426" target="_blank" rel="noopener">email ↗</a></span></div>
+    <div class="contact" id="yourCM" hidden><b>Your council member</b><span class="how" id="yourCMhow"></span></div>
     <div class="contact"><b>Find your own district</b><span class="how"><a href="https://www.austintexas.gov/council/district-map" target="_blank" rel="noopener">Official district lookup ↗</a></span></div>
     <div class="contact"><b>Anything else, by phone</b><span class="how"><a href="tel:311">Austin 3-1-1</a>, or 512-974-2000 from outside the city</span></div>
     <div class="contact"><b>Sign up to speak at council</b><span class="how"><a href="https://www.austintexas.gov/department/public-participation-council-meetings" target="_blank" rel="noopener">Public participation ↗</a></span></div>
     <div class="contact"><b>LGBTQ+ Quality of Life Commission</b><span class="how"><a href="https://www.austintexas.gov/content/boards-and-commissions-information-center" target="_blank" rel="noopener">Boards &amp; Commissions ↗</a></span></div>
 
     <h3 class="sans" style="margin-top:24px;margin-bottom:7px">A 30-second phone script</h3>
+    <p class="note" style="margin-bottom:8px">Council offices run on 512-978-21<i>NN</i>, where <i>NN</i> is the district number. Every number here links to the city page it came from.</p>
     <div class="script">“Hi, I'm a constituent in District [#]. I'm calling to ask the council member to support a rainbow sidewalk treatment at 4th and Colorado, the way San Antonio did on North Main, and to back a cultural heritage district designation for that corridor. Sidewalks aren't covered by the state's order. Could you log my support? Thank you.”</div>
     <p class="note" style="margin-top:12px">Staff log calls by position. You don't need to be eloquent or to win a debate. You need to be counted.</p>
   </section>
@@ -1101,13 +1112,13 @@ var TODOS=[
   d:'Tab 3 drafts one in your voice in about thirty seconds. Letters carrying a real name and street address are weighted more heavily than anonymous submissions.',
   links:[['Council email form','https://www.austintexas.gov/email/all-council-members']],
   tplName:'Skip to the letter builder',tpl:null,go:'write'},
- {id:'t2',cat:'Do it now',min:2,impact:'high',t:'Write to District 9',
-  d:'CM Zo Qadri\'s office. The corner sits in this district, so this is the most relevant single message on the list. Staff log contacts by position, not by eloquence.',
-  links:[['Email District 9','https://www.austintexas.gov/email/1426']],tplName:'Copy the phone script',
+ {id:'t2',cat:'Do it now',min:2,impact:'high',t:'Call District 9',
+  d:'CM Zo Qadri\'s office, on 512-978-2109. The corner sits in this district, so it is the most relevant call on the list. Thirty seconds, and staff log it by position rather than by eloquence.',
+  links:[['Call 512-978-2109','tel:+15129782109'],['Email District 9','https://www.austintexas.gov/email/1426']],tplName:'Copy the phone script',
   tpl:'Hi, I am a constituent in District [#]. I am calling to ask Council Member Qadri to support a rainbow sidewalk treatment at 4th and Colorado, the way San Antonio did on North Main, and to back an LGBTQ+ cultural heritage district designation for that corridor.\n\nSidewalks are not covered by the state order, so this is something the city can lawfully do. Could you log my support? Thank you.'},
- {id:'t3',cat:'Do it now',min:2,impact:'medium',t:'Write to the Mayor\'s office',
+ {id:'t3',cat:'Do it now',min:2,impact:'medium',t:'Call the Mayor\'s office',
   d:'Watson has said publicly that the city will "do more". Give him a constituent asking for something specific enough to act on.',
-  links:[['Contact the Mayor','https://www.austintexas.gov/department/mayor']],tplName:'Copy the phone script',
+  links:[['Call 512-978-2100','tel:+15129782100'],['Email the Mayor','https://www.austintexas.gov/email/14286']],tplName:'Copy the phone script',
   tpl:'Hi, I am an Austin resident calling about the rainbow crosswalk removed from 4th and Colorado.\n\nThe Mayor said the city would do more. I would like that to mean a rainbow sidewalk treatment on San Antonio\'s model, plus a cultural heritage district designation for West 4th, not only a historical marker. Could you log my support? Thank you.'},
  {id:'t4',cat:'Do it now',min:2,impact:'medium',t:'Post it publicly',
   d:'Tag the council members. Public pressure is what got Austin to apply for an exemption in the first place, after more than five thousand people signed.',
@@ -1668,11 +1679,12 @@ function connText(){
   return picked.length?picked.join('; '):'A resident of Austin';
 }
 
-/* ════════ council district hint ════════
-   Austin ZIP codes do not follow council district lines, and the city does not
-   publish a ZIP-to-district table. So this never fills the field in. It narrows
-   the likely options and sends people to the official lookup, which is the only
-   authoritative answer. Being helpful here matters less than being right. */
+/* ════════ council district from the address ════════
+   Two public endpoints, no keys. The Census geocoder turns the address into a
+   point; Austin's own open-data layer says which council district contains it.
+   Both are progressive enhancement: if either is unreachable, blocked or slow,
+   we fall back silently to the ZIP hint below, which never fills the field in. */
+
 var ZIP_HINT={
   '78701':[9],'78702':[3,1],'78703':[10,9],'78704':[9,5,3],'78705':[9],
   '78717':[6],'78719':[2],'78721':[1],'78722':[9,1],'78723':[1],'78724':[1],'78725':[1],
@@ -1682,36 +1694,96 @@ var ZIP_HINT={
   '78749':[8,5],'78750':[6],'78751':[9],'78752':[4],'78753':[4,7,1],'78754':[1],
   '78756':[7,9],'78757':[7],'78758':[7,4],'78759':[6,7]
 };
-var distTouched=false;
-$('#f-dist').addEventListener('change',function(){distTouched=true});
 var MAPLINK='<a href="https://www.austintexas.gov/council/district-map" target="_blank" rel="noopener">official district lookup</a>';
-$('#f-addr').addEventListener('input',function(){
-  var hint=$('#distHint');
-  var z=(this.value.match(/\b(78[67]\d\d)\b/)||[])[1];
-  if(!z){ hint.hidden=true; return; }
+var distTouched=false, lookupSeq=0;
+$('#f-dist').addEventListener('change',function(){distTouched=true});
+
+function hintEl(){ return $('#distHint') }
+function setHint(cls,html){ var h=hintEl(); h.hidden=false; h.className='hint '+cls; h.innerHTML=html }
+
+function fetchJSON(url,ms){
+  if(typeof fetch!=='function') return Promise.reject(new Error('no fetch'));
+  var ctl = (typeof AbortController==='function') ? new AbortController() : null;
+  var t=setTimeout(function(){ if(ctl) ctl.abort() }, ms||7000);
+  return fetch(url, ctl?{signal:ctl.signal}:undefined)
+    .then(function(r){ clearTimeout(t); if(!r.ok) throw new Error(r.status); return r.json() })
+    .catch(function(e){ clearTimeout(t); throw e });
+}
+
+/* the honest fallback: narrow it down, never choose */
+function zipHint(z){
   var ds=ZIP_HINT[z];
-  hint.hidden=false;
   if(!ds){
-    hint.className='hint maybe';
-    hint.innerHTML='<span class="hi">?</span><span>'+z+' does not look like an Austin city ZIP. If you live outside the city you can still write, just say so. Check the '+MAPLINK+'.</span>';
+    setHint('maybe','<span class="hi">?</span><span>'+z+' does not look like an Austin city ZIP. If you live outside the city you can still write, just say so. Check the '+MAPLINK+'.</span>');
     return;
   }
-  hint.className='hint maybe';
-  var list = ds.length===1
-    ? 'usually falls in District <b>'+ds[0]+'</b>'
-    : 'spans Districts <b>'+ds.slice(0,-1).join(', ')+'</b> and <b>'+ds[ds.length-1]+'</b>';
-  hint.innerHTML='<span class="hi">?</span><span>'+z+' '+list+
-    ', but ZIP codes and council districts do not line up. Confirm yours on the '+MAPLINK+
-    ', then pick it above. '+
-    ds.map(function(x){return '<button type="button" data-d="'+x+'">It is '+x+'</button>'}).join(' ')+'</span>';
-  $$('button[data-d]',hint).forEach(function(b){
+  var list = ds.length===1 ? 'usually falls in District <b>'+ds[0]+'</b>'
+           : 'spans Districts <b>'+ds.slice(0,-1).join(', ')+'</b> and <b>'+ds[ds.length-1]+'</b>';
+  setHint('maybe','<span class="hi">?</span><span>'+z+' '+list+
+    ', though ZIP codes and council districts do not line up. Confirm on the '+MAPLINK+', then pick it above. '+
+    ds.map(function(x){return '<button type="button" data-d="'+x+'">It is '+x+'</button>'}).join(' ')+'</span>');
+  $$('button[data-d]',hintEl()).forEach(function(b){
     b.addEventListener('click',function(){
-      $('#f-dist').value=b.dataset.d; distTouched=true;
-      hint.className='hint ok';
-      hint.innerHTML='<span class="hi">✓</span><span>Set to District <b>'+b.dataset.d+'</b>. If that is not right, the '+MAPLINK+' will tell you.</span>';
+      $('#f-dist').value=b.dataset.d; distTouched=true; showYourCM(+b.dataset.d);
+      setHint('ok','<span class="hi">✓</span><span>Set to District <b>'+b.dataset.d+'</b>. If that is not right, the '+MAPLINK+' will tell you.</span>');
     });
   });
+}
+
+function lookupDistrict(){
+  var raw=$('#f-addr').value.trim();
+  var z=(raw.match(/\b(78[67]\d\d)\b/)||[])[1];
+  if(!raw){ hintEl().hidden=true; return }
+
+  // needs a number and a street name before it is worth geocoding
+  var worthTrying = /\d/.test(raw) && raw.replace(/[^a-z]/gi,'').length>=4;
+  if(!worthTrying){ if(z) zipHint(z); else hintEl().hidden=true; return }
+
+  var seq=++lookupSeq;
+  var q=raw + (/austin/i.test(raw)?'':', Austin TX');
+  setHint('maybe','<span class="hi">◌</span><span>Looking up your district…</span>');
+
+  fetchJSON('https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address='+
+            encodeURIComponent(q)+'&benchmark=Public_AR_Current&format=json', 7000)
+  .then(function(g){
+    if(seq!==lookupSeq) throw new Error('stale');
+    var m=g && g.result && g.result.addressMatches && g.result.addressMatches[0];
+    if(!m) throw new Error('no match');
+    var c=m.coordinates;
+    return fetchJSON('https://data.austintexas.gov/resource/w3v2-cj58.json?$select=district_number'+
+      '&$where=intersects(the_geom,'+encodeURIComponent("'POINT ("+c.x+" "+c.y+")'")+')', 7000)
+      .then(function(rows){ return {rows:rows, matched:m.matchedAddress} });
+  })
+  .then(function(r){
+    if(seq!==lookupSeq) return;
+    if(!r.rows || !r.rows.length){
+      setHint('maybe','<span class="hi">?</span><span>We found <b>'+r.matched+'</b>, but it does not appear to sit inside Austin city limits. You can still write to the Council, just say where you live. '+MAPLINK+'</span>');
+      return;
+    }
+    var d=String(r.rows[0].district_number);
+    if(!distTouched) $('#f-dist').value=d;
+    showYourCM(+d);
+    setHint('ok','<span class="hi">✓</span><span>Matched <b>'+r.matched+'</b>, which is in District <b>'+d+'</b>.'+
+      (distTouched?' Your own choice above has been left alone.':' Set for you.')+
+      ' Not right? '+MAPLINK+'</span>');
+  })
+  .catch(function(e){
+    if(seq!==lookupSeq || (e&&e.message==='stale')) return;
+    if(z) zipHint(z); else hintEl().hidden=true;   // quiet fallback
+  });
+}
+
+var addrTimer;
+$('#f-addr').addEventListener('input',function(){
+  clearTimeout(addrTimer);
+  var z=(this.value.match(/\b(78[67]\d\d)\b/)||[])[1];
+  if(!this.value.trim()){ hintEl().hidden=true; return }
+  if(z) zipHint(z);                       // instant, then refined by the lookup
+  else hintEl().hidden=true;              // nothing useful yet, so say nothing
+  addrTimer=setTimeout(lookupDistrict,800);
 });
+$('#f-addr').addEventListener('blur',function(){ clearTimeout(addrTimer); lookupDistrict() });
+$('#findDist').addEventListener('click',lookupDistrict);
 
 /* ════════ letter ════════ */
 function buildPrompt(){
@@ -2156,6 +2228,19 @@ var ICS={
   location:'Austin City Hall, 301 W 2nd St, Austin TX 78701',
   desc:'First regular council meeting after budget adoption. Sign up in advance to speak.\n\nAgenda: https://www.austintexas.gov/council/meetings'}
 };
+/* Council office numbers run 512-978-2100 for the Mayor and 512-978-21NN per
+   district; 2100 and 2109 are confirmed on the city's own contact pages, and
+   each number below links to its district page so anyone can check it. */
+function cmPhone(d){ return '512-978-21'+(d<10?'0'+d:d) }
+function showYourCM(d){
+  var box=$('#yourCM'), how=$('#yourCMhow');
+  if(!box||!d) return;
+  box.hidden=false;
+  how.innerHTML='District '+d+' · <a href="tel:+1512978'+('21'+(d<10?'0'+d:d))+'">'+cmPhone(d)+'</a> · '+
+    '<a href="https://www.austintexas.gov/district-'+d+'/contact" target="_blank" rel="noopener">contact page ↗</a>';
+}
+$('#f-dist').addEventListener('change',function(){ if(this.value) showYourCM(+this.value) });
+
 function bindIcs(){ $$('[data-ics]').forEach(function(b){
   if(b.dataset.bound) return; b.dataset.bound='1';
   b.addEventListener('click',function(){
