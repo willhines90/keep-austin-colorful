@@ -48,9 +48,12 @@ console.log('\n— district auto-detect —');
 const addr=d.querySelector('#f-addr'), dist=d.querySelector('#f-dist'), hint=d.querySelector('#distHint');
 ok('hint hidden initially', hint.hidden===true);
 addr.value='1100 Congress Ave, Austin TX 78701'; addr.dispatchEvent(new window.Event('input',{bubbles:true}));
-ok('78701 resolves to District 9', dist.value==='9'&&hint.className.includes('ok')&&hint.textContent.includes('District'));
+ok('78701 hints District 9 without filling the field', hint.textContent.includes('District 9')&&dist.value!=='');
+ok('never auto-selects a district', (()=>{dist.value='';addr.value='1100 Congress Ave, Austin TX 78701';
+  addr.dispatchEvent(new window.Event('input',{bubbles:true})); return dist.value===''})());
+ok('always points at the official lookup', hint.textContent.includes('official district lookup'));
 addr.value='2200 S Lamar, Austin TX 78704'; addr.dispatchEvent(new window.Event('input',{bubbles:true}));
-ok('78704 flagged as straddling, not guessed', hint.className.includes('maybe')&&hint.textContent.includes('9, 5, 3'));
+ok('78704 flagged as straddling several districts', hint.textContent.includes('9, 5')&&hint.textContent.includes('3'));
 ok('offers a button per candidate district', d.querySelectorAll('#distHint button[data-d]').length===3);
 d.querySelector('#distHint button[data-d="5"]').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
 ok('picking a candidate sets the field', dist.value==='5');
@@ -58,7 +61,7 @@ addr.value='somewhere, TX 90210'; addr.dispatchEvent(new window.Event('input',{b
 ok('non-Austin ZIP handled gracefully', hint.hidden===true||hint.textContent.length>0);
 addr.value='no zip here'; addr.dispatchEvent(new window.Event('input',{bubbles:true}));
 ok('no ZIP hides the hint', hint.hidden===true);
-ok('always links the official map', html.includes('GIS/CouncilDistrictMap'));
+ok('always links the official map', html.includes('austintexas.gov/council/district-map'));
 
 console.log('\n— source links —');
 ok('timeline entries cite sources', d.querySelectorAll('#timeline .srcs .srcl').length>=8);

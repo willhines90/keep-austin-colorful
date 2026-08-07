@@ -566,6 +566,19 @@ button.lnkb:hover{border-color:var(--accent); transform:none; opacity:1; box-sha
 .tplbox{margin-top:11px; background:#fffdf8; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 9px 9px 0; padding:14px 16px; font-family:var(--serif); font-size:.92rem; line-height:1.6; white-space:pre-wrap; color:var(--ink-2); max-height:320px; overflow:auto}
 .quicktog{display:flex; align-items:center; gap:9px; font-family:var(--sans); font-size:.86rem; color:var(--muted); cursor:pointer; user-select:none}
 /* dates */
+.nextup{display:flex; gap:var(--s3); align-items:center; flex-wrap:wrap; margin:var(--s5) 0 var(--s2);
+  background:var(--accent-soft); border:1px solid var(--accent-line); border-radius:var(--r-pill);
+  padding:var(--s2) var(--s5); font-family:var(--sans); font-size:var(--fs-sm); color:var(--accent-ink); width:fit-content; max-width:100%}
+.nu-tag{font-size:var(--fs-2xs); font-weight:var(--w-bold); letter-spacing:var(--track-eyebrow); text-transform:uppercase; color:var(--accent)}
+.dtag{display:inline-block; font-family:var(--sans); font-size:var(--fs-2xs); font-weight:var(--w-bold);
+  letter-spacing:.08em; text-transform:uppercase; padding:2px 8px; border-radius:var(--r-xs); margin-left:var(--s2); vertical-align:1px}
+.dtag.council{background:var(--accent-soft); color:var(--accent)}
+.dtag.commission{background:var(--green-soft); color:var(--green)}
+.dtag.pride{background:linear-gradient(90deg,#e40303,#ff8c00,#e0b400,#008026,#24408e,#732982); color:#fff}
+.dtag.done{background:var(--paper-2); color:var(--faint)}
+.date.past{opacity:.5}
+.date.past .dwhen,.date.past .dwhat b{text-decoration:line-through; text-decoration-thickness:1px}
+.date.next .dwhat b{color:var(--accent)}
 .date{display:flex; gap:18px; padding:16px 0; border-bottom:1px solid var(--line-2); align-items:flex-start; flex-wrap:wrap}
 .date:last-of-type{border-bottom:none}
 .dwhen{font-family:var(--sans); font-weight:var(--w-bold); font-size:.855rem; min-width:122px; flex-shrink:0; letter-spacing:-.012em; padding-top:1px}
@@ -671,6 +684,7 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
     </div>
     <div class="kicker">Austin, District 9 · A neighborhood project</div>
     <h1>Let's put the color back on <span class="hl">4th &amp; Colorado.</span></h1>
+    <div class="nextup" id="nextUp" hidden></div>
     <p class="dek">Austin's rainbow crosswalk came up in July under a state order. Here is the happy part: San Antonio faced the very same order and painted its sidewalks instead. Two blocks of color, entirely legal, and it needed no council vote. Austin has every tool to do the same, a council that has said it wants to, and a neighborhood ready to help. Here is how, and how to ask in about five minutes.</p>
   </div>
 </div>
@@ -717,7 +731,7 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
   <div class="stats">
     <div class="stat" style="--sw:var(--r1)"><b>3</b><span>Texas cities that have already brought their color back</span></div>
     <div class="stat" style="--sw:var(--r2)"><b>$170K</b><span>What San Antonio invested in two blocks of rainbow sidewalk</span></div>
-    <div class="stat" style="--sw:var(--r4)"><b>5,000+</b><span>Austinites who signed to keep the crosswalk</span></div>
+    <div class="stat" style="--sw:var(--r4)"><b>5,330</b><span>Austinites who signed the petition to keep the crosswalk</span></div>
     <div class="stat" style="--sw:var(--r5)"><b>~75</b><span>Neighbors who gathered on the corner in July</span></div>
   </div>
 
@@ -893,34 +907,19 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
   </section>
 
   <section>
-    <h2>Dates worth putting in your diary</h2>
-    <div class="date">
-      <div class="dwhen">12–14 Aug 2026<span class="hot">Now</span></div>
-      <div class="dwhat"><b>FY2027 budget adoption</b><span>The council's money meetings. If you want a sidewalk treatment funded, this is the week it gets into the budget or waits a year. Public comment is taken.</span>
-        <div class="btnrow" style="margin-top:11px"><button class="ghost sm" data-ics="budget">＋ Add to calendar</button></div></div>
-    </div>
-    <div class="date">
-      <div class="dwhen">Aug 2026</div>
-      <div class="dwhat"><b>LGBTQ historical marker unveiling</b><span>At 4th &amp; Colorado. Date not yet announced, but worth turning up to, and worth asking what comes after it.</span></div>
-    </div>
-    <div class="date">
-      <div class="dwhen">27 Aug 2026</div>
-      <div class="dwhat"><b>Regular council meeting</b><span>The first ordinary meeting after the budget. Sign up in advance to speak.</span>
-        <div class="btnrow" style="margin-top:11px"><button class="ghost sm" data-ics="council">＋ Add to calendar</button></div></div>
-    </div>
-    <div class="date">
-      <div class="dwhen">Monthly</div>
-      <div class="dwhat"><b>LGBTQ+ Quality of Life Advisory Commission</b><span>Meets at City Hall with a public comment period, and its recommendations travel up to council through the Joint Inclusion Committee. A smaller room and a far shorter queue than council, and often the faster route in.</span></div>
-    </div>
-    <p class="note" style="margin-top:16px">Dates from the City of Austin's published 2026 council calendar and subject to change, so <a href="https://www.austintexas.gov/council/meetings" target="_blank" rel="noopener">check the agenda before you turn up</a>.</p>
-  </section>
+    <h2>What is coming up</h2>
+    <div id="dateList"></div>
+    <p class="note" style="margin-top:var(--s5)">Budget week is the quickest route, and it is not the only one. A council member can bring a resolution at any regular meeting, and a cultural heritage district designation is not tied to the budget cycle at all. If one window closes, the next one is a few weeks away.</p>
+    <p class="note" style="margin-top:var(--s3)">Dates from the City of Austin's published 2026 council calendar and from Austin Pride, and subject to change. <a href="https://www.austintexas.gov/council/meetings" target="_blank" rel="noopener">Check the agenda</a> before you turn up.</p>
+    </section>
 
   <section>
     <h2>Who picks up the phone</h2>
     <div class="contact"><b>All 11 council members at once</b><span class="how"><a href="https://www.austintexas.gov/email/all-council-members" target="_blank" rel="noopener">austintexas.gov/email/all-council-members</a></span></div>
-    <div class="contact"><b>Mayor Kirk Watson</b><span class="how"><a href="tel:+15129782100">512-978-2100</a></span></div>
-    <div class="contact"><b>CM Zo Qadri, District 9, where the corner is</b><span class="how"><a href="tel:+15129782109">512-978-2109</a></span></div>
-    <div class="contact"><b>Find your own district</b><span class="how"><a href="https://www.austintexas.gov/GIS/CouncilDistrictMap/" target="_blank" rel="noopener">Council district map ↗</a></span></div>
+    <div class="contact"><b>Mayor Kirk Watson</b><span class="how"><a href="https://www.austintexas.gov/department/mayor" target="_blank" rel="noopener">Contact the Mayor's office ↗</a></span></div>
+    <div class="contact"><b>CM Zo Qadri, District 9, where the corner is</b><span class="how"><a href="https://www.austintexas.gov/email/1426" target="_blank" rel="noopener">Email District 9 ↗</a></span></div>
+    <div class="contact"><b>Find your own district</b><span class="how"><a href="https://www.austintexas.gov/council/district-map" target="_blank" rel="noopener">Official district lookup ↗</a></span></div>
+    <div class="contact"><b>Anything else, by phone</b><span class="how"><a href="tel:311">Austin 3-1-1</a>, or 512-974-2000 from outside the city</span></div>
     <div class="contact"><b>Sign up to speak at council</b><span class="how"><a href="https://www.austintexas.gov/department/public-participation-council-meetings" target="_blank" rel="noopener">Public participation ↗</a></span></div>
     <div class="contact"><b>LGBTQ+ Quality of Life Commission</b><span class="how"><a href="https://www.austintexas.gov/content/boards-and-commissions-information-center" target="_blank" rel="noopener">Boards &amp; Commissions ↗</a></span></div>
 
@@ -940,7 +939,9 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
       <a href="https://www.kut.org/transportation/2026-07-22/austin-tx-lgbtq-vigil-rainbow-crosswalks-4th-street" target="_blank" rel="noopener">KUT: LGBTQ+ community holds vigil for Austin rainbow crosswalks (22 Jul 2026)</a><br>
       <a href="https://www.axios.com/local/austin/2026/06/23/austin-painted-crosswalks-removal-abbott" target="_blank" rel="noopener">Axios Austin: Rainbow crosswalk and Black Artists Matter mural to be removed (23 Jun 2026)</a><br>
       <a href="https://services.austintexas.gov/edims/document.cfm?id=462100" target="_blank" rel="noopener">City of Austin: 2026 Council Meeting Schedule (PDF)</a><br>
-      <a href="https://sixsquareatx.org/" target="_blank" rel="noopener">Six Square: Austin's Black Cultural District</a>
+      <a href="https://sixsquareatx.org/" target="_blank" rel="noopener">Six Square: Austin's Black Cultural District</a><br>
+      <a href="https://www.change.org/p/city-of-austin-texas-approve-the-rainbow-crosswalks-in-austin-tx" target="_blank" rel="noopener">Change.org: Approve the Rainbow Crosswalks in Austin (5,330 signatures)</a><br>
+      <a href="https://austinpride.org/pride2026/" target="_blank" rel="noopener">Austin Pride 2026</a>
     </p>
   </section>
 </div>
@@ -969,7 +970,9 @@ var SRC={
  axios:['Axios Austin','https://www.axios.com/local/austin/2026/06/23/austin-painted-crosswalks-removal-abbott'],
  kvue:['KVUE','https://www.kvue.com/article/news/local/austin-texas-fourth-colorado-streets-rainbow-crosswalk-removed/269-0218c935-2ca7-47b4-8199-8c0fbdf2df00'],
  calendar:['City of Austin calendar','https://services.austintexas.gov/edims/document.cfm?id=462100'],
- sixsquare:['Six Square','https://sixsquareatx.org/']
+ sixsquare:['Six Square','https://sixsquareatx.org/'],
+ petition:['The petition (5,330 signatures)','https://www.change.org/p/city-of-austin-texas-approve-the-rainbow-crosswalks-in-austin-tx'],
+ pride:['Austin Pride','https://austinpride.org/pride2026/']
 };
 function srcLinks(keys){
   if(!keys||!keys.length) return '';
@@ -983,8 +986,8 @@ function srcLinks(keys){
 var TIMELINE=[
  {d:'2018–2021',k:0,s:['tribune'],t:'Texas cities paint rainbow crosswalks',
   b:"San Antonio's goes in at North Main and West Evergreen in 2018, funded and maintained by residents and nearby businesses rather than the city. Austin's arrives at West 4th and Colorado in 2021, in the heart of the city's LGBTQ+ district."},
- {d:'Oct 2025',k:1,s:['tribune'],t:'Abbott orders TxDOT to withhold road funding',
-  b:'The order targets roadway art that might “advance political agendas,” following a similar Federal Highway Administration directive. Cities can apply for exemptions. TxDOT denies every application to keep a rainbow crosswalk, and never answers whether it granted an exemption to any roadway art at all.'},
+ {d:'Oct 2025',k:1,s:['tribune','petition'],t:'Abbott orders TxDOT to withhold road funding',
+  b:'The order targets roadway art that might “advance political agendas,” following a similar Federal Highway Administration directive. Cities can apply for exemptions. More than five thousand people signed a petition asking Austin to try. TxDOT denies every application to keep a rainbow crosswalk, and never answers whether it granted an exemption to any roadway art at all.'},
  {d:'Nov 2025',k:0,s:['sareport'],t:'San Antonio argues its crosswalk is safer, and loses anyway',
   b:'Assistant City Manager John Peterek writes to TxDOT that the intersection is safer than comparable nearby intersections, and safer than before the paint went down. “Nevertheless, the City will respect TxDOT\'s decision.” The safety rationale is never actually contested on the data.'},
  {d:'Jan 2026',k:1,s:['sareport','tpr'],t:'San Antonio scrubs its crosswalk, and starts on the sidewalks',
@@ -1098,13 +1101,13 @@ var TODOS=[
   d:'Tab 3 drafts one in your voice in about thirty seconds. Letters carrying a real name and street address are weighted more heavily than anonymous submissions.',
   links:[['Council email form','https://www.austintexas.gov/email/all-council-members']],
   tplName:'Skip to the letter builder',tpl:null,go:'write'},
- {id:'t2',cat:'Do it now',min:2,impact:'high',t:'Call District 9',
-  d:'CM Zo Qadri\'s office. The corner sits in this district, so this is the single most relevant phone call on the list. Staff log calls by position, not by eloquence.',
-  links:[['Call 512-978-2109','tel:+15129782109']],tplName:'Copy the phone script',
+ {id:'t2',cat:'Do it now',min:2,impact:'high',t:'Write to District 9',
+  d:'CM Zo Qadri\'s office. The corner sits in this district, so this is the most relevant single message on the list. Staff log contacts by position, not by eloquence.',
+  links:[['Email District 9','https://www.austintexas.gov/email/1426']],tplName:'Copy the phone script',
   tpl:'Hi, I am a constituent in District [#]. I am calling to ask Council Member Qadri to support a rainbow sidewalk treatment at 4th and Colorado, the way San Antonio did on North Main, and to back an LGBTQ+ cultural heritage district designation for that corridor.\n\nSidewalks are not covered by the state order, so this is something the city can lawfully do. Could you log my support? Thank you.'},
- {id:'t3',cat:'Do it now',min:2,impact:'medium',t:'Call the Mayor\'s office',
+ {id:'t3',cat:'Do it now',min:2,impact:'medium',t:'Write to the Mayor\'s office',
   d:'Watson has said publicly that the city will "do more". Give him a constituent asking for something specific enough to act on.',
-  links:[['Call 512-978-2100','tel:+15129782100']],tplName:'Copy the phone script',
+  links:[['Contact the Mayor','https://www.austintexas.gov/department/mayor']],tplName:'Copy the phone script',
   tpl:'Hi, I am an Austin resident calling about the rainbow crosswalk removed from 4th and Colorado.\n\nThe Mayor said the city would do more. I would like that to mean a rainbow sidewalk treatment on San Antonio\'s model, plus a cultural heritage district designation for West 4th, not only a historical marker. Could you log my support? Thank you.'},
  {id:'t4',cat:'Do it now',min:2,impact:'medium',t:'Post it publicly',
   d:'Tag the council members. Public pressure is what got Austin to apply for an exemption in the first place, after more than five thousand people signed.',
@@ -1131,7 +1134,7 @@ var TODOS=[
 
  {id:'t9',cat:'Go deeper',min:20,impact:'highest',t:'Recruit a council sponsor',
   d:'Nothing reaches the agenda without a member willing to carry it. This is the step that turns a pile of letters into an actual item, and it is the least crowded part of the process.',
-  links:[['Find your member','https://www.austintexas.gov/GIS/CouncilDistrictMap/']],
+  links:[['Find your member','https://www.austintexas.gov/council/district-map']],
   tplName:'Copy a note to a council office',
   tpl:'Subject: Sponsoring a rainbow sidewalk item for 4th and Colorado\n\nDear Council Member [NAME],\n\nI am a constituent in District [#]. I am writing to ask whether you would consider sponsoring an item directing staff to scope and cost a rainbow sidewalk treatment at 4th and Colorado, and to begin the process of designating the West 4th corridor an LGBTQ+ cultural heritage district.\n\nThe precedent is close at hand. San Antonio, facing the same TxDOT directive, painted the sidewalks along North Main instead of the roadway. The installation cost roughly $170,000, was dedicated in March 2026, survived a legal challenge, and cost the city no road funding. It did not require a council vote, because the corridor already held Pride Cultural Heritage District status.\n\nA resolution directing staff to scope the work commits no money and creates a record with a deadline. Community donations are on the table if cost is the obstacle, as they were in Dallas.\n\nI would welcome the chance to discuss it with your office.\n\n[YOUR NAME]\n[ADDRESS]'},
  {id:'t10',cat:'Go deeper',min:60,impact:'high',t:'Take it to the LGBTQ+ Quality of Life Commission',
@@ -1665,10 +1668,12 @@ function connText(){
   return picked.length?picked.join('; '):'A resident of Austin';
 }
 
-/* ════════ council district from ZIP ════════
-   Austin ZIPs do not line up neatly with council districts, so this offers a
-   suggestion and always points at the official map rather than asserting. */
-var ZIP2D={
+/* ════════ council district hint ════════
+   Austin ZIP codes do not follow council district lines, and the city does not
+   publish a ZIP-to-district table. So this never fills the field in. It narrows
+   the likely options and sends people to the official lookup, which is the only
+   authoritative answer. Being helpful here matters less than being right. */
+var ZIP_HINT={
   '78701':[9],'78702':[3,1],'78703':[10,9],'78704':[9,5,3],'78705':[9],
   '78717':[6],'78719':[2],'78721':[1],'78722':[9,1],'78723':[1],'78724':[1],'78725':[1],
   '78726':[6],'78727':[7],'78728':[7],'78729':[6],'78730':[10],'78731':[10],'78732':[10],
@@ -1679,33 +1684,33 @@ var ZIP2D={
 };
 var distTouched=false;
 $('#f-dist').addEventListener('change',function(){distTouched=true});
+var MAPLINK='<a href="https://www.austintexas.gov/council/district-map" target="_blank" rel="noopener">official district lookup</a>';
 $('#f-addr').addEventListener('input',function(){
   var hint=$('#distHint');
-  var m=(this.value.match(/\b(78[67]\d\d)\b/)||[])[1];
-  if(!m){ hint.hidden=true; return; }
-  var ds=ZIP2D[m];
-  var link='<a href="https://www.austintexas.gov/GIS/CouncilDistrictMap/" target="_blank" rel="noopener">confirm on the district map</a>';
+  var z=(this.value.match(/\b(78[67]\d\d)\b/)||[])[1];
+  if(!z){ hint.hidden=true; return; }
+  var ds=ZIP_HINT[z];
+  hint.hidden=false;
   if(!ds){
-    hint.hidden=false; hint.className='hint maybe';
-    hint.innerHTML='<span class="hi">?</span><span>'+m+' does not look like an Austin city ZIP. If you are outside the city you can still write, just say so. '+link+'.</span>';
+    hint.className='hint maybe';
+    hint.innerHTML='<span class="hi">?</span><span>'+z+' does not look like an Austin city ZIP. If you live outside the city you can still write, just say so. Check the '+MAPLINK+'.</span>';
     return;
   }
-  hint.hidden=false;
-  if(ds.length===1){
-    hint.className='hint ok';
-    hint.innerHTML='<span class="hi">✓</span><span>'+m+' is District <b>'+ds[0]+'</b>. '+
-      (distTouched?'Left your choice alone. ':'Set it for you. ')+link+' if that looks wrong.</span>';
-    if(!distTouched) $('#f-dist').value=String(ds[0]);
-  } else {
-    hint.className='hint maybe';
-    hint.innerHTML='<span class="hi">?</span><span>'+m+' straddles Districts <b>'+ds.join(', ')+'</b>, so I have not guessed. '+
-      ds.map(function(x){return '<button type="button" data-d="'+x+'">Use '+x+'</button>'}).join(' ')+
-      ' or '+link+'.</span>';
-    $$('button[data-d]',hint).forEach(function(b){
-      b.addEventListener('click',function(){ $('#f-dist').value=b.dataset.d; distTouched=true;
-        hint.className='hint ok'; hint.innerHTML='<span class="hi">✓</span><span>Set to District <b>'+b.dataset.d+'</b>. '+link+'.</span>'; });
+  hint.className='hint maybe';
+  var list = ds.length===1
+    ? 'usually falls in District <b>'+ds[0]+'</b>'
+    : 'spans Districts <b>'+ds.slice(0,-1).join(', ')+'</b> and <b>'+ds[ds.length-1]+'</b>';
+  hint.innerHTML='<span class="hi">?</span><span>'+z+' '+list+
+    ', but ZIP codes and council districts do not line up. Confirm yours on the '+MAPLINK+
+    ', then pick it above. '+
+    ds.map(function(x){return '<button type="button" data-d="'+x+'">It is '+x+'</button>'}).join(' ')+'</span>';
+  $$('button[data-d]',hint).forEach(function(b){
+    b.addEventListener('click',function(){
+      $('#f-dist').value=b.dataset.d; distTouched=true;
+      hint.className='hint ok';
+      hint.innerHTML='<span class="hi">✓</span><span>Set to District <b>'+b.dataset.d+'</b>. If that is not right, the '+MAPLINK+' will tell you.</span>';
     });
-  }
+  });
 });
 
 /* ════════ letter ════════ */
@@ -2020,6 +2025,94 @@ $('#quickBtn').addEventListener('click',function(){
 });
 $('#resetTrack').addEventListener('click',function(){S.done={}; save(); renderTodos(); ring(); toast('Progress reset')});
 
+
+/* ════════ the calendar ════════
+   Rendered from today's date, so whatever is next is always at the top and
+   whatever has passed is marked rather than deleted. The site stays useful
+   after budget week, which is the point. */
+var DATES=[
+ {s:'2026-08-12',e:'2026-08-14',ics:'budget',tag:'Council',
+  t:'FY2027 budget adoption',
+  w:'The council adopts next year\'s budget, and public comment is taken. This is the week a sidewalk treatment gets funded or waits for the next cycle.',
+  link:'https://www.austintexas.gov/department/public-participation-council-meetings'},
+ {s:'2026-08-17',e:'2026-08-17',tag:'Commission',
+  t:'LGBTQ+ Quality of Life Advisory Commission',
+  w:'Meets monthly at City Hall with a public comment period, and its recommendations travel up to council through the Joint Inclusion Committee. A smaller room, a far shorter queue, and often the faster route in.',
+  link:'https://www.austintexas.gov/boards-commissions'},
+ {s:'2026-08-20',e:'2026-08-23',ics:'pride',tag:'Pride',
+  t:'Austin Pride weekend',
+  w:'Four days of it, themed Viva la Resistencia. The best week of the year to have this conversation with your neighbors, and to ask the businesses on 4th Street whether they will add their name.',
+  link:'https://austinpride.org/pride2026/'},
+ {s:'2026-08-22',e:'2026-08-22',ics:'parade',tag:'Pride',
+  t:'The Pride parade, down Congress',
+  w:'Steps off at 8pm. Council members march in this parade. If you want to put the ask in front of one of them in person, this is the friendliest possible setting for it.',
+  link:'https://austinpride.org/pride2026/'},
+ {s:'2026-08-27',e:'2026-08-27',ics:'council',tag:'Council',
+  t:'Regular council meeting',
+  w:'The first ordinary meeting after the budget, and the first chance to ask for a resolution rather than a line item. Sign up in advance to speak.',
+  link:'https://www.austintexas.gov/council/meetings'},
+ {s:'2026-09-10',e:'2026-09-10',tag:'Council',t:'Regular council meeting',
+  w:'Another opportunity for a resolution directing staff to scope the work.',
+  link:'https://www.austintexas.gov/council/meetings'},
+ {s:'2026-09-21',e:'2026-09-21',tag:'Commission',t:'LGBTQ+ Quality of Life Advisory Commission',
+  w:'Monthly meeting, public comment taken.',link:'https://www.austintexas.gov/boards-commissions'},
+ {s:'2026-09-24',e:'2026-09-24',tag:'Council',t:'Regular council meeting',
+  w:'Public comment taken.',link:'https://www.austintexas.gov/council/meetings'},
+ {s:'2026-10-08',e:'2026-10-08',tag:'Council',t:'Regular council meeting',
+  w:'Public comment taken.',link:'https://www.austintexas.gov/council/meetings'},
+ {s:'2026-10-22',e:'2026-10-22',tag:'Council',t:'Regular council meeting',
+  w:'Public comment taken.',link:'https://www.austintexas.gov/council/meetings'},
+ {s:'2026-11-19',e:'2026-11-19',tag:'Council',t:'Regular council meeting',
+  w:'Public comment taken.',link:'https://www.austintexas.gov/council/meetings'},
+ {s:'2026-12-03',e:'2026-12-03',tag:'Council',t:'Regular council meeting',
+  w:'Public comment taken.',link:'https://www.austintexas.gov/council/meetings'}
+];
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function dparse(x){var a=x.split('-');return new Date(+a[0],+a[1]-1,+a[2])}
+function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+function dfmt(d){
+  var a=dparse(d.s), b=dparse(d.e);
+  if(d.s===d.e) return a.getDate()+' '+MON[a.getMonth()]+' '+a.getFullYear();
+  if(a.getMonth()===b.getMonth()) return a.getDate()+'–'+b.getDate()+' '+MON[b.getMonth()]+' '+b.getFullYear();
+  return a.getDate()+' '+MON[a.getMonth()]+' – '+b.getDate()+' '+MON[b.getMonth()]+' '+b.getFullYear();
+}
+function daysAway(d){ return Math.round((dparse(d.s)-today())/86400000) }
+function upcoming(){ var t=today(); return DATES.filter(function(d){return dparse(d.e)>=t}) }
+function nextUp(){ var u=upcoming(); return u.length?u[0]:null }
+function countdown(d){
+  var n=daysAway(d);
+  if(n<0) return 'on now';
+  if(n===0) return 'today';
+  if(n===1) return 'tomorrow';
+  if(n<=21) return 'in '+n+' days';
+  return 'in '+Math.round(n/7)+' weeks';
+}
+function renderDates(){
+  var m=$('#dateList'); if(!m) return;
+  m.innerHTML='';
+  var t=today(), first=true;
+  DATES.forEach(function(d){
+    var past=dparse(d.e)<t;
+    var row=el('div','date'+(past?' past':'')+(!past&&first?' next':''));
+    var badge = past ? '<span class="dtag done">passed</span>'
+                     : (first?'<span class="hot">next up, '+countdown(d)+'</span>':'<span class="dtag '+d.tag.toLowerCase()+'">'+d.tag+'</span>');
+    var btn = (!past&&d.ics)?'<div class="btnrow" style="margin-top:11px"><button class="ghost sm" data-ics="'+d.ics+'">＋ Add to calendar</button></div>':'';
+    var lnk = (!past&&d.link)?' <a href="'+d.link+'" target="_blank" rel="noopener">Details ↗</a>':'';
+    row.innerHTML='<div class="dwhen">'+dfmt(d)+'</div>'+
+      '<div class="dwhat"><b>'+d.t+' '+badge+'</b><span>'+d.w+lnk+'</span>'+btn+'</div>';
+    if(!past) first=false;
+    m.appendChild(row);
+  });
+  var n=nextUp();
+  var s=$('#nextUp');
+  if(s){
+    if(n){ s.hidden=false;
+      s.innerHTML='<span class="nu-tag">Next up</span><span><b>'+n.t+'</b>, '+dfmt(n)+', '+countdown(n)+'.</span>'; }
+    else { s.hidden=false;
+      s.innerHTML='<span class="nu-tag">Any time</span><span>Council meets through the year, and a resolution can be brought at any regular meeting.</span>'; }
+  }
+}
+
 /* ════════ .ics ════════ */
 function pad(n){return n<10?'0'+n:''+n}
 function icsDate(y,m,d){return y+pad(m)+pad(d)}
@@ -2046,6 +2139,14 @@ function makeICS(o){
   'END:VEVENT','END:VCALENDAR'].map(fold).join('\r\n');
 }
 var ICS={
+ pride:{uid:'atx-pride-2026@keepaustincolorful',start:icsDate(2026,8,20),end:icsDate(2026,8,24),
+  summary:'Austin Pride weekend: Viva la Resistencia',
+  location:'Austin, Texas',
+  desc:'Austin Pride 2026, themed Viva la Resistencia. Festival at Fiesta Gardens, parade down Congress Avenue on Saturday evening.\n\nA good weekend to talk to neighbors about the corner at 4th and Colorado, and to ask businesses on the block whether they will add their name to a letter.\n\nDetails: https://austinpride.org/pride2026/'},
+ parade:{uid:'atx-pride-parade-2026@keepaustincolorful',start:icsDate(2026,8,22),end:icsDate(2026,8,23),
+  summary:'Austin Pride parade, down Congress Avenue',
+  location:'Congress Avenue, Austin, Texas',
+  desc:'Steps off at 8pm. Council members march in this parade, which makes it the friendliest possible setting to put the 4th and Colorado ask in front of one of them.\n\nDetails: https://austinpride.org/pride2026/'},
  budget:{uid:'atx-budget-2026@keepaustincolorful',start:icsDate(2026,8,12),end:icsDate(2026,8,15),
   summary:'Austin FY2027 budget adoption: speak for a rainbow sidewalk at 4th & Colorado',
   location:'Austin City Hall, 301 W 2nd St, Austin TX 78701',
@@ -2055,13 +2156,15 @@ var ICS={
   location:'Austin City Hall, 301 W 2nd St, Austin TX 78701',
   desc:'First regular council meeting after budget adoption. Sign up in advance to speak.\n\nAgenda: https://www.austintexas.gov/council/meetings'}
 };
-$$('[data-ics]').forEach(function(b){
+function bindIcs(){ $$('[data-ics]').forEach(function(b){
+  if(b.dataset.bound) return; b.dataset.bound='1';
   b.addEventListener('click',function(){
     var k=b.dataset.ics;
     download(k==='budget'?'austin-budget-hearings.ics':'austin-council-meeting.ics', makeICS(ICS[k]), 'text/calendar;charset=utf-8');
     toast('Calendar file downloaded. Open it to add the event');
   });
-});
+})}
+renderDates(); bindIcs();
 
 
 })();

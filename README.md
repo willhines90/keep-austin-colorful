@@ -29,17 +29,19 @@ npm install
 npm test
 ```
 
-258 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+260 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 
 See [DEPLOY.md](DEPLOY.md). Short version: `npx vercel --prod` from this directory.
 
-After your first deploy, point the share image at your real domain, or link previews will be blank in some clients:
+After your first deploy, point the share and canonical URLs at your real domain:
 
 ```bash
-sed -i '' 's|content="/og.png"|content="https://YOUR-DOMAIN/og.png"|g' index.html
+./set-domain.sh keep-austin-colorful.vercel.app
 ```
+
+Relative URLs already work on Facebook, X, LinkedIn and Slack; this is for the older clients that insist on absolute ones, and for the canonical tag.
 
 ## Forking this for your city
 
@@ -53,7 +55,10 @@ The structure generalizes. Most of what you'd change lives in clearly-marked dat
 | Funding routes | `FUNDS` |
 | Objections and answers | `OBJS` |
 | The action list and its templates | `TODOS` |
-| Council meeting dates for the calendar files | `ICS` |
+| Upcoming dates, which drive the "next up" banner | `DATES` |
+| Calendar file contents | `ICS` |
+| ZIP code hints for the district field | `ZIP_HINT` |
+| Letter phrasings, one pool per slot | `L`, `CONN_LINE`, `askSentence` |
 | Source links | `SRC` |
 
 Map pin positions are projected latitude/longitude in a 100 × 94.4 viewBox. If you swap in a different state, you'll need to regenerate the outline path and the pin coordinates together.
