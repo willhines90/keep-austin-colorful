@@ -17,7 +17,7 @@ fi
 
 DOMAIN="${1#https://}"; DOMAIN="${DOMAIN#http://}"; DOMAIN="${DOMAIN%/}"
 URL="https://${DOMAIN}"
-FILE="index.html"
+FILE="public/index.html"
 
 [ -f "$FILE" ] || { echo "no $FILE here; run this from the project root" >&2; exit 1; }
 

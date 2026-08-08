@@ -19,8 +19,10 @@ The state's order reaches the road. Sidewalks belong to the city. This site expl
 There is no build step. `index.html` is a single self-contained file with all CSS, JavaScript and artwork inlined, and it makes no external requests except web fonts.
 
 ```bash
-python3 -m http.server 8000    # then open http://localhost:8000
+npm run dev     # serves ./public on http://localhost:8000
 ```
+
+Only `public/` is deployed. The tests, docs and image sources live alongside it in the repo but never ship.
 
 ## The district lookup
 

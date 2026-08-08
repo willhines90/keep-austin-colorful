@@ -4,6 +4,35 @@ Everything is in this folder. No build step, no dependencies, no framework. `ind
 
 ---
 
+## The layout
+
+Only `public/` is deployed. Everything else — tests, docs, the share-image source — stays in the repo but never ships.
+
+```
+public/          index.html, og.png, robots.txt, _headers   <- this is the site
+wrangler.jsonc   points Cloudflare at ./public
+test/            258 checks, not deployed
+```
+
+This matters. The first Cloudflare build failed because Wrangler defaulted its
+asset directory to the repo root, and the build machine had just run
+`bun install`, so it tried to upload jsdom's 122 MiB `workerd` binary as a
+static asset. Keeping the deployable files in their own directory makes that
+impossible on any host.
+
+## Cloudflare
+
+Connect the repo at [pages.cloudflare.com](https://pages.cloudflare.com). With
+`wrangler.jsonc` present, Cloudflare reads the asset directory from it. Leave
+the build command **empty** — `index.html` is the finished artifact, there is
+nothing to build.
+
+To deploy from your machine instead:
+
+```bash
+npx wrangler deploy
+```
+
 ## Fastest route: Vercel
 
 ```bash
