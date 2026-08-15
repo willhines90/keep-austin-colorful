@@ -16,6 +16,7 @@ Each suite loads `index.html` into jsdom, drives the real interface, and asserts
 | `5-actions` | Twelve actions in three tiers, copyable templates, the quick filter, progress ring and category counters |
 | `6-brand-and-tone` | Brand lockup and favicon, the type system, US spelling, no em dashes, and a list of phrases the tone pass removed that must not return |
 | `7-links-and-a11y` | External links open or fall back to copying, keyboard reach on every control, skip link, touch targets |
+| `9-seo-and-hardening` | JSON-LD validity and coverage, sitemap, llms.txt, 404, the CSP hash matching the served script, head tags, deep links |
 | `8-letter-variation` | Two writers never get the same letter, one writer always gets the same one, tone and connection chips actually change the text, and no form-letter tells |
 
 ## Why these exist
@@ -29,5 +30,9 @@ A few assertions encode decisions rather than mechanics, and those are the valua
 - **The white ring around a pin must always be larger than the dot**, at every interaction state. It wasn't once, and the selected state looked broken.
 - **Two people must not get the same letter.** Council offices log identical form letters as a single contact, so variation is not cosmetic. The suite generates letters for several writers and asserts they differ, while asserting one writer gets a stable letter each time.
 - **A list of removed phrases** — "has not tried", "chosen not to", "out-prided" and others — must not reappear. The site's persuasive strategy depends on being an invitation rather than an accusation, and that is easy to undo one word at a time.
+
+**If suite 9 fails after you edit `index.html`**, run `npm run build:meta`. The
+JSON-LD and the CSP script hash are generated from the page, so they go stale the
+moment the page changes. The suite failing is the mechanism working.
 
 If you fork this for another city, the tone and geometry assertions are the ones to keep.

@@ -44,11 +44,11 @@ ok('line-height scale defined', ['--lh-tight:','--lh-snug:','--lh-body:'].every(
 ok('radii use tokens, not raw px', !/border-radius:(?!2px)[0-9]+px(?=[;}])/.test(CSS));
 ok('accent derives from the flag violet', CSS.includes('--accent:#6a2578')&&CSS.includes('--r6:#732982'));
 ok('old tailwind violet fully removed', !/6d28d9|8b5cf6|ddd0fb|f4efff/i.test(html));
-ok('web fonts loaded with swap', html.includes('family=Poppins')&&html.includes('Nunito')&&html.includes('display=swap'));
+ok('web fonts loaded with swap', html.includes('family=Poppins')&&html.includes('Figtree')&&html.includes('display=swap'));
 ok('display face is Poppins, fallback intact', CSS.includes("--display: 'Poppins'")&&CSS.includes('Trebuchet MS'));
 ok('no serif anywhere in the type system', !/--serif:\s*'/.test(CSS)&&!CSS.includes('Fraunces')&&!CSS.includes('Newsreader'));
 ok('display face applied to headings and stats', CSS.includes('font-family:var(--display)'));
-ok('text face is Nunito, fallback intact', CSS.includes("--sans: 'Nunito'")&&CSS.includes('system-ui'));
+ok('text face is Figtree, fallback intact', CSS.includes("--sans: 'Figtree'")&&CSS.includes('system-ui'));
 ok('preconnect to the font host', html.includes('rel="preconnect" href="https://fonts.gstatic.com"'));
 ok('tabular numerals on stats and counters', CSS.includes('font-variant-numeric:tabular-nums'));
 ok('optical sizing + kerning enabled', CSS.includes('font-optical-sizing:auto')&&CSS.includes('font-kerning:normal'));
@@ -62,6 +62,16 @@ ok('the petition figure links the petition', (()=>{const c=cards.find(x=>x.query
   return c && c.querySelector('.srcl').getAttribute('href').includes('change.org')})());
 ok('the cost figure links the reporting that carried it', (()=>{const c=cards.find(x=>x.querySelector('b').textContent==='$170K');
   return c && c.querySelectorAll('.srcl').length>=2})());
+
+ok('type scale is actually enforced, not just declared', !/font-size:[0-9.]+rem/.test(CSS));
+ok('display face carries real weight on the page', (()=>{
+  // one rule, many selectors: count the selectors, not the string
+  const m=CSS.match(/([^{}]+)\{[^}]*font-family:var\(--display\)/g)||[];
+  const sels=m.join(',').split(',').filter(x=>x.trim()).length;
+  return sels>=12;})());
+ok('sections carry a flag-colored rule', /section::before/.test(CSS)&&/--sec:var\(--r1\)/.test(CSS));
+ok('dark sections exist for the key moments', /section\.dark\{background:var\(--ink\)/.test(CSS)&&(html.match(/section[^>]*class="dark"/g)||[]).length>=2);
+ok('stat numbers take their own color', /\.stat b\{[^}]*color:var\(--sw\)/.test(CSS));
 
 console.log('\n— street labels —');
 ok('street names sit on their own plate', CSS!==null && html.includes('function roadLabel('));

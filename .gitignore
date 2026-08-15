@@ -7,3 +7,6 @@ package-lock.json
 
 # stray artifact, safe to delete
 test/*.add
+
+# FUSE mount artifacts from in-place edits
+.fuse_hidden*

@@ -1,0 +1,26 @@
+name: Factual correction
+description: Something on the site is wrong or out of date
+labels: [correction]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Corrections matter more than anything else here: the site only
+        works because every claim on it can be checked.
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong
+      description: Quote the text, or say where on the page it appears.
+    validations: { required: true }
+  - type: textarea
+    id: correct
+    attributes:
+      label: What it should say
+    validations: { required: true }
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: A link we can verify it against. Corrections without one cannot be applied.
+    validations: { required: true }

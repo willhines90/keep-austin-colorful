@@ -79,8 +79,13 @@ console.log('\n— ics —');
 const dm=boot(null);
 const dl=[]; dm.window.URL.createObjectURL=b=>{dl.push(b);return 'blob:x'};
 dm.window.URL.revokeObjectURL=()=>{};
-dm.window.document.querySelector('[data-ics="budget"]').dispatchEvent(new dm.window.MouseEvent('click',{bubbles:true}));
-ok('budget .ics generated', dl.length===1);
+// which events are upcoming changes with the date, so take whichever is offered
+const icsBtn=dm.window.document.querySelector('[data-ics]');
+ok('at least one upcoming event offers a calendar file', !!icsBtn);
+if(icsBtn){
+  icsBtn.dispatchEvent(new dm.window.MouseEvent('click',{bubbles:true}));
+  ok('.ics generated for '+icsBtn.dataset.ics, dl.length===1);
+}
 console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));
 process.exit(fail?1:0);
 })();

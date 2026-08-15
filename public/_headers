@@ -1,11 +1,18 @@
 /*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-vdWrkl5SC09OaPXsV/AuqY5Gaf7CO7SGwARNNfZ1jtk=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://geocoding.geo.census.gov https://data.austintexas.gov https://cloudflareinsights.com; form-action 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'self'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
-  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
 
 /og.png
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=86400, immutable
 
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600

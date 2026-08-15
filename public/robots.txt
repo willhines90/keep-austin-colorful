@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://keep-austin-colorful.dark-glitter-501f.workers.dev/sitemap.xml

@@ -1,0 +1,22 @@
+name: Forking for another city
+description: You are adapting this and something is unclear or does not transfer
+labels: [fork]
+body:
+  - type: input
+    id: city
+    attributes:
+      label: Which city
+    validations: { required: true }
+  - type: textarea
+    id: blocked
+    attributes:
+      label: What is not transferring
+      description: |
+        The map projection, the district lookup and the illustrations are the
+        three pieces that usually need real work. See FORKING.md.
+    validations: { required: true }
+  - type: textarea
+    id: legal
+    attributes:
+      label: Does the roadway/sidewalk distinction hold where you are?
+      description: If you are not sure yet, say so. It is the load-bearing part.

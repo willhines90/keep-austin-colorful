@@ -1,5 +1,7 @@
 # Keep Austin Colorful
 
+[![CI](https://github.com/willhines90/keep-austin-colorful/actions/workflows/ci.yml/badge.svg)](https://github.com/willhines90/keep-austin-colorful/actions/workflows/ci.yml)
+
 An advocacy pack for putting the color back on 4th &amp; Colorado in Austin, Texas.
 
 **Live:** _add your URL here after the first deploy_
@@ -24,6 +26,31 @@ npm run dev     # serves ./public on http://localhost:8000
 
 Only `public/` is deployed. The tests, docs and image sources live alongside it in the repo but never ship.
 
+## Design system
+
+Two families and one scale, both enforced by tests rather than convention.
+
+- **Poppins** for display, **Figtree** for reading. Loaded from Google Fonts with the system stack as fallback.
+- Nine font-size tokens, four weights, an 11-step space scale, five radii, three shadows, three motion durations. A test fails if a raw `rem` size appears in the stylesheet, because a scale nobody follows is not a scale.
+- Every section carries a hairline of flag color along its top, cycling through the six, so the page reads as one continuous rainbow rather than a stack of white boxes.
+- Two sections are dark: the one that explains the mechanism, and the closing contact block. Every colour pair on them clears WCAG AA.
+
+## Analytics
+
+Off by default; the site makes no third-party requests until you switch something on. Google Analytics and Cloudflare Web Analytics are both wired and configurable at the top of the script block. See [ANALYTICS.md](ANALYTICS.md), including why Vercel Analytics cannot work on a non-Vercel host.
+
+## Metadata is generated, not maintained
+
+`npm run build:meta` derives the JSON-LD, `sitemap.xml`, `llms.txt` and the CSP
+script hash from the data already in `index.html`. Run it after any content edit
+and commit the result; `npm run deploy` runs it for you.
+
+The structured data matters more than usual here. The objection cards are
+published as a `FAQPage` and the calendar as `Event` records, which is how
+answer engines and AI summarisers pick up a small site with no domain authority.
+`llms.txt` carries the verified figures and explicitly asks summarisers to
+preserve the non-adversarial framing.
+
 ## The district lookup
 
 Typing an address looks up the writer's council district using two public endpoints, neither of which needs a key:
@@ -42,7 +69,7 @@ npm install
 npm test
 ```
 
-276 checks across eight suites (about 45 seconds). They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+368 checks across nine suites (about 50 seconds), run on every push by CI. They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 
@@ -55,6 +82,15 @@ After your first deploy, point the share and canonical URLs at your real domain:
 ```
 
 Relative URLs already work on Facebook, X, LinkedIn and Slack; this is for the older clients that insist on absolute ones, and for the canonical tag.
+
+## Contributing and forking
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — how to run it, and the two house rules for copy
+- [FORKING.md](FORKING.md) — adapting it for another city, and what to check before you do
+- [SECURITY.md](SECURITY.md) — what the site does and does not send anywhere
+- [PHOTO-REQUESTS.md](PHOTO-REQUESTS.md) — four drafted licence requests, ready to send
+- [PHOTOS.md](PHOTOS.md) — the four photographs worth having, and where they can legally come from
+- [ANALYTICS.md](ANALYTICS.md) — off by default; how to switch it on
 
 ## Forking this for your city
 

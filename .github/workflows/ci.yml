@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Tests and generated metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm install --no-audit --no-fund
+
+      - name: Run the suites
+        run: npm test
+
+      # The JSON-LD and the CSP script hash are generated from index.html. If a
+      # content change lands without running build:meta, the deployed CSP will
+      # block the site's own script. Catch that here rather than in production.
+      - name: Check generated metadata is in sync
+        run: |
+          npm run build:meta > /dev/null
+          if ! git diff --quiet -- public/; then
+            echo "::error::Generated files are stale. Run 'npm run build:meta' and commit the result."
+            git diff --stat -- public/
+            git diff -- public/_headers | head -20
+            exit 1
+          fi
+          echo "Generated metadata matches the page."
+
+  links:
+    name: External links resolve
+    runs-on: ubuntu-latest
+    continue-on-error: true   # a news site being briefly down should not fail the build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check every cited source still resolves
+        run: |
+          grep -oE 'https://[^"<) ]+' public/index.html \
+            | grep -vE 'schema\.org|w3\.org|googleapis|gstatic|cloudflareinsights|census\.gov|data\.austintexas' \
+            | sort -u > urls.txt
+          echo "Checking $(wc -l < urls.txt) unique URLs"
+          fail=0
+          while read -r u; do
+            code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 20 -A 'keep-austin-colorful link check' "$u" || echo 000)
+            if [ "$code" -ge 400 ] || [ "$code" = "000" ]; then
+              echo "  $code  $u"; fail=1
+            fi
+          done < urls.txt
+          [ "$fail" = "0" ] && echo "All cited sources resolve." || echo "::warning::Some sources did not resolve; check whether they moved."
