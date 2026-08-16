@@ -22,8 +22,8 @@
 <meta name="twitter:image" content="https://keep-austin-colorful.dark-glitter-501f.workers.dev/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://geocoding.geo.census.gov">
-<link rel="dns-prefetch" href="https://data.austintexas.gov">
+<!-- The district lookup is same-origin now (see /api/district in src/worker.js),
+     so there is no third-party host left to warm up. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400..800;1,400..600&family=Poppins:ital,wght@0,500;0,600;0,700;1,500&display=swap">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%2315151D%22%2F%3E%3Cg%20transform%3D%22translate%284%2C15.4%29%20scale%280.351%29%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22f%22%3E%3Cpath%20clip-rule%3D%22evenodd%22%20d%3D%22M0%2C48%20L12%2C0%20L22%2C0%20L34%2C48%20L23.4%2C48%20L21.2%2C38.6%20L12.8%2C38.6%20L10.6%2C48%20Z%20M17%2C13%20L13.9%2C29.4%20L20.1%2C29.4%20Z%20M40%2C0%20L74%2C0%20L74%2C10.5%20L62.6%2C10.5%20L62.6%2C48%20L51.4%2C48%20L51.4%2C10.5%20L40%2C10.5%20Z%20M80%2C0%20L91.5%2C0%20L97%2C10%20L102.5%2C0%20L114%2C0%20L102.8%2C24%20L114%2C48%20L102.5%2C48%20L97%2C38%20L91.5%2C48%20L80%2C48%20L91.2%2C24%20Z%22%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M0%2C48%20L12%2C0%20L22%2C0%20L34%2C48%20L23.4%2C48%20L21.2%2C38.6%20L12.8%2C38.6%20L10.6%2C48%20Z%20M17%2C13%20L13.9%2C29.4%20L20.1%2C29.4%20Z%20M40%2C0%20L74%2C0%20L74%2C10.5%20L62.6%2C10.5%20L62.6%2C48%20L51.4%2C48%20L51.4%2C10.5%20L40%2C10.5%20Z%20M80%2C0%20L91.5%2C0%20L97%2C10%20L102.5%2C0%20L114%2C0%20L102.8%2C24%20L114%2C48%20L102.5%2C48%20L97%2C38%20L91.5%2C48%20L80%2C48%20L91.2%2C24%20Z%22%20fill%3D%22%23F7F5F0%22%2F%3E%3Cg%20clip-path%3D%22url%28%23f%29%22%3E%3Crect%20x%3D%220%22%20y%3D%2216.000%22%20width%3D%22114%22%20height%3D%222.75%22%20fill%3D%22%23e40303%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2218.667%22%20width%3D%22114%22%20height%3D%222.75%22%20fill%3D%22%23ff8c00%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2221.334%22%20width%3D%22114%22%20height%3D%222.75%22%20fill%3D%22%23ffd500%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2224.001%22%20width%3D%22114%22%20height%3D%222.75%22%20fill%3D%22%23008026%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2226.668%22%20width%3D%22114%22%20height%3D%222.75%22%20fill%3D%22%2324408e%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2229.335%22%20width%3D%22114%22%20height%3D%222.75%22%20fill%3D%22%23732982%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <meta name="theme-color" content="#15151D">
@@ -54,6 +54,13 @@
 
   /* ── FLAG ─────────────────────────────────────────────────*/
   --r1:#e40303;--r2:#ff8c00;--r3:#ffd500;--r4:#008026;--r5:#24408e;--r6:#732982;
+  /* The flag colors are for surfaces. Orange and yellow are far too light to
+     set type in on white. Flag orange is 2.33:1, which fails at any size.
+     These are the type-safe counterparts, each at least 4.5:1 on white, so
+     they are safe for body copy as well as headlines. --r2-ink is UT's burnt
+     orange, which is both compliant and about as Austin as a color gets. */
+  --r1-ink:#c40202;--r2-ink:#bf5700;--r3-ink:#7a6000;
+  --r4-ink:#006b20;--r5-ink:#24408e;--r6-ink:#732982;
   --highlight:#ffe27a;
 
   /* ── TYPE ─────────────────────────────────────────────────
@@ -294,7 +301,7 @@ em{font-style:italic}
 .stat:hover{transform:translateY(-2px); box-shadow:var(--sh-2)}
 .stat::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--sw,var(--accent))}
 .stat b{display:block; font-family:var(--display); font-size:var(--fs-3xl); font-weight:var(--w-bold);
-  letter-spacing:-.04em; line-height:1; color:var(--sw)}
+  letter-spacing:-.04em; line-height:1; color:var(--swt,var(--sw))}
 @media(max-width:720px){.stat b{font-size:var(--fs-2xl)}}
 .stat span{font-size:var(--fs-xs); color:var(--muted); display:block; margin-top:7px; line-height:1.4; font-family:var(--sans)}
 .stat{display:flex; flex-direction:column}
@@ -631,7 +638,12 @@ a.pu:hover b{color:var(--accent)}
   letter-spacing:.08em; text-transform:uppercase; padding:2px 8px; border-radius:var(--r-xs); margin-left:var(--s2); vertical-align:1px}
 .dtag.council{background:var(--accent-soft); color:var(--accent)}
 .dtag.commission{background:var(--green-soft); color:var(--green)}
-.dtag.pride{background:linear-gradient(90deg,#e40303,#ff8c00,#e0b400,#008026,#24408e,#732982); color:#fff}
+/* White type over a rainbow gradient is unreadable wherever the gradient runs
+   yellow (1.96:1). So the tag keeps a solid, high-contrast ground and wears
+   the flag as a stripe along the bottom instead. */
+.dtag.pride{background:var(--accent); color:#fff; position:relative; overflow:hidden; padding-bottom:4px}
+.dtag.pride::after{content:''; position:absolute; left:0; right:0; bottom:0; height:3px;
+  background:linear-gradient(90deg,var(--r1),var(--r2),var(--r3),var(--r4),var(--r5),var(--r6))}
 .dtag.done{background:var(--paper-2); color:var(--faint)}
 .date.past{opacity:.5}
 .date.past .dwhen,.date.past .dwhat b{text-decoration:line-through; text-decoration-thickness:1px}
@@ -642,6 +654,11 @@ a.pu:hover b{color:var(--accent)}
 .dwhat{flex:1; min-width:220px}
 .dwhat b{font-family:var(--sans); font-size:var(--fs-md); font-weight:var(--w-semi); display:block; margin-bottom:3px; letter-spacing:-.01em}
 .dwhat span{font-size:var(--fs-md); color:var(--ink-2); line-height:1.5}
+/* .dwhat span (0,1,1) was quietly outranking .hot and .dtag (0,1,0), so the
+   badges inside a date row inherited body color and body size, which is how
+   white-on-red became grey-on-red at 2.45:1. Re-assert them at higher weight. */
+.dwhat .hot,.dwhat .dtag{font-size:var(--fs-2xs); line-height:1.35}
+.dwhat .hot{color:#fff}
 .hot{display:inline-block; font-family:var(--sans); font-size:var(--fs-2xs); font-weight:var(--w-bold); letter-spacing:.1em; text-transform:uppercase; background:var(--r1); color:#fff; padding:2.5px 8px; border-radius:var(--r-xs); margin-left:8px; vertical-align:2px}
 
 .contact{display:flex; justify-content:space-between; gap:14px; padding:13px 0; border-bottom:1px solid var(--line-2); flex-wrap:wrap; align-items:center}
@@ -728,6 +745,15 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
   .out{border:none;box-shadow:none;padding:0;background:#fff}
   .out::before{display:none}
 }
+/* Controls measure 32-37px, which clears the WCAG 2.2 minimum of 24 but sits
+   under the 44px both Apple and Google recommend for fingers. On a touch
+   device, grow them. Pointer devices are left alone. */
+@media (pointer:coarse){
+  .tab,.ct,.vt,.go,.ghost,.lnkb,select,button[data-d]{min-height:44px}
+  .tab,.ct,.vt,.go,.ghost,.lnkb{display:inline-flex; align-items:center; justify-content:center}
+  .srcl{min-height:32px; display:inline-flex; align-items:center}
+}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .tlb,.obb{transition:none}
@@ -1550,9 +1576,10 @@ var CONTACT={
 };
 
 var ANALYTICS={
-  ga4:'',            // 'G-XXXXXXXXXX' from Google Analytics. Left empty on purpose.
-  cfToken:'',        // token from Cloudflare Web Analytics (cookieless)
-  cfAuto:true,       // true if Cloudflare injects the beacon itself, at the edge
+  ga4:'',            // 'G-XXXXXXXXXX' from Google Analytics. Unused; Cloudflare is the chosen provider.
+  cfToken:'',        // ← THE ONE TO FILL IN. Token from Cloudflare Web Analytics (cookieless, no banner).
+  cfAuto:false,      // edge injection. Only works on a custom domain proxied through Cloudflare;
+                     // it cannot work on a *.workers.dev URL, which is why the dashboard stayed empty.
   respectDNT:true    // skip analytics for visitors who ask not to be tracked
 };
 
@@ -1650,7 +1677,7 @@ var CITIES=[
  {id:'elpaso',name:'El Paso',s:['tribune'],x:2.82,y:42.80,lp:[8.4,1.1,'start'],status:'win',rank:1,
   short:'Pride lamp posts',street:'Downtown El Paso',sidewalk:'grey',feature:'lamps',
   replaced:'Pride-wrapped street lamps',payer:'City / community',vote:'no',voteTxt:'Not needed',
-  what:'Street lamps wrapped in Pride flags, keeping color in the same space the crosswalk occupied. Organisers at the Borderland Rainbow Center are pushing for rainbow bike racks next.',
+  what:'Street lamps wrapped in Pride flags, keeping color in the same space the crosswalk occupied. Organizers at the Borderland Rainbow Center are pushing for rainbow bike racks next.',
   rows:[['What replaced it','Pride-wrapped street lamps'],['Jurisdiction','Lamp posts, city property rather than roadway'],['Next ask','Rainbow bike racks'],['Why it matters','Nothing in the order reaches above the road surface']]},
  {id:'kerrville',name:'Kerrville',s:['tribune'],x:57.01,y:57.73,lp:[-8.4,-4.2,'end'],status:'none',rank:3,
   short:'No replacement yet',street:'Guadalupe River crossings',sidewalk:'grey',feature:'none',
@@ -2319,10 +2346,12 @@ function connText(){
 }
 
 /* ════════ council district from the address ════════
-   Two public endpoints, no keys. The Census geocoder turns the address into a
-   point; Austin's own open-data layer says which council district contains it.
-   Both are progressive enhancement: if either is unreachable, blocked or slow,
-   we fall back silently to the ZIP hint below, which never fills the field in. */
+   One same-origin call to /api/district. The worker does the geocode and the
+   point-in-district query server-side, because the Census geocoder answers
+   servers but returns 503 to anything sending a browser Origin header.
+
+   This is still progressive enhancement: any failure falls back silently to
+   the ZIP hint below, which narrows the choice but never fills the field in. */
 
 var ZIP_HINT={
   '78701':[9],'78702':[3,1],'78703':[10,9],'78704':[9,5,3],'78705':[9],
@@ -2334,6 +2363,15 @@ var ZIP_HINT={
   '78756':[7,9],'78757':[7],'78758':[7,4],'78759':[6,7]
 };
 var MAPLINK='<a href="https://www.austintexas.gov/council/district-map" target="_blank" rel="noopener">official district lookup</a>';
+
+/* The matched address comes back from a third party (Census, via our worker)
+   and lands in innerHTML, so it gets escaped. Not to be confused with esc(),
+   which escapes for iCalendar and would do nothing useful here. */
+function escHTML(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 var distTouched=false, lookupSeq=0;
 $('#f-dist').addEventListener('change',function(){distTouched=true});
 
@@ -2382,27 +2420,23 @@ function lookupDistrict(){
   var q=raw + (/austin/i.test(raw)?'':', Austin TX');
   setHint('maybe','<span class="hi">◌</span><span>Looking up your district…</span>');
 
-  fetchJSON('https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address='+
-            encodeURIComponent(q)+'&benchmark=Public_AR_Current&format=json', 7000)
-  .then(function(g){
-    if(seq!==lookupSeq) throw new Error('stale');
-    var m=g && g.result && g.result.addressMatches && g.result.addressMatches[0];
-    if(!m) throw new Error('no match');
-    var c=m.coordinates;
-    return fetchJSON('https://data.austintexas.gov/resource/w3v2-cj58.json?$select=district_number'+
-      '&$where=intersects(the_geom,'+encodeURIComponent("'POINT ("+c.x+" "+c.y+")'")+')', 7000)
-      .then(function(rows){ return {rows:rows, matched:m.matchedAddress} });
-  })
+  fetchJSON('/api/district?address='+encodeURIComponent(q), 8000)
   .then(function(r){
     if(seq!==lookupSeq) return;
-    if(!r.rows || !r.rows.length){
-      setHint('maybe','<span class="hi">?</span><span>We found <b>'+r.matched+'</b>, but it does not appear to sit inside Austin city limits. You can still write to the Council, just say where you live. '+MAPLINK+'</span>');
-      return;
+
+    if(!r || !r.found){
+      // outside_city is worth saying out loud; anything else is a quiet fallback
+      if(r && r.reason==='outside_city' && r.matched){
+        setHint('maybe','<span class="hi">?</span><span>We found <b>'+escHTML(r.matched)+'</b>, but it does not appear to sit inside Austin city limits. You can still write to the Council, just say where you live. '+MAPLINK+'</span>');
+        return;
+      }
+      throw new Error(r && r.reason || 'no match');
     }
-    var d=String(r.rows[0].district_number);
+
+    var d=String(r.district);
     if(!distTouched) $('#f-dist').value=d;
     showYourCM(+d); track('district_found',{district:d});
-    setHint('ok','<span class="hi">✓</span><span>Matched <b>'+r.matched+'</b>, which is in District <b>'+d+'</b>.'+
+    setHint('ok','<span class="hi">✓</span><span>Matched <b>'+escHTML(r.matched)+'</b>, which is in District <b>'+d+'</b>.'+
       (distTouched?' Your own choice above has been left alone.':' Set for you.')+
       ' Not right? '+MAPLINK+'</span>');
   })
@@ -2777,7 +2811,7 @@ function photoById(id){ for(var i=0;i<PHOTOS.length;i++) if(PHOTOS[i].id===id) r
    belong here, because the rest of the page depends on that being true. */
 var STATS=[
  {n:'3', w:'Texas cities that have already brought their color back', c:'var(--r1)', s:['tribune']},
- {n:'$170K', w:'What San Antonio invested in two blocks of rainbow sidewalk', c:'var(--r2)', s:['sareport','tpr']},
+ {n:'$170K', w:'What San Antonio invested in two blocks of rainbow sidewalk', c:'var(--r2)', t:'var(--r2-ink)', s:['sareport','tpr']},
  {n:'5,330', w:'Austinites who signed the petition to keep the crosswalk', c:'var(--r4)', s:['petition']},
  {n:'~75', w:'Neighbors who gathered on the corner in July', c:'var(--r5)', s:['kut']}
 ];
@@ -2785,7 +2819,9 @@ function renderStats(){
   var m=$('#statRow'); if(!m) return;
   m.innerHTML='';
   STATS.forEach(function(st){
-    var d=el('div','stat'); d.style.setProperty('--sw',st.c);
+    // --sw paints the 4px bar, --swt sets the numeral. They differ only where
+    // the flag color is too light to read as type; t falls back to c.
+    var d=el('div','stat'); d.style.setProperty('--sw',st.c); d.style.setProperty('--swt',st.t||st.c);
     d.innerHTML='<b>'+st.n+'</b><span>'+st.w+'</span>'+srcLinks(st.s);
     m.appendChild(d);
   });
@@ -2986,7 +3022,20 @@ loadAnalytics();
   var p=photoById('corner-today');
   if(p){ slot.innerHTML=photoHTML(p); slot.hidden=false; }
 })();
-renderStats(); renderDates(); bindIcs();
+/* Decorative SVG announces itself as "graphic" to a screen reader and adds
+   nothing but noise. Anything carrying a <title>, an aria-label or a role, and
+   anything focusable, is left exactly as it is. */
+function hideDecorativeSVG(root){
+  $$('svg',root||document).forEach(function(s){
+    if(s.getAttribute('aria-hidden')||s.getAttribute('aria-label')||
+       s.getAttribute('role')||s.querySelector('title')) return;
+    if(s.closest('[tabindex],button,a')) return;
+    s.setAttribute('aria-hidden','true');
+    s.setAttribute('focusable','false');
+  });
+}
+
+renderStats(); renderDates(); bindIcs(); hideDecorativeSVG();
 (function(){ var t=tabFromHash(); if(t) activate(t,false,true) })();
 
 

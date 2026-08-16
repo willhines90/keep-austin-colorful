@@ -71,7 +71,34 @@ ok('display face carries real weight on the page', (()=>{
   return sels>=12;})());
 ok('sections carry a flag-colored rule', /section::before/.test(CSS)&&/--sec:var\(--r1\)/.test(CSS));
 ok('dark sections exist for the key moments', /section\.dark\{background:var\(--ink\)/.test(CSS)&&(html.match(/section[^>]*class="dark"/g)||[]).length>=2);
-ok('stat numbers take their own color', /\.stat b\{[^}]*color:var\(--sw\)/.test(CSS));
+ok('stat numbers take their own color', /\.stat b\{[^}]*color:var\(--swt,var\(--sw\)\)/.test(CSS));
+// Flag orange is 2.33:1 on white and yellow is worse. Type uses the ink variants.
+ok('type-safe ink variants exist for every flag color',
+   [1,2,3,4,5,6].every(n=>new RegExp('--r'+n+'-ink:#').test(CSS)));
+(()=>{
+  const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.substr(i,2),16)/255)
+    .map(v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4));
+    return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+  const onWhite=h=>(1.05)/(lum(h)+0.05);
+  const inks=[...CSS.matchAll(/--r\d-ink:(#[0-9a-f]{6})/g)].map(m=>m[1]);
+  ok('every ink variant clears 4.5:1 on white', inks.length===6&&inks.every(h=>onWhite(h)>=4.5));
+  // and no stat may ship a color that fails large-text contrast
+  // t: overrides c: where the flag color is too light for type, so read the
+  // whole entry and prefer t. Matching either one in isolation picks the wrong
+  // token on exactly the entry that matters.
+  const block=(html.match(/var STATS=\[[\s\S]*?\n\];/)||[''])[0];
+  const used=block.split(/\n\s*\{n:/).slice(1).map(e=>{
+    const t=e.match(/t:'var\(--([a-z0-9-]+)\)'/), c=e.match(/c:'var\(--([a-z0-9-]+)\)'/);
+    return (t&&t[1])||(c&&c[1]);
+  }).filter(Boolean);
+  const hex=k=>(CSS.match(new RegExp('--'+k+':(#[0-9a-f]{6})'))||[])[1];
+  ok('every stat number clears 3:1 on white',
+     used.length>=4&&used.every(k=>{const h=hex(k);return h&&onWhite(h)>=3}));
+})();
+ok('pride tag does not set type on a gradient',
+   /\.dtag\.pride\{background:var\(--accent\)/.test(CSS)&&/\.dtag\.pride::after/.test(CSS));
+ok('date-row badges outrank .dwhat span', /\.dwhat \.hot\{color:#fff\}/.test(CSS));
+ok('touch targets grow on coarse pointers', /@media \(pointer:coarse\)/.test(CSS)&&/min-height:44px/.test(CSS));
 
 console.log('\n— street labels —');
 ok('street names sit on their own plate', CSS!==null && html.includes('function roadLabel('));

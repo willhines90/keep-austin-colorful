@@ -53,9 +53,11 @@ ok('exactly one inline script', scripts.length===1);
 const want="sha256-"+crypto.createHash('sha256').update(scripts[0],'utf8').digest('base64');
 ok('CSP hash matches the served script', h.includes(want));
 ok('CSP has no unsafe-inline for scripts', !/script-src[^;]*unsafe-inline/.test(h));
-ok('CSP allows only the two lookup endpoints',
-   /connect-src[^;]*geocoding\.geo\.census\.gov/.test(h)&&
-   /connect-src[^;]*data\.austintexas\.gov/.test(h)&&
+// The page talks to nothing but its own origin now that the lookup is a worker
+// route, so connect-src is the tightest it can be.
+ok('CSP connect-src is self only',
+   /connect-src 'self'(?:;| https:\/\/cloudflareinsights)/.test(h)&&
+   !/connect-src[^;]*census/.test(h)&&
    !/connect-src[^;]*\*/.test(h));
 ok('CSP blocks object and base-uri', /object-src 'none'/.test(h)&&/base-uri 'none'/.test(h));
 ok('HSTS set for a year', /Strict-Transport-Security: max-age=31536000/.test(h));
@@ -66,8 +68,16 @@ ok('ships with nothing enabled', /ga4:\s*''/.test(html)&&/cfToken:\s*''/.test(ht
 ok('no third-party script tags in the served HTML', !/<script[^>]+src="https:\/\/(?!fonts)/.test(html));
 ok('Google is not permitted while GA is off',
    !/script-src[^;]*googletagmanager/.test(h)&&!/connect-src[^;]*google-analytics/.test(h));
-ok('Cloudflare beacon is permitted so edge injection is not silently blocked',
-   /script-src[^;]*static\.cloudflareinsights\.com/.test(h));
+// cfAuto cannot work on *.workers.dev: edge injection requires a domain proxied
+// through Cloudflare. So the CSP should only carry the beacon origin once a
+// token is actually configured, and the two must never disagree.
+(()=>{
+  const tok=(html.match(/cfToken:\s*'([^']*)'/)||[])[1]||'';
+  const auto=/cfAuto:\s*true/.test(html);
+  const allowed=/script-src[^;]*static\.cloudflareinsights\.com/.test(h);
+  ok('CSP and analytics config agree', allowed===!!(tok||auto));
+  ok('no analytics origin is opened while none is configured', (tok||auto)?true:!allowed);
+})();
 ok('Do Not Track is respected by default', /respectDNT:\s*true/.test(html));
 ok('events are instrumented, not just pageviews',
    ['letter_generated','letter_copied','council_form_opened','template_copied','action_completed','calendar_added','district_found']

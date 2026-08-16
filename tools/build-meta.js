@@ -233,7 +233,11 @@ const cf  = (html.match(/cfToken:\s*'([^']*)'/) || [])[1] || '';
 const cfAuto = /cfAuto:\s*true/.test(html);
 
 const scriptSrc = ["'self'", ...hashes];
-const connectSrc = ["'self'", 'https://geocoding.geo.census.gov', 'https://data.austintexas.gov'];
+// The district lookup used to call the Census geocoder and Austin's Socrata
+// API straight from the page. Census returns 503 to browser-origin requests,
+// so both calls now happen in the worker and the page talks only to itself.
+// Nothing here should ever grow a third-party origin again except analytics.
+const connectSrc = ["'self'"];
 const imgSrc = ["'self'", 'data:'];
 
 if (ga4) {

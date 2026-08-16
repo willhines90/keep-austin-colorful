@@ -1,52 +1,68 @@
 # Analytics
 
-Nothing is enabled by default. With both fields empty the site makes **no third-party requests at all** beyond Google Fonts, and the Content-Security-Policy stays as tight as it can be.
+**Cloudflare Web Analytics is the chosen provider.** Free, unsampled, no cookies,
+no consent banner, and it runs on the host the site already sits on.
 
-## Turning it on
+Nothing is enabled yet. With `cfToken` empty the site makes **no third-party
+requests at all** beyond Google Fonts, and the CSP stays as tight as it can be.
 
-Both switches live at the top of the script block in `public/index.html`:
+## Status, as of 15 August 2026
+
+Checked against the live deployment: **no beacon is loading and nothing is being
+collected.** The code is wired and waiting; the switch has never been flipped.
+
+## Why the current setting cannot work
+
+The config used to say `cfAuto:true`, meaning "Cloudflare injects the beacon at
+the edge, no code change needed." That is a real feature, but it only works when
+traffic to the domain is **proxied through Cloudflare** (orange-clouded DNS).
+A `*.workers.dev` URL is not a zone you control DNS for, so edge injection never
+fires. That is why the dashboard has stayed empty.
+
+`cfAuto` is now `false`, which matches reality. Use the token instead.
+
+## Turning it on, the way that actually works
+
+1. Cloudflare dashboard → **Analytics & Logs → Web Analytics → Add a site**.
+   Enter the hostname you are serving (the `workers.dev` one is fine for now;
+   re-add the real domain once you own one).
+2. Choose **manual / JS snippet** setup. Copy the token it gives you.
+3. Put it in `public/index.html`:
 
 ```js
 var ANALYTICS={
-  ga4:'',            // 'G-XXXXXXXXXX' from Google Analytics
-  cfToken:'',        // token from Cloudflare Web Analytics (cookieless)
-  respectDNT:true    // skip analytics for visitors who ask not to be tracked
+  ga4:'',            // unused; Cloudflare is the provider
+  cfToken:'PASTE_THE_TOKEN_HERE',
+  cfAuto:false,      // leave false unless you are on a proxied custom domain
+  respectDNT:true
 };
 ```
 
-Fill in whichever you want, then:
+4. Regenerate the CSP and redeploy:
 
 ```bash
-npm run build:meta
+npm run build:meta && npm test && npx wrangler deploy
 ```
 
-That regenerates the CSP so it permits **only** the origins the enabled provider needs. If you skip this step the browser will block the analytics script and you will see nothing. That is the CSP working correctly.
+Step 4 is not optional. `build:meta` adds `static.cloudflareinsights.com` to
+`script-src` only when a token is present. Skip it and the browser silently
+drops the beacon, with no error anywhere obvious, and the dashboard stays empty
+exactly as it does now. A test asserts the CSP and the config cannot disagree.
 
-## Google Analytics 4
+## Verifying it works
 
-Create a property at [analytics.google.com](https://analytics.google.com), take the `G-` measurement ID, and put it in `ga4`.
+Load the site, open DevTools → Network, filter `beacon`. You want a request to
+`static.cloudflareinsights.com/beacon.min.js` returning 200. No request means
+the token is missing; a blocked request means you skipped `build:meta`.
 
-`anonymize_ip` is set. GA4 still sets first-party cookies (`_ga`), which is worth knowing given the two caveats below.
+Data takes a few minutes to appear in the dashboard.
 
-## Cloudflare Web Analytics — the one in use
+## Google Analytics
 
-Free, unsampled, **no cookies**, no consent banner, and on the host the site already runs on.
-
-There are two ways to switch it on, and both need the CSP to allow the beacon.
-
-**Edge injection, no code change.** Cloudflare dashboard → Analytics & Logs → Web
-Analytics → enable for this site. Cloudflare adds the beacon itself at the edge.
-`cfAuto:true` is already set, so the CSP permits it and it will just work.
-
-This is the path in use. Nothing further is needed.
-
-**Explicit token, if you prefer it in version control.** Take the token from the
-same dashboard page, put it in `cfToken`, and run `npm run build:meta`. The
-beacon is then part of the page rather than injected, which makes it visible in
-the repo and portable if you ever move hosts.
-
-Either way, the CSP entry is what makes it work. Without it the browser drops the
-beacon and the dashboard stays empty with no error anywhere obvious.
+Left in the code as an unused hook (`ga4`). If you ever fill it in, `build:meta`
+opens the Google origins in the CSP automatically. Worth knowing that GA4 sets
+first-party cookies (`_ga`) even with `anonymize_ip`, which is the main reason
+Cloudflare was chosen instead.
 
 ## What is measured
 

@@ -3,12 +3,18 @@
   "name": "keep-austin-colorful",
   "compatibility_date": "2026-08-08",
 
+  // The site is static; the worker exists only to serve /api/district, because
+  // the Census geocoder returns 503 to browser-origin requests. Everything
+  // else falls through to the assets via the ASSETS binding.
+  "main": "src/worker.js",
+
   // Only ./public ships. Everything else in the repo — tests, docs, the
   // og-image source, node_modules — stays out of the deploy, which is what
   // went wrong the first time: Wrangler defaulted to the repo root and tried
   // to upload jsdom's 122 MiB workerd binary as a static asset.
   "assets": {
     "directory": "./public",
+    "binding": "ASSETS",
     "not_found_handling": "404-page"
   },
 

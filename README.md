@@ -24,7 +24,7 @@ There is no build step. `index.html` is a single self-contained file with all CS
 npm run dev     # serves ./public on http://localhost:8000
 ```
 
-Only `public/` is deployed. The tests, docs and image sources live alongside it in the repo but never ship.
+Only `public/` (the site) and `src/worker.js` (the district lookup route) are deployed. The tests, docs and image sources live alongside them in the repo but never ship.
 
 ## Design system
 
@@ -58,7 +58,11 @@ Typing an address looks up the writer's council district using two public endpoi
 1. The **US Census geocoder** turns the address into a coordinate.
 2. **Austin's own open data layer** (`w3v2-cj58`) says which council district contains that point.
 
-It is strictly progressive enhancement. If either endpoint is unreachable, blocked by CORS, or slow, it times out after seven seconds and falls back to a ZIP code hint that narrows the options but never picks one. The form always works without it.
+Both calls happen in a Cloudflare Worker (`src/worker.js`), not in the browser, and the page makes a single same-origin request to `/api/district`.
+
+That indirection is not architectural taste. The Census geocoder answers server-to-server requests perfectly well but returns **503 to anything sending a browser `Origin` header** — verified on 15 August 2026, identical URL, same minute, 200 from a server and 503 from a page. Called directly from the browser the lookup failed silently on every visit and quietly degraded to the ZIP guess. Moving it server-side also means the page reaches no third-party host at all, so `connect-src` in the CSP is `'self'`.
+
+It remains strictly progressive enhancement. Any failure times out after eight seconds and falls back to a ZIP code hint that narrows the options but never picks one. The form always works without it.
 
 Once a district is known, the page shows that member's direct number, which is how a reader gets from "I care about this" to a phone call in one step.
 
@@ -69,7 +73,7 @@ npm install
 npm test
 ```
 
-368 checks across nine suites (about 50 seconds), run on every push by CI. They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+381 checks across nine suites (about 50 seconds), run on every push by CI. They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 

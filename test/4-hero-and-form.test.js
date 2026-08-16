@@ -1,5 +1,6 @@
 const fs=require('fs');const {JSDOM}=require('jsdom');
 const html=fs.readFileSync(__dirname+'/../public/index.html','utf8');
+const WORKER=fs.readFileSync(__dirname+'/../src/worker.js','utf8');
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://local/',pretendToBeVisual:true});
@@ -66,10 +67,20 @@ ok('always links the official map', html.includes('austintexas.gov/council/distr
 console.log('\n— address lookup + council contacts —');
 ok('address field has a lookup control', !!d.querySelector('#findDist'));
 ok('address field supports browser autofill', d.querySelector('#f-addr').getAttribute('autocomplete')==='street-address');
-ok('geocode + district endpoints are wired', html.includes('geocoding.geo.census.gov')&&html.includes('data.austintexas.gov/resource/w3v2-cj58'));
-ok('lookup uses the correct district field', html.includes('district_number'));
+// The Census geocoder returns 503 to browser-origin requests (verified live,
+// 15 Aug 2026), so the lookup runs in the worker and the page calls only itself.
+ok('page calls the same-origin lookup', html.includes("'/api/district?address='"));
+ok('page reaches no third-party host at all',
+   !html.includes('geocoding.geo.census.gov')&&!html.includes('data.austintexas.gov/resource'));
+ok('worker owns both upstreams', WORKER.includes('geocoding.geo.census.gov')&&WORKER.includes('w3v2-cj58'));
+ok('worker uses the correct district field', WORKER.includes('district_number'));
+ok('worker caps the address it will proxy', /length > 120/.test(WORKER)&&/cleanAddress/.test(WORKER));
+ok('worker rejects non-GET', /method_not_allowed/.test(WORKER));
+ok('worker falls through to static assets', /env\.ASSETS\.fetch/.test(WORKER));
+ok('matched address is escaped before it reaches innerHTML',
+   html.includes('escHTML(r.matched)')&&/function escHTML/.test(html));
 ok('lookup degrades to the ZIP hint', html.includes('if(z) zipHint(z); else hintEl().hidden=true;'));
-ok('lookup has a timeout so it cannot hang', html.includes('AbortController')&&html.includes('7000'));
+ok('lookup has a timeout so it cannot hang', html.includes('AbortController')&&html.includes('8000'));
 ok('your-council-member block starts hidden', /<div class="contact" id="yourCM" hidden>/.test(html));
 (()=>{const sel=d.querySelector('#f-dist'); sel.value='5'; sel.dispatchEvent(new window.Event('change',{bubbles:true}));})();
 ok('choosing a district reveals their number', d.querySelector('#yourCMhow').textContent.includes('512-978-2105'));
