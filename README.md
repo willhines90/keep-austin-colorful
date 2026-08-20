@@ -129,6 +129,13 @@ Map pin positions are projected latitude/longitude in a 100 × 94.4 viewBox. If 
 
 `og-source.svg` is the editable source for the share image.
 
+> **The share image lags the headline.** `og-source.svg` carries the current
+> wording; `public/og.png` still reads "Let's put the color back on 4th St."
+> Regenerate it with a real SVG renderer (`rsvg-convert -w 1200 -h 630
+> og-source.svg -o public/og.png`, or open the SVG in a browser and export).
+> ImageMagick's `convert` mangles the negative letter-spacing on the headline,
+> so don't use it.
+
 ## A note on tone
 
 This pack works because it asks for something a city can lawfully say yes to, and because every factual claim links to its source. If you adapt it, please keep both of those true. The moment it reads as an accusation rather than an invitation, it gets easier to ignore.

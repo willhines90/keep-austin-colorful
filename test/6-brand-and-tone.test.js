@@ -120,7 +120,15 @@ barbs.forEach(b=>ok('no barb: "'+b+'"', !BODY.includes(b)));
 ok('Austin card leads with what is done, not undone', d.querySelector('#citycard')!==null);
 ok('objection panel framed as questions', BODY.includes('The question')&&!BODY.includes('They say'));
 ok('letter prompt steers away from blame', html.includes('Keep the letter warm toward the city'));
-ok('headline is an invitation, not a grievance', d.querySelector('h1').textContent.includes("Let's put the color back"));
+// Assert the shape of the line, not its exact words, so the copy can change
+// without the test having to be told twice what it is actually protecting:
+// forward-looking construction, no grievance vocabulary.
+ok('headline is an invitation, not a grievance', (()=>{
+  const h=d.querySelector('h1').textContent.replace(/\s+/g,' ').trim();
+  return /^Let's put the .+ back on/.test(h) &&
+         !/erased|stole|stolen|attack|destroyed|banned|scrubbed|war on/i.test(h);
+})());
+ok('headline names what it is about', /pride|rainbow/i.test(d.querySelector('h1').textContent));
 ok('tabs read warmly', BODY.includes('The story')&&BODY.includes("What's possible")&&BODY.includes('Pitch in'));
 ok('stats lead with people and possibility', [...d.querySelectorAll('.stat span')].every(x=>!/exemptions granted|vigil on the corner/.test(x.textContent)));
 ok('caution box is guidance, not prohibition', BODY.includes('A gentle word on how to help')&&BODY.includes('Let the city hold the brush'));

@@ -101,5 +101,5 @@ setTimeout(()=>{
   ok('word count now shown', d.querySelector('#wordCount').style.display==='block'&&/\d+ words/.test(d.querySelector('#wordCount').textContent));
   console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));
   process.exit(fail?1:0);
-},3200);
-},700);
+},6000);  // was 3200; failed roughly one run in twenty under load
+},1600);  // was 700, same reason
