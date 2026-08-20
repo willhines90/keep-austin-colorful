@@ -4,7 +4,9 @@
 
 An advocacy pack for putting the color back on 4th &amp; Colorado in Austin, Texas.
 
-**Live:** _add your URL here after the first deploy_
+The name is a play on Keep Austin Weird. The color in it is paint.
+
+**Live:** https://keep-austin-colorful.dark-glitter-501f.workers.dev
 
 ---
 
@@ -33,11 +35,11 @@ Two families and one scale, both enforced by tests rather than convention.
 - **Poppins** for display, **Figtree** for reading. Loaded from Google Fonts with the system stack as fallback.
 - Nine font-size tokens, four weights, an 11-step space scale, five radii, three shadows, three motion durations. A test fails if a raw `rem` size appears in the stylesheet, because a scale nobody follows is not a scale.
 - Every section carries a hairline of flag color along its top, cycling through the six, so the page reads as one continuous rainbow rather than a stack of white boxes.
-- Two sections are dark: the one that explains the mechanism, and the closing contact block. Every colour pair on them clears WCAG AA.
+- Two sections are dark: the one that explains the mechanism, and the closing contact block. Every color pair on them clears WCAG AA, verified in a real browser rather than in jsdom.
 
 ## Analytics
 
-Off by default; the site makes no third-party requests until you switch something on. Google Analytics and Cloudflare Web Analytics are both wired and configurable at the top of the script block. See [ANALYTICS.md](ANALYTICS.md), including why Vercel Analytics cannot work on a non-Vercel host.
+Off by default; the site makes no third-party requests until you switch something on. **Cloudflare Web Analytics** is the chosen provider: cookieless, unsampled, no consent banner. It is wired and waiting for a token. See [ANALYTICS.md](ANALYTICS.md), including why edge injection cannot work on a `workers.dev` URL and why Vercel Analytics cannot work on a non-Vercel host.
 
 ## Metadata is generated, not maintained
 
@@ -47,8 +49,8 @@ and commit the result; `npm run deploy` runs it for you.
 
 The structured data matters more than usual here. The objection cards are
 published as a `FAQPage` and the calendar as `Event` records, which is how
-answer engines and AI summarisers pick up a small site with no domain authority.
-`llms.txt` carries the verified figures and explicitly asks summarisers to
+answer engines and AI summarizers pick up a small site with no domain authority.
+`llms.txt` carries the verified figures and explicitly asks summarizers to
 preserve the non-adversarial framing.
 
 ## The district lookup
@@ -77,12 +79,19 @@ npm test
 
 ## Deploying
 
-See [DEPLOY.md](DEPLOY.md). Short version: `npx vercel --prod` from this directory.
+Cloudflare Workers. See [DEPLOY.md](DEPLOY.md). Short version:
+
+```bash
+npm run deploy      # build:meta, then wrangler deploy
+```
+
+`wrangler.jsonc` ships `public/` as static assets and `src/worker.js` as the
+`/api/district` route. Nothing else in the repo is uploaded.
 
 After your first deploy, point the share and canonical URLs at your real domain:
 
 ```bash
-./set-domain.sh keep-austin-colorful.vercel.app
+./set-domain.sh your-domain.org
 ```
 
 Relative URLs already work on Facebook, X, LinkedIn and Slack; this is for the older clients that insist on absolute ones, and for the canonical tag.

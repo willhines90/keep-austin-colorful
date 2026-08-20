@@ -44,7 +44,7 @@ tabs[0].dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
 
 console.log('\n— timeline —');
 ok('8 entries rendered from data', d.querySelectorAll('#timeline .tli').length===8);
-ok('key moments pre-expanded', d.querySelectorAll('#timeline .tli.key.open').length===4);
+ok('key moments pre-expanded', d.querySelectorAll('#timeline .tli.key.open').length===5);
 const t0=d.querySelector('#timeline .tli');
 const was=t0.classList.contains('open');
 t0.querySelector('.tlh').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));

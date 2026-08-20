@@ -9,7 +9,7 @@
 <meta name="robots" content="index,follow">
 <meta property="og:url" content="https://keep-austin-colorful.dark-glitter-501f.workers.dev/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Keep Austin Colorful">
+<meta property="og:site_name" content="Keep Austin Colorful: bringing the color back to 4th &amp; Colorado">
 <meta property="og:title" content="Let's put the color back on 4th &amp; Colorado">
 <meta property="og:description" content="San Antonio faced the same order and painted its sidewalks instead: two blocks of color, entirely legal, no council vote needed. Austin can do this too.">
 <meta property="og:image" content="https://keep-austin-colorful.dark-glitter-501f.workers.dev/og.png">
@@ -644,6 +644,7 @@ a.pu:hover b{color:var(--accent)}
 .dtag.pride{background:var(--accent); color:#fff; position:relative; overflow:hidden; padding-bottom:4px}
 .dtag.pride::after{content:''; position:absolute; left:0; right:0; bottom:0; height:3px;
   background:linear-gradient(90deg,var(--r1),var(--r2),var(--r3),var(--r4),var(--r5),var(--r6))}
+.dtag.marker{background:var(--ink); color:#fff}
 .dtag.done{background:var(--paper-2); color:var(--faint)}
 .date.past{opacity:.5}
 .date.past .dwhen,.date.past .dwhat b{text-decoration:line-through; text-decoration-thickness:1px}
@@ -869,6 +870,11 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
           "@type": "CreativeWork",
           "name": "Austin Pride",
           "url": "https://austinpride.org/pride2026/"
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "Austin Chronicle",
+          "url": "https://www.austinchronicle.com/category-qmmunity/marking-queer-history-on-austins-fourth-street/"
         }
       ]
     },
@@ -910,10 +916,10 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
         },
         {
           "@type": "Question",
-          "name": "We already did a mural and we're doing a marker",
+          "name": "We already did a mural and a marker",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Both are genuinely good, and the community turned out for the mural in June. The ask is to build on them rather than stop there. San Antonio paired its commemoration with something permanent, city-maintained and underfoot where people actually walk, and wrapped it in a district designation that carries forward automatically. Austin has every tool it needs to do the same, and a council that has already said it wants to do more."
+            "text": "Both are genuinely good, and worth being clear about: the marker was three years of work by the LGBTQ+ Quality of Life Commission, approved by council in 2023, and would have happened whatever the state did. It is not a consolation prize and nobody should treat it as one. The ask is to build on them rather than stop there. San Antonio paired its commemoration with something permanent, city-maintained and underfoot where people actually walk, and wrapped it in a district designation that carries forward automatically. Austin has every tool it needs to do the same, and a council that has already said it wants to do more."
           }
         }
       ]
@@ -968,6 +974,32 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
         "@id": "https://keep-austin-colorful.dark-glitter-501f.workers.dev#org"
       },
       "url": "https://www.austintexas.gov/boards-commissions",
+      "isAccessibleForFree": true
+    },
+    {
+      "@type": "Event",
+      "name": "The LGBTQIA+ historical marker is unveiled",
+      "description": "10:30am at 4th and Colorado, beneath the Bettie Naylor street sign on the southwest corner. Three years in the making, approved by council back in September 2023, and nothing to do with the crosswalk: this was already coming. Speakers include Rep. Lloyd Doggett, Mayor Watson and CM Qadri, with a performance by Brigitte Bandit and a reception afterwards at Rain on 4th. Go. Be glad of it.",
+      "startDate": "2026-08-21",
+      "endDate": "2026-08-21",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "location": {
+        "@type": "Place",
+        "name": "Austin City Hall",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "301 W 2nd St",
+          "addressLocality": "Austin",
+          "addressRegion": "TX",
+          "postalCode": "78701",
+          "addressCountry": "US"
+        }
+      },
+      "organizer": {
+        "@id": "https://keep-austin-colorful.dark-glitter-501f.workers.dev#org"
+      },
+      "url": "https://www.austinchronicle.com/category-qmmunity/marking-queer-history-on-austins-fourth-street/",
       "isAccessibleForFree": true
     },
     {
@@ -1535,7 +1567,7 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
 </main>
 
 <footer>
-  <p><b>Keep Austin Colorful</b> is a neighbor's project, built August 2026. Not affiliated with the City of Austin, and not legal advice. Every claim on this page links to its source. Copy it, fork it, point it at your own city. <a href="#contact">Get in touch</a>.</p>
+  <p><b>Keep Austin Colorful</b> is a play on Keep Austin Weird, and the color in it is paint. A neighbor's project, built August 2026. Not affiliated with the City of Austin, and not legal advice. Every claim on this page links to its source. Copy it, fork it, point it at your own city. <a href="#contact">Get in touch</a>.</p>
   <p class="verified" id="verified"></p>
 </footer>
 </div>
@@ -1563,7 +1595,7 @@ window.addEventListener('error',function(){ document.documentElement.classList.a
    other host it fails silently. */
 /* Set these once the domain is live. The alias keeps a personal inbox off a
    public page and can be forwarded or shut off without touching the site. */
-var VERIFIED='15 August 2026';
+var VERIFIED='20 August 2026';
 var CONTACT={
   /* IMPORTANT: leave these empty until the aliases actually exist and you have
      sent yourself a test message. A published address that bounces is worse
@@ -1626,7 +1658,8 @@ var SRC={
  calendar:['City of Austin calendar','https://services.austintexas.gov/edims/document.cfm?id=462100'],
  sixsquare:['Six Square','https://sixsquareatx.org/'],
  petition:['Change.org petition','https://www.change.org/p/city-of-austin-texas-approve-the-rainbow-crosswalks-in-austin-tx'],
- pride:['Austin Pride','https://austinpride.org/pride2026/']
+ pride:['Austin Pride','https://austinpride.org/pride2026/'],
+ chronicle:['Austin Chronicle','https://www.austinchronicle.com/category-qmmunity/marking-queer-history-on-austins-fourth-street/']
 };
 function srcLinks(keys){
   if(!keys||!keys.length) return '';
@@ -1652,8 +1685,8 @@ var TIMELINE=[
   b:'Residents paint hearts onto a new mural between Colorado and Lavaca. Mayor Watson: “We\'re going to do more to show our love and our respect and our appreciation for all of our people, and we\'re going to do it in a way that\'s clearly Austin.”'},
  {d:'20–21 Jul 2026',k:1,s:['kut','kvue'],t:'The crosswalk comes up at 4th and Colorado',
   b:'The paint comes up under the state order, along with the “Black Artists Matter” lettering on East 11th and crosswalks honoring the Guadalupe River in Kerrville. The next evening about seventy-five neighbors gather on the corner, which is where this project began.'},
- {d:'Aug 2026',k:0,s:['tribune','calendar'],t:'A historical marker, and a budget',
-  b:'The city intends to unveil an LGBTQ historical marker at the intersection. A task force weighed sidewalk paint and held off for now, citing light rail construction that may reach the street within 18 to 24 months. That is a solvable sequencing question. Meanwhile the FY2027 budget is adopted 12–14 August. That is the window.'}
+ {d:'Aug 2026',k:1,s:['chronicle','calendar'],t:'The marker goes up',
+  b:'On 21 August the city unveiled an LGBTQIA+ historical marker at the intersection, under the Bettie Naylor street sign. It was three years of work by the LGBTQ+ Quality of Life Commission, approved by council back in 2023, and it was never a reaction to the crosswalk. It names Austin queer history plainly, back to the Gay Liberation Front chapter founded here in 1970. Separately, a task force weighed sidewalk paint and held off for now, citing light rail construction that may reach the street within 18 to 24 months. That is a solvable sequencing question. Meanwhile the FY2027 budget is adopted 12–14 August. That is the window.'}
 ];
 
 /* x/y are projected from real coordinates onto the 100 × 94.4 map viewBox.
@@ -1661,9 +1694,9 @@ var TIMELINE=[
 var CITIES=[
  {id:'austin',name:'Austin',s:['kut','axios','kvue'],x:67.38,y:55.81,lp:[8.4,1.1,'start'],status:'gap',rank:2,
   short:'Open opportunity',street:'W 4th St at Colorado',sidewalk:'grey',feature:'mural',
-  replaced:'A community mural, and a marker in August',payer:'Neighbors, so far',vote:'no',voteTxt:'Not needed',
-  what:'The rainbow crosswalk at West 4th &amp; Colorado came up on 20–21 July 2026 under the state order. The city responded quickly: residents painted a community mural on 4th Street in June, and a historical marker is coming in August. The next step, a sidewalk treatment, sits entirely with the city.',
-  rows:[['Where','West 4th &amp; Colorado'],['Already done','A community mural in June; a marker coming in August'],['Available next','A sidewalk treatment, on San Antonio\'s model'],['Also available','Cultural heritage district designation'],['Authority needed','All of it sits with the city']]},
+  replaced:'A community mural, and a historical marker',payer:'Neighbors, so far',vote:'no',voteTxt:'Not needed',
+  what:'The rainbow crosswalk at West 4th &amp; Colorado came up on 20–21 July 2026 under the state order. The city responded quickly: residents painted a community mural on 4th Street in June, and on 21 August the city unveiled an LGBTQIA+ historical marker that the LGBTQ+ Quality of Life Commission had spent three years bringing to life. The next step, a sidewalk treatment, sits entirely with the city.',
+  rows:[['Where','West 4th &amp; Colorado'],['Already done','A community mural in June; a historical marker on 21 August'],['Available next','A sidewalk treatment, on San Antonio\'s model'],['Also available','Cultural heritage district designation'],['Authority needed','All of it sits with the city']]},
  {id:'sanantonio',name:'San Antonio',s:['tpr','sareport','kens5'],x:61.81,y:63.16,lp:[-8.4,4.6,'end'],status:'win',rank:1,
   short:'Rainbow sidewalks',street:'N Main Ave, Laurel to Park',sidewalk:'rainbow',feature:'none',
   replaced:'Two blocks of rainbow sidewalk',payer:'City funds, ~$170,000',vote:'no',voteTxt:'Not needed',
@@ -1705,9 +1738,9 @@ var ASKS=[
  {id:'light',on:false,ttl:'Colored lighting across the intersection at night',
   desc:'Light is not paint and changes no road surface. No Texas city has tested this yet, so treat it as a creative ask rather than a settled one.',
   chips:[['Untested in Texas','un'],['No surface alteration','ok']]},
- {id:'marker',on:true,ttl:'Follow through on the marker, and the other removed art',
-  desc:'The August marker is already promised. Hold them to it, and ask that the Black Artists Matter lettering on East 11th be commemorated too. That removal took Texas\'s first Black cultural heritage district with it.',
-  chips:[['Already committed','ok'],['Costs almost nothing','']]},
+ {id:'marker',on:true,ttl:'Do for East 11th what was just done for 4th Street',
+  desc:'The 4th Street marker went up on 21 August, three years of work by the LGBTQ+ Quality of Life Commission and a genuinely lovely morning. The Black Artists Matter lettering on East 11th came up under the same order and has had nothing like it. Six Square and the organizations on the east side lead that work and should be the ones setting the ask. What this corner can usefully do is say, loudly, that whatever they ask for should get the same care and the same council attention 4th Street just got.',
+  chips:[['Precedent set on 4th St','ok'],['Costs almost nothing','']]},
  {id:'commission',on:true,ttl:'Design it with the community, not for it',
   desc:'San Antonio developed its design with the city\'s LGBTQ+ advisory board. Austin should route this through the LGBTQ+ Quality of Life Advisory Commission and the Austin LGBT Chamber.',
   chips:[['Precedent: San Antonio','ok'],['No cost','']]}
@@ -1737,8 +1770,8 @@ var OBJS=[
   a:'The directive, and the federal order behind it, govern roadway art. Sidewalks, steps, bike racks and lamp posts are not roadway. San Antonio has had rainbow sidewalks since March, in plain sight, with a ribbon-cutting, and has not lost road funding. A lawsuit against the city over them failed. The legal question isn\'t hypothetical any more; it has been answered by somebody else, at their expense.'},
  {q:'It was a safety decision, not a political one',s:['sareport','tribune'],
   a:'San Antonio\'s own assistant city manager wrote to TxDOT that the intersection was safer with the paint than without it, and safer than comparable nearby intersections. TxDOT denied the exemption anyway, and declined to say whether it had granted an exemption for any roadway art at all. If safety were the criterion, the data went the other way.'},
- {q:'We already did a mural and we\'re doing a marker',s:['tribune','tpr'],
-  a:'Both are genuinely good, and the community turned out for the mural in June. The ask is to build on them rather than stop there. San Antonio paired its commemoration with something permanent, city-maintained and underfoot where people actually walk, and wrapped it in a district designation that carries forward automatically. Austin has every tool it needs to do the same, and a council that has already said it wants to do more.'}
+ {q:'We already did a mural and a marker',s:['tribune','chronicle'],
+  a:'Both are genuinely good, and worth being clear about: the marker was three years of work by the LGBTQ+ Quality of Life Commission, approved by council in 2023, and would have happened whatever the state did. It is not a consolation prize and nobody should treat it as one. The ask is to build on them rather than stop there. San Antonio paired its commemoration with something permanent, city-maintained and underfoot where people actually walk, and wrapped it in a district designation that carries forward automatically. Austin has every tool it needs to do the same, and a council that has already said it wants to do more.'}
 ];
 
 var PIR='To the City of Austin Public Information Office,\n\n'+
@@ -1762,7 +1795,7 @@ var TODOS=[
  {id:'t3',cat:'Do it now',min:2,impact:'medium',t:'Call the Mayor\'s office',
   d:'Watson has said publicly that the city will "do more". Give him a constituent asking for something specific enough to act on.',
   links:[['Call 512-978-2100','tel:+15129782100'],['Email the Mayor','https://www.austintexas.gov/email/14286']],tplName:'Copy the phone script',
-  tpl:'Hi, I am an Austin resident calling about the rainbow crosswalk removed from 4th and Colorado.\n\nThe Mayor said the city would do more. I would like that to mean a rainbow sidewalk treatment on San Antonio\'s model, plus a cultural heritage district designation for West 4th, not only a historical marker. Could you log my support? Thank you.'},
+  tpl:'Hi, I am an Austin resident calling about the rainbow crosswalk removed from 4th and Colorado.\n\nI was glad to see the historical marker go up on 21 August. I would like the next step to be a rainbow sidewalk treatment on San Antonio\'s model, plus a cultural heritage district designation for West 4th. Could you log my support? Thank you.'},
  {id:'t4',cat:'Do it now',min:2,impact:'medium',t:'Post it publicly',
   d:'Tag the council members. Public pressure is what got Austin to apply for an exemption in the first place, after more than five thousand people signed.',
   links:[],tplName:'Copy a post',
@@ -1776,7 +1809,7 @@ var TODOS=[
   d:'The single highest-leverage item on this list. It is the only week of the year when money is allocated, and public comment is taken. Sign up in advance.',
   links:[['How to sign up','https://www.austintexas.gov/department/public-participation-council-meetings'],['Agenda','https://www.austintexas.gov/council/meetings']],
   tplName:'Copy a one-minute testimony',
-  tpl:'Mayor, Council Members. My name is [NAME] and I live in District [#].\n\nI am asking you to fund a rainbow sidewalk treatment at 4th and Colorado in this budget.\n\nWhen San Antonio was forced to remove its crosswalk, it painted the sidewalks along North Main instead. About $170,000. Dedicated in March. Still there. No road funding lost, and a lawsuit against the city failed. It required no council vote, because that corridor had already been designated a Pride Cultural Heritage District.\n\nAustin gave us a mural in June and has a marker coming in August, and I am glad of both. I am asking you to build on them with something permanent and underfoot.\n\nI am asking for two things: money in this budget for an interim sidewalk treatment, and a cultural heritage district designation for West 4th so the next council cannot quietly drop it. If light rail is the concern, that is an argument for sequencing the work, not for skipping it.\n\nSan Antonio showed this can be done well. Austin is better placed than most to do it, and I hope you will. Thank you.'},
+  tpl:'Mayor, Council Members. My name is [NAME] and I live in District [#].\n\nI am asking you to fund a rainbow sidewalk treatment at 4th and Colorado in this budget.\n\nWhen San Antonio was forced to remove its crosswalk, it painted the sidewalks along North Main instead. About $170,000. Dedicated in March. Still there. No road funding lost, and a lawsuit against the city failed. It required no council vote, because that corridor had already been designated a Pride Cultural Heritage District.\n\nAustin gave us a mural in June and a historical marker on 21 August, and I am glad of both. I am asking you to build on them with something permanent and underfoot.\n\nI am asking for two things: money in this budget for an interim sidewalk treatment, and a cultural heritage district designation for West 4th so the next council cannot quietly drop it. If light rail is the concern, that is an argument for sequencing the work, not for skipping it.\n\nSan Antonio showed this can be done well. Austin is better placed than most to do it, and I hope you will. Thank you.'},
  {id:'t7',cat:'This week',min:10,impact:'high',t:'Submit written testimony',
   d:'If you cannot make the meeting in person, written comment still enters the record and still gets counted. Lower effort, most of the benefit.',
   links:[['Public participation','https://www.austintexas.gov/department/public-participation-council-meetings']],
@@ -1797,9 +1830,9 @@ var TODOS=[
  {id:'t11',cat:'Go deeper',min:10,impact:'medium',t:'File a records request',
   d:'Ask for the exemption application, TxDOT\'s denial, and the task force\'s analysis. Understanding the real constraints makes your ask sharper and shows staff you have done the homework. Ten business days to respond, and you need give no reason for asking.',
   links:[],tplName:'Copy the records request',tpl:PIR},
- {id:'t12',cat:'Go deeper',min:90,impact:'medium',t:'Turn up to the marker unveiling',
-  d:'August, at 4th and Colorado, date still to be announced. Go, be glad of it, and ask the officials present what comes after it.',
-  links:[],tplName:null,tpl:null}
+ {id:'t12',cat:'Go deeper',min:90,impact:'high',t:'Turn up to the marker unveiling',
+  d:'Friday 21 August, 10:30am, 4th and Colorado, under the Bettie Naylor sign. It kicks off Pride weekend, the Mayor and CM Qadri are both speaking, and there is a reception afterwards at Rain on 4th. Go and be glad of it first. Then, if the moment is right, ask what comes after it.',
+  links:[['The Chronicle\'s piece on the marker','https://www.austinchronicle.com/category-qmmunity/marking-queer-history-on-austins-fourth-street/']],tplName:null,tpl:null}
 ];
 
 /* ════════ state ════════ */
@@ -2005,7 +2038,7 @@ function streetSVG(rainbow){
     s+='<polygon points="'+quad([ex('lo',y0),y0],[ex('li',y0),y0],[ex('li',y1),y1],[ex('lo',y1),y1])+'" fill="'+col+'"/>';
     s+='<polygon points="'+quad([ex('ri',y0),y0],[ex('ro',y0),y0],[ex('ro',y1),y1],[ex('ri',y1),y1])+'" fill="'+col+'"/>';
   }
-  // kerbs
+  // curbs
   s+='<polygon points="'+quad([ex('li',BOT),BOT],[ex('li',BOT)+7,BOT],[ex('li',HZ)+1,HZ],[ex('li',HZ),HZ])+'" fill="#8d8779"/>';
   s+='<polygon points="'+quad([ex('ri',BOT)-7,BOT],[ex('ri',BOT),BOT],[ex('ri',HZ),HZ],[ex('ri',HZ)-1,HZ])+'" fill="#8d8779"/>';
 
@@ -2199,7 +2232,7 @@ function corridorSVG(c){
   var cap = c.sidewalk==='rainbow' ? 'Rainbow sidewalks, both sides'
     : c.feature==='steps' ? 'Rainbow steps and bike racks'
     : c.feature==='lamps' ? 'Pride-wrapped lamp posts'
-    : c.feature==='mural' ? 'A mural on a wall, a marker on the kerb'
+    : c.feature==='mural' ? 'A mural on a wall, a marker on the corner'
     : 'Grey. Nothing put back.';
   return '<div class="corridor"><span class="cap">'+cap+'</span>'+s+'</div>';
 }
@@ -2475,7 +2508,7 @@ function buildPrompt(){
 "- Austin's rainbow crosswalk at West 4th and Colorado, in the heart of the city's LGBTQ+ district, was scraped away on 20-21 July 2026. The 'Black Artists Matter' lettering on East 11th, in Texas's first Black cultural heritage district, was removed too. About 75 people held a vigil at the corner.",
 "- San Antonio, forced to remove its own crosswalk in January 2026, had Public Works paint rainbow SIDEWALKS along North Main Avenue from Laurel to Park instead, about $170,000, dedicated in late March 2026. The state's order covers roadways; sidewalks are city property. Crucially it required no council vote, because the corridor had been designated a Pride Cultural Heritage District in 2025, the first in Texas.",
 "- Dallas painted the Oak Lawn Branch Library steps rainbow using city staff and private donations, and installed 18 rainbow bike racks. El Paso wrapped street lamps in Pride flags.",
-"- Austin has so far produced a community mural on 4th Street and plans a historical marker in August 2026. A city task force weighed sidewalk paint and held off for now, citing light rail construction expected within 18-24 months.",
+"- Austin produced a community mural on 4th Street in June 2026, and unveiled an LGBTQIA+ historical marker at 4th and Colorado on 21 August 2026. That marker was three years of work by the LGBTQ+ Quality of Life Commission, approved by council in 2023, and was NOT a response to the crosswalk removal. Never write about it as a consolation prize. A city task force weighed sidewalk paint and held off for now, citing light rail construction expected within 18-24 months.",
 "- Austin adopts its FY2027 budget on 12-14 August 2026.",
 "",
 "THE WRITER:",
@@ -2489,7 +2522,7 @@ askLines,"",
 "RULES:",
 "- 250-350 words.",
 "- Open by saying who they are and where they live. Sign off with 'Sincerely,' then their name and address on separate lines.",
-"- Do NOT blame the city or its staff. They complied under a genuine funding threat and have already responded with a mural and a marker. Keep the letter warm toward the city and focused on the opportunity ahead.",
+"- Do NOT blame the city or its staff. They complied under a genuine funding threat, and there is a mural and a marker on that block already. Keep the letter warm toward the city and focused on the opportunity ahead.",
 "- Lead with the San Antonio precedent; it is the strongest argument because it is proven, lawful and nearby.",
 "- If light rail is relevant, frame it as a reason to sequence the work, not to skip it.",
 "- No bullet points, no hashtags, no exclamation marks, no em-dashes, no 'As an AI', no salesy language.",
@@ -2533,7 +2566,7 @@ var L={
  precedent:[
   {t:'any', s:"Complying with the state does not have to be the end of it. When San Antonio was ordered to remove its own rainbow crosswalk, the city painted the sidewalks along North Main instead. The order covers roadways; sidewalks are city property. Their color is back, entirely legally, and it required no council vote, because that corridor had already been designated a Pride Cultural Heritage District."},
   {t:'any', s:"San Antonio faced exactly this and found a way through. Rather than repaint the road, the city treated the sidewalks along North Main, which sit outside the state's order because they belong to the city. It cost about $170,000, was dedicated in March, survived a legal challenge, and needed no council vote thanks to the corridor's cultural heritage district status."},
-  {t:'any', s:"There is a precedent close to hand. San Antonio, under the same directive, put the color on its sidewalks instead of its roadway. Two blocks of North Main, dedicated last March, still there. The state's order reaches the road surface and stops at the kerb."},
+  {t:'any', s:"There is a precedent close to hand. San Antonio, under the same directive, put the color on its sidewalks instead of its roadway. Two blocks of North Main, dedicated last March, still there. The state's order reaches the road surface and stops at the curb."},
   {t:'any', s:"The route San Antonio took seems to me the obvious one. The state's order governs the roadway. Sidewalks do not fall under it, so the city painted those instead, and the result has stood since March without costing a cent of road funding."}
  ],
  lead:[
@@ -2575,7 +2608,7 @@ function askSentence(a){
    steps:"paint the steps of a nearby public building, as Dallas did at its Oak Lawn library",
    lamps:"wrap the lamp posts on the block, which is what El Paso did and which nothing in the state's order touches",
    light:"look at colored lighting across the intersection at night, since light changes no road surface at all",
-   marker:"follow through on the historical marker, and find a way to commemorate the lettering removed from East 11th as well",
+   marker:"back Six Square and the east-side organizations in whatever they ask for the Black Artists Matter lettering on East 11th, with the same council attention 4th Street just received",
    commission:"design whatever happens with the LGBTQ+ Quality of Life Advisory Commission and the Austin LGBT Chamber, the way San Antonio worked with its advisory board"
   };
   return m[a.id]||strip(a.ttl).toLowerCase();
@@ -2840,6 +2873,10 @@ var DATES=[
   t:'LGBTQ+ Quality of Life Advisory Commission',
   w:'Meets monthly at City Hall with a public comment period, and its recommendations travel up to council through the Joint Inclusion Committee. A smaller room, a far shorter queue, and often the faster route in.',
   link:'https://www.austintexas.gov/boards-commissions'},
+ {s:'2026-08-21',e:'2026-08-21',ics:'marker',tag:'Marker',
+  t:'The LGBTQIA+ historical marker is unveiled',
+  w:'10:30am at 4th and Colorado, beneath the Bettie Naylor street sign on the southwest corner. Three years in the making, approved by council back in September 2023, and nothing to do with the crosswalk: this was already coming. Speakers include Rep. Lloyd Doggett, Mayor Watson and CM Qadri, with a performance by Brigitte Bandit and a reception afterwards at Rain on 4th. Go. Be glad of it.',
+  link:'https://www.austinchronicle.com/category-qmmunity/marking-queer-history-on-austins-fourth-street/'},
  {s:'2026-08-20',e:'2026-08-23',ics:'pride',tag:'Pride',
   t:'Austin Pride weekend',
   w:'Four days of it, themed Viva la Resistencia. The best week of the year to have this conversation with your neighbors, and to ask the businesses on 4th Street whether they will add their name.',
@@ -2959,6 +2996,10 @@ function makeICS(o){
   'END:VEVENT','END:VCALENDAR'].map(fold).join('\r\n');
 }
 var ICS={
+ marker:{uid:'atx-lgbtq-marker-2026@keepaustincolorful',start:icsDate(2026,8,21),end:icsDate(2026,8,22),
+  summary:'LGBTQIA+ historical marker dedication, 4th & Colorado',
+  location:'W 4th St & Colorado St, Austin TX 78701',
+  desc:'10:30am at 4th and Colorado, beneath the Bettie Naylor street sign on the southwest corner.\n\nThree years of work by the LGBTQ+ Quality of Life Commission, approved by council in 2023. It is not a response to the crosswalk removal; it was already coming.\n\nSpeakers include Rep. Lloyd Doggett, Mayor Kirk Watson and Council Member Zo Qadri, with a performance by Brigitte Bandit. Reception afterwards at Rain on 4th.\n\nDetails: https://www.austinchronicle.com/category-qmmunity/marking-queer-history-on-austins-fourth-street/'},
  pride:{uid:'atx-pride-2026@keepaustincolorful',start:icsDate(2026,8,20),end:icsDate(2026,8,24),
   summary:'Austin Pride weekend: Viva la Resistencia',
   location:'Austin, Texas',
