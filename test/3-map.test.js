@@ -1,5 +1,5 @@
 const fs=require('fs');const {JSDOM}=require('jsdom');
-const html=fs.readFileSync(__dirname+'/../public/index.html','utf8');
+const html=require('./_boot').inline('background.html');   // the page this suite is about
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://local/',pretendToBeVisual:true});
@@ -77,10 +77,13 @@ ok('selected row highlighted', d.querySelectorAll('#cmpTable tbody tr.hi').lengt
 ok('map and table stay in sync', d.querySelector('#cmpTable tbody tr.hi').dataset.id===d.querySelector('#txmap .pin.sel').dataset.id);
 
 console.log('\n— regression —');
-ok('4 tabs still work', d.querySelectorAll('.tab').length===4);
-ok('compare slider intact', !!d.querySelector('#cmpRange'));
-ok('8 asks intact', d.querySelectorAll('#askList .ask').length===8);
-ok('8 todos intact', d.querySelectorAll('#todoList .todo').length===12);
+// This page owns the timeline, the map and the objections. The regression to
+// guard against is the map quietly taking the rest of the page down with it.
+ok('nav survived the render', d.querySelectorAll('.mainnav a').length===5);
+ok('timeline intact', d.querySelectorAll('#timeline .tli').length===8);
+ok('objections intact', d.querySelectorAll('#objList .obj').length===5);
+ok('funding routes intact', d.querySelectorAll('#fundList .ask').length===4);
+ok('nothing from the action page leaked in', !d.querySelector('#letterOut')&&!d.querySelector('#todoList'));
 console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));
 process.exit(fail?1:0);
 },800);

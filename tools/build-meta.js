@@ -5,9 +5,9 @@
  *   - JSON-LD structured data, injected into index.html
  *   - sitemap.xml
  *   - llms.txt
- *   - _headers, including a Content-Security-Policy hash for the inline script
+ *   - _headers, including the Content-Security-Policy
  *
- * All of it is derived from the data already in index.html (window.__KAC__), so
+ * All of it is derived from the data already in site.js (window.__KAC__), so
  * the metadata cannot drift from the page. Crawlers and most LLM scrapers do not
  * run JavaScript, which is why the JSON-LD is written into the served HTML
  * rather than injected at runtime.
@@ -16,24 +16,31 @@
  */
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const { JSDOM } = require('jsdom');
 
 const ROOT = path.join(__dirname, '..');
 const PUB = path.join(ROOT, 'public');
 const FILE = path.join(PUB, 'index.html');
+const JS_FILE = path.join(PUB, 'site.js');
 
 let html = fs.readFileSync(FILE, 'utf8');
+// Behavior lives in site.js now. The data objects this script reads (and the
+// VERIFIED stamp it writes) are in there, not in the HTML.
+let js = fs.readFileSync(JS_FILE, 'utf8');
+// The replacement has to be a function: '$$' in a string replacement means a
+// literal '$', and site.js is full of $$ (its querySelectorAll helper).
+const assembled = html.replace('<link rel="stylesheet" href="site.css">', '')
+                      .replace('<script src="site.js" defer></script>', () => '<script>' + js + '</script>');
 
 // the live domain, from the canonical tag unless overridden
 const argDomain = process.argv[2];
 const canon = html.match(/<link rel="canonical" href="https:\/\/([^"/]+)/);
-const DOMAIN = (argDomain || (canon && canon[1]) || 'keep-austin-colorful.pages.dev')
+const DOMAIN = (argDomain || (canon && canon[1]) || 'keepaustincolorful.com')
   .replace(/^https?:\/\//, '').replace(/\/$/, '');
 const URL = 'https://' + DOMAIN;
 
 // ── read the page's own data ────────────────────────────────────────────────
-const dom = new JSDOM(html, { runScripts: 'dangerously', url: URL, pretendToBeVisual: true });
+const dom = new JSDOM(assembled, { runScripts: 'dangerously', url: URL, pretendToBeVisual: true });
 const D = dom.window.__KAC__;
 if (!D) { console.error('window.__KAC__ missing; did the script block change?'); process.exit(1); }
 
@@ -100,7 +107,7 @@ const page = {
   '@type': 'WebPage',
   '@id': URL + '#page',
   url: URL,
-  name: "Let's put the color back on 4th & Colorado",
+  name: strip((html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/) || [])[1] || 'Keep Austin Colorful'),
   isPartOf: { '@id': URL + '#site' },
   about: [
     { '@type': 'Thing', name: 'Rainbow crosswalk removal in Texas' },
@@ -121,29 +128,27 @@ html = html.replace('</head>', block + '\n</head>');
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const now=new Date();
 const stamp=now.getDate()+' '+MONTHS[now.getMonth()]+' '+now.getFullYear();
-html = html.replace(/var VERIFIED='[^']*'/, "var VERIFIED='"+stamp+"'");
-if(!/var VERIFIED=/.test(html)){
-  html = html.replace("var CONTACT={", "var VERIFIED='"+stamp+"';\nvar CONTACT={");
-}
+if(!/var VERIFIED=/.test(js)) { console.error('VERIFIED marker missing from site.js'); process.exit(1); }
+js = js.replace(/var VERIFIED='[^']*'/, "var VERIFIED='"+stamp+"'");
 
 // ── sitemap ─────────────────────────────────────────────────────────────────
 const today = new Date().toISOString().slice(0, 10);
-const tabs = ['', '#case', '#play', '#write', '#act'];
+const SITEMAP = [
+  ['/',               'weekly',  '1.0'],
+  ['/act.html',       'weekly',  '0.9'],
+  ['/background.html','monthly', '0.8'],
+  ['/contact.html',   'monthly', '0.7'],
+  ['/press.html',     'monthly', '0.6']
+];
 fs.writeFileSync(path.join(PUB, 'sitemap.xml'),
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${URL}/</loc>
+${SITEMAP.map(([loc, freq, pri]) => `  <url>
+    <loc>${URL}${loc}</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>${URL}/press.html</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
+    <changefreq>${freq}</changefreq>
+    <priority>${pri}</priority>
+  </url>`).join('\n')}
 </urlset>
 `);
 
@@ -208,7 +213,8 @@ ${Object.values(D.SRC).map(([n, u]) => `- ${n}: ${u}`).join('\n')}
 
 This campaign is deliberately non-adversarial toward the City of Austin. The city
 complied with the state order under a genuine funding threat and has already
-responded with a community mural and a planned historical marker. The ask is to
+responded with a community mural in June and an LGBTQIA+ historical marker
+dedicated on 21 August 2026. The ask is to
 build on that, not a criticism of it. Please preserve that framing.
 
 Every factual claim on the site links to its source. Nothing on the site asks
@@ -220,19 +226,20 @@ Code: Apache 2.0. Written content: CC BY-SA 4.0. The project name and wordmark
 are not licensed. Other cities are explicitly invited to fork it.
 `);
 
-// ── CSP, with a hash for the single inline script ───────────────────────────
-const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
-const hashes = scripts.map(s => "'sha256-" + crypto.createHash('sha256').update(s, 'utf8').digest('base64') + "'");
+// ── CSP ─────────────────────────────────────────────────────────────────────
+// Scripts and styles are their own files now, so script-src 'self' is enough
+// and there is no hash to keep in sync with the page. One less thing that can
+// silently drift out of agreement with what actually ships.
 
 // Only open the origins an enabled provider actually needs. With no analytics
 // configured the policy stays as tight as it can be.
-const ga4 = (html.match(/ga4:\s*'([^']*)'/) || [])[1] || '';
-const cf  = (html.match(/cfToken:\s*'([^']*)'/) || [])[1] || '';
+const ga4 = (js.match(/ga4:\s*'([^']*)'/) || [])[1] || '';
+const cf  = (js.match(/cfToken:\s*'([^']*)'/) || [])[1] || '';
 // Cloudflare can inject the beacon at the edge with no code change, but the CSP
 // still has to allow it or the browser drops it silently. Honour either path.
-const cfAuto = /cfAuto:\s*true/.test(html);
+const cfAuto = /cfAuto:\s*true/.test(js);
 
-const scriptSrc = ["'self'", ...hashes];
+const scriptSrc = ["'self'"];
 // The district lookup used to call the Census geocoder and Austin's Socrata
 // API straight from the page. Census returns 503 to browser-origin requests,
 // so both calls now happen in the worker and the page talks only to itself.
@@ -286,10 +293,11 @@ fs.writeFileSync(path.join(PUB, '_headers'),
 `);
 
 fs.writeFileSync(FILE, html);
+fs.writeFileSync(JS_FILE, js);
 
 console.log('domain      ', URL);
 console.log('json-ld     ', jsonld['@graph'].length, 'nodes (' + faq.mainEntity.length + ' FAQ, ' + events.length + ' events)');
-console.log('csp hash    ', hashes.join(' ').slice(0, 40) + '…');
+console.log('assets      ', 'site.css + site.js, no inline script, no CSP hash needed');
 console.log('analytics   ', [ga4 && 'GA4 ' + ga4, cf && 'Cloudflare (token)', !cf && cfAuto && 'Cloudflare (edge injection allowed)']
   .filter(Boolean).join(', ') || 'none configured, CSP left tight');
 console.log('written     ', 'index.html, sitemap.xml, robots.txt, llms.txt, _headers');

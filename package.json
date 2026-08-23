@@ -5,12 +5,14 @@
   "description": "An advocacy pack for putting the color back on 4th & Colorado in Austin, Texas",
   "scripts": {
     "test": "node test/run.js",
+    "build": "npm run build:pages && npm run build:meta",
+    "build:pages": "node tools/build-pages.js",
     "build:meta": "node tools/build-meta.js",
-    "deploy": "npm run build:meta && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "dev": "cd public && python3 -m http.server 8000"
   },
   "devDependencies": {
     "jsdom": "^24.1.0"
   },
-  "license": "MIT"
+  "license": "Apache-2.0"
 }

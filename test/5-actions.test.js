@@ -1,5 +1,5 @@
 const fs=require('fs');const {JSDOM}=require('jsdom');
-const html=fs.readFileSync(__dirname+'/../public/index.html','utf8');
+const html=require('./_boot').inline('act.html');   // the page this suite is about
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://local/',pretendToBeVisual:true});
@@ -28,9 +28,10 @@ ok('records request template intact', copied[copied.length-1].includes('Chapter 
 ok('no template contains an em dash', [...d.querySelectorAll('.tplbox')].every(p=>!p.textContent.includes('—')));
 
 console.log('\n— jump + filter —');
-d.querySelector('[data-go="write"]').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
-ok('jump button switches to the letter tab', d.querySelector('#p-write').classList.contains('on'));
-d.querySelectorAll('.tab')[3].dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
+// The letter is on this same page now, so the jump scrolls rather than
+// switching a panel. What matters is that it still has somewhere to go.
+ok('jump button present and its target exists',
+   !!d.querySelector('[data-go="write"]') && !!d.querySelector('#letter'));
 d.querySelector('#quickBtn').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
 const shown=[...d.querySelectorAll('#todoList .todo')].length;
 ok('quick filter narrows the list', shown===5);
@@ -49,7 +50,8 @@ ok('survives a filter toggle', (()=>{d.querySelector('#quickBtn').dispatchEvent(
 
 console.log('\n— dead code —');
 ok('old standalone PIR section removed', !html.includes('copyPIR'));
-ok('phone script section still present', html.includes('30-second phone script'));
+// the phone script moved to the contact page with the rest of the numbers
+ok('phone script still exists, on the contact page', require('./_boot').read('contact.html').includes('30-second phone script'));
 console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));
 process.exit(fail?1:0);
 },800);

@@ -28,14 +28,14 @@ I cannot licence images. The photographs you have already seen of the removal an
 
 **Unsplash and Pexels** are unlikely to have this specific corner but do have generic Austin streetscapes if you want atmosphere rather than evidence.
 
-**The city itself.** Photographs produced by the City of Austin are often public records. A Public Information Act request can obtain them, and the site already has a request template on the Take Action tab.
+**The city itself.** Photographs produced by the City of Austin are often public records. A Public Information Act request can obtain them, and the site already has a request template on the Take action page.
 
 ## Getting them into the site
 
-Drop files into `public/`, keep them under about 300KB each, and use `<picture>` with a WebP source and a JPEG fallback. Then:
+Drop files into `public/img/`, keep them under about 300KB each, and use `<picture>` with a WebP source and a JPEG fallback. Then:
 
 ```bash
-npm run build:meta
+npm run build
 ```
 
 The CSP currently allows `img-src 'self' data:`, so **self-hosted images work with no change**. If you ever hotlink from another domain you must add it to `img-src` or the browser will silently refuse to load it.

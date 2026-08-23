@@ -5,7 +5,9 @@ const fs=require('fs'), path=require('path'), crypto=require('crypto');
 const {JSDOM}=require('jsdom');
 const PUB=path.join(__dirname,'..','public');
 const read=f=>fs.readFileSync(path.join(PUB,f),'utf8');
-const html=read('index.html');
+const RAW=read('index.html');                        // byte-for-byte what ships
+const B=require('./_boot');
+const html=B.inline();                               // with site.css + site.js spliced in
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 
@@ -48,11 +50,18 @@ ok('favicon file exists for the 404 page', fs.existsSync(path.join(PUB,'favicon.
 console.log('\n— headers —');
 const h=read('_headers');
 ok('CSP present', /Content-Security-Policy:/.test(h));
-const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(x=>x[1]);
-ok('exactly one inline script', scripts.length===1);
-const want="sha256-"+crypto.createHash('sha256').update(scripts[0],'utf8').digest('base64');
-ok('CSP hash matches the served script', h.includes(want));
+// CSS and behavior are shared files now, so there is no inline script left to
+// hash: script-src 'self' covers it, which is both simpler and harder to break.
+// The fixture in _boot.js splices those files back in, so these checks exist to
+// make sure the shipped page really does reference them.
+ok('no inline script remains', !/<script>[\s\S]*?<\/script>/.test(RAW));
+ok('page links the shared stylesheet', RAW.includes(B.CSS_TAG));
+ok('page links the shared script', RAW.includes(B.JS_TAG));
+ok('both shared files exist and are non-trivial',
+   B.read('site.css').length>10000 && B.read('site.js').length>10000);
+ok('CSP script-src is self only', /script-src 'self'(?:;| https:\/\/static\.cloudflareinsights)/.test(h));
 ok('CSP has no unsafe-inline for scripts', !/script-src[^;]*unsafe-inline/.test(h));
+ok('CSP no longer carries a stale script hash', !/sha256-/.test(h));
 // The page talks to nothing but its own origin now that the lookup is a worker
 // route, so connect-src is the tightest it can be.
 ok('CSP connect-src is self only',
@@ -101,20 +110,25 @@ ok('a script error reveals all panels', /js-failed/.test(html)&&/addEventListene
 
 console.log('\n— accessibility detail —');
 ok('slider announces its position', /aria-valuetext/.test(html));
-ok('district result is announced', /id="distHint"[^>]*aria-live/.test(html));
-ok('tabs use a single tab stop', (html.match(/data-tab="(play|write|act)" aria-selected="false" tabindex="-1"/g)||[]).length===3);
+ok('district result is announced', /id="distHint"[^>]*aria-live/.test(B.read('act.html')));
+// tabs are gone; the equivalent promise is that the nav is a plain list of
+// links, which needs no roving tabindex to be keyboard-usable at all
+ok('nav needs no ARIA to be keyboard usable',
+   B.PAGES.every(f=>{const n=B.read(f); return /<nav class="mainnav"/.test(n) && !/role="tab"/.test(n)}));
 ok('safe-area insets for notched phones', /env\(safe-area-inset/.test(html));
 ok('print styles present', /@media print/.test(html));
 
 console.log('\n— contact and liveness —');
-const liveDoc=new JSDOM(html,{runScripts:'dangerously',url:'https://x.test/',pretendToBeVisual:true}).window.document;
+const liveDoc=new JSDOM(B.inline('contact.html'),{runScripts:'dangerously',url:'https://x.test/contact.html',pretendToBeVisual:true}).window.document;
 ok('a contact section exists', !!liveDoc.querySelector('#contact'));
 ok('contact details render', liveDoc.querySelectorAll('.contactrow').length>=3);
 ok('a press route is offered', /press\.html/.test(liveDoc.querySelector('#contactBox').innerHTML));
 ok('corrections route to the issue template', /template=correction/.test(liveDoc.querySelector('#contactBox').innerHTML));
-ok('footer links to contact', /href="#contact"/.test(html));
-ok('liveness strip renders', !!liveDoc.querySelector('#pulse')&&liveDoc.querySelector('#pulse').children.length===3);
-ok('petition figure is real and linked', /change\.org/.test(liveDoc.querySelector('#pulse').innerHTML)&&/5,330/.test(liveDoc.querySelector('#pulse').textContent));
+ok('every footer links to the contact page', B.PAGES.every(f=>/href="\/contact\.html"/.test(B.read(f))));
+// the liveness strip is part of the hero, so it lives on the home page.
+// it fills in on a timer, so these are asserted at the end of the run.
+const homeDoc=new JSDOM(B.inline('index.html'),{runScripts:'dangerously',url:'https://x.test/',pretendToBeVisual:true}).window.document;
+ok('momentum strip is on the home page', homeDoc.querySelectorAll('.mo').length===3);
 ok('countdown is computed, not hardcoded', /pulseDays/.test(html));
 ok('verification date is stamped by the build', /var VERIFIED='[0-9]/.test(html));
 ok('verification line renders', /checked against its source on/.test(liveDoc.querySelector('#verified').textContent));
@@ -123,18 +137,41 @@ ok('no fabricated activity counters', !/letters sent|people took action|supporte
 
 console.log('\n— images and contact safety —');
 ok('photo infrastructure exists but ships empty', /var PHOTOS=\[/.test(html)&&/PHOTOS=\[\s*\/\//.test(html.replace(/\n/g,'')));
-ok('photo slot hidden until an image exists', liveDoc.querySelector('#heroPhoto').hidden===true);
+ok('photo slot hidden until an image exists', homeDoc.querySelector('#heroPhoto').hidden===true);
 ok('photos render with credit and licence', /class="credit"/.test(html)&&/p\.license/.test(html));
 ok('photos use responsive picture with lazy loading', /<picture>/.test(html)&&/loading="lazy"/.test(html));
 ok('no addresses published before they exist', /email:''/.test(html)&&/press:''/.test(html));
 ok('falls back to a route that actually works', /discussions/.test(liveDoc.querySelector('#contactBox').innerHTML));
 
+console.log('\n— the build is reproducible —');
+/* public/*.html is generated from src/pages by tools/build-pages.js. Editing a
+   generated file directly works right up until the next build silently reverts
+   it, so check that what shipped still contains what the source says.
+
+   This deliberately does not run the build: doing that mid-suite rewrites files
+   the other suites are reading, which turns one honest failure into four
+   confusing ones. */
+(()=>{
+  const missing=B.PAGES.filter(f=>{
+    const body=fs.readFileSync(path.join(__dirname,'..','src','pages',f),'utf8').trim();
+    const first=body.split('\n').find(l=>l.trim());
+    const last=body.split('\n').reverse().find(l=>l.trim());
+    const out=B.read(f);
+    return !out.includes(first.trim()) || !out.includes(last.trim());
+  });
+  ok('every shipped page still contains its source body'+(missing.length?' (stale: '+missing.join(', ')+')':''), missing.length===0);
+})();
+ok('page bodies are the editable source', B.PAGES.every(f=>fs.existsSync(path.join(__dirname,'..','src','pages',f))));
+ok('the chrome is defined once', /const nav = current =>/.test(fs.readFileSync(path.join(__dirname,'..','tools','build-pages.js'),'utf8')));
+ok('no page carries its own <style> block', B.PAGES.every(f=>!/<style>/.test(B.read(f))));
+ok('every page loads the one stylesheet', B.PAGES.every(f=>B.read(f).includes(B.CSS_TAG)));
+
 console.log('\n— press kit —');
 const press=fs.readFileSync(path.join(PUB,'press.html'),'utf8');
 const pd=new JSDOM(press).window.document;
 ok('press kit exists', press.length>3000);
-ok('every figure carries a source link', pd.querySelectorAll('.fact a[href^="https://"]').length>=5);
-ok('quotes are provided', pd.querySelectorAll('.quote').length>=2);
+ok('every figure carries a source link', pd.querySelectorAll('.contact a[href^="https://"]').length>=5);
+ok('quotes are provided', pd.querySelectorAll('.script').length>=2);
 ok('images are offered', pd.querySelectorAll('.asset img').length>=2);
 ok('states plainly which images cannot be licensed', /cannot licence|cannot license/i.test(press));
 ok('press has a working contact route', /mailto:press@/.test(press) || /discussions/.test(press));
@@ -142,7 +179,7 @@ ok('press kit promises no address it does not have', !/email address at the bott
 ok('links back to the site', /href="\/"/.test(press));
 
 console.log('\n— head —');
-const d=new JSDOM(html).window.document;
+const d=new JSDOM(B.read('index.html')).window.document;
 ok('title is descriptive', d.title.length>25&&d.title.length<70);
 ok('meta description sized for search results', (()=>{const c=d.querySelector('meta[name=description]').content; return c.length>110&&c.length<330})());
 ok('canonical present', !!d.querySelector('link[rel=canonical]'));
@@ -153,15 +190,27 @@ ok('single h1', d.querySelectorAll('h1').length===1);
 ok('preconnect to the font host', !!d.querySelector('link[rel=preconnect][href*="fonts.gstatic"]'));
 
 console.log('\n— deep links —');
-['case','play','write','act'].forEach(t=>{
-  const dm=new JSDOM(html,{runScripts:'dangerously',url:'https://x.test/#'+t,pretendToBeVisual:true});
-  // give the script a tick
-  const res=()=>dm.window.document.querySelector('#p-'+t).classList.contains('on');
-  setTimeout(()=>{},0);
-  ok('#'+t+' opens its own tab', (()=>{ try{ return res() }catch(e){ return false } })());
+// Every tab is now a URL, and the old hashes still resolve to the right one.
+const JS=B.read('site.js');
+[['case','/background.html'],['play','/act.html#asks'],
+ ['write','/act.html#letter'],['act','/act.html']].forEach(([t,to])=>{
+  ok('#'+t+' still resolves to '+to, JS.includes("'"+to+"'"));
 });
+ok('old hashes redirect rather than dead-end', /location\.replace\(PAGE_FOR\[h\]\)/.test(JS));
+ok('every page is in the sitemap', (()=>{const sm=B.read('sitemap.xml');
+  return B.PAGES.every(f=>sm.includes(f==='index.html'?'.com/</loc>':'/'+f))})());
+ok('every page declares its own canonical', (()=>{
+  const set=new Set(B.PAGES.map(f=>(B.read(f).match(/rel="canonical" href="([^"]+)"/)||[])[1]));
+  return set.size===B.PAGES.length && ![...set].includes(undefined)})());
+ok('every page has a distinct title and description', (()=>{
+  const t=new Set(B.PAGES.map(f=>(B.read(f).match(/<title>([^<]*)<\/title>/)||[])[1]));
+  const dsc=new Set(B.PAGES.map(f=>(B.read(f).match(/name="description" content="([^"]*)"/)||[])[1]));
+  return t.size===B.PAGES.length && dsc.size===B.PAGES.length})());
 
 setTimeout(()=>{
+  const pu=homeDoc.querySelector('#pulse');
+  ok('liveness strip renders', !!pu && pu.children.length===3);
+  ok('petition figure is real and linked', !!pu && /change\.org/.test(pu.innerHTML) && /5,330/.test(pu.textContent));
   console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));
   process.exit(fail?1:0);
 },400);

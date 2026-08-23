@@ -24,10 +24,9 @@ fires. That is why the dashboard has stayed empty.
 ## Turning it on, the way that actually works
 
 1. Cloudflare dashboard → **Analytics & Logs → Web Analytics → Add a site**.
-   Enter the hostname you are serving (the `workers.dev` one is fine for now;
-   re-add the real domain once you own one).
+   Enter `keepaustincolorful.com`.
 2. Choose **manual / JS snippet** setup. Copy the token it gives you.
-3. Put it in `public/index.html`:
+3. Put it in `public/site.js` (near the top; **not** `public/index.html`, which is generated):
 
 ```js
 var ANALYTICS={
@@ -41,7 +40,7 @@ var ANALYTICS={
 4. Regenerate the CSP and redeploy:
 
 ```bash
-npm run build:meta && npm test && npx wrangler deploy
+npm run build && npm test && npx wrangler deploy
 ```
 
 Step 4 is not optional. `build:meta` adds `static.cloudflareinsights.com` to

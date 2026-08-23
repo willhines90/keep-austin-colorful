@@ -14,7 +14,9 @@ If that is true where you are, most of this transfers.
 
 ## What to change, in order
 
-Everything city-specific is in data objects near the top of the script block in `public/index.html`.
+Everything city-specific is in data objects near the top of `public/site.js`, in the page prose in `src/pages/*.html`, and in the `PAGES` array in `tools/build-pages.js` (titles, descriptions, nav order).
+
+Note that `public/*.html` is generated. A pull request that edits it will be reverted by the next build.
 
 | What | Where | Notes |
 |---|---|---|
@@ -36,18 +38,20 @@ Then the harder pieces:
 
 **The map.** `CITIES` positions are latitude and longitude projected into a 100 × 94.4 viewBox. If you swap states you need to regenerate the outline path and the pin coordinates together. There is a point-in-polygon test that will tell you when a pin lands outside the state, which is the failure you will actually hit.
 
-**The district lookup.** Austin publishes council district boundaries as open data, and the site queries it with a point from the US Census geocoder. The geocoder works anywhere in the US; the district layer does not. Find your city's equivalent, or delete the lookup and keep the ZIP hint.
+**The district lookup.** Austin publishes council district boundaries as open data, and **the Cloudflare Worker** in `src/worker.js` queries it with a point from the US Census geocoder. You will need to change its `CENSUS`/`DISTRICTS` constants and the `/austin/i` check in `cleanAddress()`, and you will need a host that can run it. On purely static hosting the field degrades to the ZIP hint. The geocoder works anywhere in the US; the district layer does not. Find your city's equivalent, or delete the lookup and keep the ZIP hint.
 
 **The illustrations.** The plan and street views are hand-drawn SVG generated in `planSVG()` and `streetSVG()`. The one thing to preserve is that the crosswalk bars are **identical** in the before and after states. That is the legal argument rendered as a picture, and there is a test asserting it.
 
 ## After any content change
 
 ```bash
-npm run build:meta
+npm run build
 npm test
 ```
 
-The first regenerates the JSON-LD, sitemap, `llms.txt` and the CSP script hash. Skip it and the deployed CSP will block your own script. The second tells you if you broke something.
+The first regenerates the pages from `src/pages/`, then the JSON-LD, sitemap, `robots.txt`, `llms.txt` and `_headers`. Skip it and you ship pages that do not match their own source. The second tells you if you broke something.
+
+If you add or remove a page, it has to be declared in three places: `PAGES` in `tools/build-pages.js`, `SITEMAP` in `tools/build-meta.js`, and `PAGES` in `test/_boot.js`.
 
 ## What to keep
 

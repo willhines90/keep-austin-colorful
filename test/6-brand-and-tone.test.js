@@ -1,19 +1,34 @@
 const fs=require('fs');const {JSDOM}=require('jsdom');
-const html=fs.readFileSync(__dirname+'/../public/index.html','utf8');
+const B=require('./_boot');
+/* Site-wide suite: it boots every page, because the things it checks (the
+   brand lockup, the nav, link hygiene, tone) are promises the whole site
+   makes, not one page. `d` is whichever page owns the section under test. */
+function page(f){
+  const j=new JSDOM(B.inline(f),{runScripts:'dangerously',url:'https://local/'+(f==='index.html'?'':f),pretendToBeVisual:true});
+  j.window.scrollTo=()=>{}; j.window.HTMLElement.prototype.scrollIntoView=function(){};
+  return j;
+}
+const DOMS={}; B.PAGES.forEach(f=>{ DOMS[f]=page(f) });
+const DOCS={};  B.PAGES.forEach(f=>{ DOCS[f]=DOMS[f].window.document });
+const html=B.allHtml();
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
-const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://local/',pretendToBeVisual:true});
-const {window}=dom,d=window.document;
+const dom=DOMS['index.html'], {window}=dom, d=window.document;
+const BG=DOCS['background.html'], ACT=DOCS['act.html'];
 const errs=[];window.addEventListener('error',e=>errs.push(e.message));
 setTimeout(()=>{
 console.log('\n— brand —');
 ok('no uncaught errors', errs.length===0||(console.log('    '+errs.join('; ')),false));
-ok('brand lockup at top of page', !!d.querySelector('.masthead .brand .brandmark svg'));
-ok('name is in the masthead', d.querySelector('.brandname').textContent.replace(/\s+/g,' ').trim()==='Keep Austin Colorful');
-ok('tagline present', d.querySelector('.brandtag').textContent.includes('Bringing the color back'));
-ok('name persists in sticky nav', d.querySelector('.navbrand b').textContent==='Keep Austin Colorful');
+// The lockup lives in the top bar now, and the top bar is on every page.
+ok('brand lockup in the header of every page',
+   B.PAGES.every(f=>!!DOCS[f].querySelector('.topbar .brandlink .brandmark svg')));
+ok('name in the header of every page',
+   B.PAGES.every(f=>DOCS[f].querySelector('.brandtext b').textContent.trim()==='Keep Austin Colorful'));
+ok('tagline present', d.querySelector('.brandtext i').textContent.includes('Bringing the color back'));
+ok('the wordmark links home from every page',
+   B.PAGES.every(f=>DOCS[f].querySelector('.brandlink').getAttribute('href')==='/'));
 ok('mark is the ATX monogram with a 6-stripe band', (()=>{
-  const g=d.querySelector('.brandmark svg');
+  const g=d.querySelector('.topbar .brandmark svg');
   if(!g) return false;
   const letters=g.querySelector('path[fill-rule="evenodd"]');
   const bands=[...g.querySelectorAll('rect')].filter(r=>['#e40303','#ff8c00','#ffd500','#008026','#24408e','#732982'].includes(r.getAttribute('fill')));
@@ -21,12 +36,14 @@ ok('mark is the ATX monogram with a 6-stripe band', (()=>{
   const subpaths=(letters?.getAttribute('d').match(/M/g)||[]).length;
   return !!letters && bands.length===6 && clipped && subpaths===4;})());
 ok('band is clipped to the letterforms, not floating', !!d.querySelector('.brandmark clipPath path[clip-rule="evenodd"]'));
-ok('nav carries the same mark', d.querySelectorAll('.navbrand svg path[fill-rule="evenodd"]').length===1);
-ok('favicon is the ATX tile', /rel="icon" href="data:image\/svg\+xml,[^"]*rx%3D%2211%22/.test(html));
+ok('the header mark is the same one on every page',
+   B.PAGES.every(f=>DOCS[f].querySelectorAll('.topbar .brandmark svg path[fill-rule="evenodd"]').length===1));
+// the favicon is a real file now rather than a data URI repeated on five pages
+ok('favicon is the ATX tile', /rx="11"/.test(B.read('favicon.svg'))&&/e40303/.test(B.read('favicon.svg')));
 ok('compare tags shrink-wrap', html.includes('width:max-content')&&html.includes('max-width:calc(50% - 22px)'));
 ok('lede measure widened', html.includes('max-width:72ch'));
 ok('mark hidden from screen readers (decorative)', d.querySelector('.brandmark').getAttribute('aria-hidden')==='true' || d.querySelector('.brandmark svg').getAttribute('aria-hidden')==='true');
-ok('favicon embedded as data URI', /rel="icon" href="data:image\/svg\+xml/.test(html));
+ok('every page links the favicon', B.PAGES.every(f=>/rel="icon" href="\/favicon\.svg"/.test(B.read(f))));
 ok('theme-color set', html.includes('name="theme-color"'));
 
 console.log('\n— typography discipline —');
@@ -109,15 +126,27 @@ console.log('\n— copy —');
 const txt=d.body.textContent;
 ok('US spelling throughout', !/\bcolour|\bneighbour|\borganised|\bprogramme\b/i.test(txt));
 ok('zero em dashes', !html.includes('—'));
-ok('dek names the San Antonio fact', d.querySelector('.dek').textContent.includes('needed no council vote'));
+// The dek must still carry the two facts that make the ask credible: that a
+// Texas city already did this, and that it took no council vote.
+ok('dek names the San Antonio fact', (()=>{const t=d.querySelector('.dek').textContent;
+  return /San Antonio/.test(t) && /no council vote/i.test(t)})());
+// And, since the marker went up, the sequence that makes it feel like completion.
+ok('momentum strip shows two done and one open', (()=>{
+  const rows=[...d.querySelectorAll('.mo')];
+  return rows.length===3 && rows.filter(r=>r.classList.contains('done')).length===2
+      && rows.filter(r=>r.classList.contains('next')).length===1})());
+ok('momentum names the mural, the marker and the sidewalk', (()=>{
+  const t=d.querySelector('#momentum').textContent;
+  return /mural/i.test(t) && /historical marker/i.test(t) && /sidewalk/i.test(t)})());
 ok('footer carries the brand + source promise', d.querySelector('footer').textContent.includes('Keep Austin Colorful')&&d.querySelector('footer').textContent.includes('links to its source'));
-ok('section headers rewritten', txt.includes('Good questions, good answers')&&txt.includes('What Austin can do next')&&txt.includes('The thing all of them worked out'));
+ok('section headers rewritten', (()=>{const all=B.PAGES.map(f=>DOCS[f].body.textContent).join(' ');
+  return all.includes('Good questions, good answers')&&all.includes('What Austin can do next')&&all.includes('The thing all of them worked out')})());
 
 console.log('\n— tone —');
 const BODY=d.body.textContent;
 const barbs=['has not tried','chosen not to','nobody asks','out-prided','mark an absence','do not fill it','stopped short','The gap','Nothing back','scraped away overnight','goes grey','Nothing reported','Not reached'];
 barbs.forEach(b=>ok('no barb: "'+b+'"', !BODY.includes(b)));
-ok('Austin card leads with what is done, not undone', d.querySelector('#citycard')!==null);
+ok('Austin card leads with what is done, not undone', BG.querySelector('#citycard')!==null);
 ok('objection panel framed as questions', BODY.includes('The question')&&!BODY.includes('They say'));
 ok('letter prompt steers away from blame', html.includes('Keep the letter warm toward the city'));
 // Assert the shape of the line, not its exact words, so the copy can change
@@ -129,19 +158,24 @@ ok('headline is an invitation, not a grievance', (()=>{
          !/erased|stole|stolen|attack|destroyed|banned|scrubbed|war on/i.test(h);
 })());
 ok('headline names what it is about', /pride|rainbow/i.test(d.querySelector('h1').textContent));
-ok('tabs read warmly', BODY.includes('The story')&&BODY.includes("What's possible")&&BODY.includes('Pitch in'));
+// the tabs became the nav; the promise is the same, that it reads as an
+// invitation rather than a filing system
+ok('nav reads warmly', (()=>{const t=[...d.querySelectorAll('.mainnav a')].map(a=>a.textContent.trim());
+  return t.join('|')==='Home|Background|Take action|Contact|Press'})());
 ok('stats lead with people and possibility', [...d.querySelectorAll('.stat span')].every(x=>!/exemptions granted|vigil on the corner/.test(x.textContent)));
-ok('caution box is guidance, not prohibition', BODY.includes('A gentle word on how to help')&&BODY.includes('Let the city hold the brush'));
+ok('caution box is guidance, not prohibition', (()=>{const t=DOCS['background.html'].body.textContent;
+  return t.includes('A gentle word on how to help')&&t.includes('Let the city hold the brush')})());
 
 console.log('\n— regression —');
-ok('4 tabs work', d.querySelectorAll('.tab').length===4);
-d.querySelectorAll('.tab')[1].dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
-ok('tab switch OK', d.querySelector('#p-play').classList.contains('on'));
+ok('every page reachable from every page',
+   B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a').length===5));
+ok('the nav marks the current page exactly once',
+   B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a[aria-current="page"]').length===1));
 ok('hero renders both layers', !!d.querySelector('#cmpBase svg')&&!!d.querySelector('#cmpAfter svg'));
-ok('map pins render', d.querySelectorAll('#txmap .pin').length===5);
-ok('12 actions', d.querySelectorAll('#todoList .todo').length===12);
-ok('9 connection chips', d.querySelectorAll('#f-conn .cchip').length===9);
-ok('source links present', d.querySelectorAll('.srcl').length>10);
+ok('map pins render', BG.querySelectorAll('#txmap .pin').length===5);
+ok('12 actions', ACT.querySelectorAll('#todoList .todo').length===12);
+ok('9 connection chips', ACT.querySelectorAll('#f-conn .cchip').length===9);
+ok('source links present', BG.querySelectorAll('.srcl').length>10);
 console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));
 process.exit(fail?1:0);
 },800);

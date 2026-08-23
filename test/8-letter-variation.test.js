@@ -1,7 +1,7 @@
 /* The template path must not produce form letters. Council offices log
    identical submissions as a single contact, so variation is the point. */
 const fs=require('fs');const {JSDOM}=require('jsdom');
-const html=fs.readFileSync(__dirname+'/../public/index.html','utf8');
+const html=require('./_boot').inline('act.html');   // the page this suite is about
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 

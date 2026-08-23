@@ -6,7 +6,7 @@ An advocacy pack for putting the color back on 4th &amp; Colorado in Austin, Tex
 
 The name is a play on Keep Austin Weird. The color in it is paint.
 
-**Live:** https://keep-austin-colorful.dark-glitter-501f.workers.dev
+**Live:** https://keepaustincolorful.com
 
 ---
 
@@ -20,13 +20,21 @@ The state's order reaches the road. Sidewalks belong to the city. This site expl
 
 ## Running it
 
-There is no build step. `index.html` is a single self-contained file with all CSS, JavaScript and artwork inlined, and it makes no external requests except web fonts.
+Five pages that share one stylesheet and one script. No framework, no runtime dependency, plain ES5.
+
+**`public/*.html` is generated.** Page bodies are edited in `src/pages/*.html` and wrapped in shared chrome by `tools/build-pages.js`. Editing a file in `public/` works right up until the next build silently reverts it.
+
+```bash
+npm install
+npm run build    # pages, then metadata
+npm test
+```
 
 ```bash
 npm run dev     # serves ./public on http://localhost:8000
 ```
 
-Only `public/` (the site) and `src/worker.js` (the district lookup route) are deployed. The tests, docs and image sources live alongside them in the repo but never ship.
+Only `public/` (the site) and `src/worker.js` (the district lookup route) are deployed. The page sources, tools, tests, docs and image sources live alongside them in the repo but never ship.
 
 ## Design system
 
@@ -39,13 +47,17 @@ Two families and one scale, both enforced by tests rather than convention.
 
 ## Analytics
 
-Off by default; the site makes no third-party requests until you switch something on. **Cloudflare Web Analytics** is the chosen provider: cookieless, unsampled, no consent banner. It is wired and waiting for a token. See [ANALYTICS.md](ANALYTICS.md), including why edge injection cannot work on a `workers.dev` URL and why Vercel Analytics cannot work on a non-Vercel host.
+Off by default; beyond Google Fonts the site makes no third-party requests until you switch something on. **Cloudflare Web Analytics** is the chosen provider: cookieless, unsampled, no consent banner. It is wired and waiting for a token. See [ANALYTICS.md](ANALYTICS.md), including why edge injection cannot work on a `workers.dev` URL and why Vercel Analytics cannot work on a non-Vercel host.
 
 ## Metadata is generated, not maintained
 
-`npm run build:meta` derives the JSON-LD, `sitemap.xml`, `llms.txt` and the CSP
-script hash from the data already in `index.html`. Run it after any content edit
-and commit the result; `npm run deploy` runs it for you.
+`npm run build` generates the five pages from `src/pages/`, then derives the
+JSON-LD, `sitemap.xml`, `robots.txt`, `llms.txt` and `_headers` from the data in
+`public/site.js`. Run it after any content edit and commit the result;
+`npm run deploy` runs it for you, and CI fails the PR if you forget.
+
+There is no CSP script hash to keep in sync any more: there is no inline script,
+so `script-src 'self'` covers it.
 
 The structured data matters more than usual here. The objection cards are
 published as a `FAQPage` and the calendar as `Event` records, which is how
@@ -75,26 +87,26 @@ npm install
 npm test
 ```
 
-381 checks across nine suites (about 50 seconds), run on every push by CI. They boot the page in jsdom and drive the real interface. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+404 checks across nine suites (about 50 seconds), run on every push by CI. They boot the real pages in jsdom through the shared fixture in `test/_boot.js` and drive the real interface: suite 3 boots the background page, suites 2, 5 and 8 the action page, suites 6 and 7 all five. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 
 Cloudflare Workers. See [DEPLOY.md](DEPLOY.md). Short version:
 
 ```bash
-npm run deploy      # build:meta, then wrangler deploy
+npm run deploy      # build:pages + build:meta, then wrangler deploy
 ```
 
 `wrangler.jsonc` ships `public/` as static assets and `src/worker.js` as the
 `/api/district` route. Nothing else in the repo is uploaded.
 
-After your first deploy, point the share and canonical URLs at your real domain:
+To move the site to a different domain:
 
 ```bash
 ./set-domain.sh your-domain.org
 ```
 
-Relative URLs already work on Facebook, X, LinkedIn and Slack; this is for the older clients that insist on absolute ones, and for the canonical tag.
+That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which rewrites the canonical and Open Graph tags on all five pages and regenerates the sitemap, robots.txt and llms.txt to match.
 
 ## Contributing and forking
 
@@ -104,10 +116,11 @@ Relative URLs already work on Facebook, X, LinkedIn and Slack; this is for the o
 - [PHOTO-REQUESTS.md](PHOTO-REQUESTS.md) — four drafted licence requests, ready to send
 - [PHOTOS.md](PHOTOS.md) — the four photographs worth having, and where they can legally come from
 - [ANALYTICS.md](ANALYTICS.md) — off by default; how to switch it on
+- [DEPLOY.md](DEPLOY.md) — Cloudflare Workers, and why the host has to run the worker
 
 ## Forking this for your city
 
-The structure generalizes. Most of what you'd change lives in clearly-marked data objects near the top of the `<script>` block in `index.html`:
+The structure generalizes. Most of what you'd change lives in clearly-marked data objects near the top of `public/site.js`, and the page prose in `src/pages/*.html`:
 
 | What | Where |
 |---|---|
@@ -124,6 +137,11 @@ The structure generalizes. Most of what you'd change lives in clearly-marked dat
 | Letter phrasings, one pool per slot | `L`, `CONN_LINE`, `askSentence` |
 | Source links | `SRC` |
 | The stat row, each figure with its citation | `STATS` |
+| The three-beat momentum strip | `MOMENTUM` |
+| Photographs, empty until you have one | `PHOTOS` |
+| Analytics configuration | `ANALYTICS` |
+| Page titles, descriptions and nav order | `PAGES` in `tools/build-pages.js` |
+| The prose on each page | `src/pages/*.html` |
 
 Map pin positions are projected latitude/longitude in a 100 × 94.4 viewBox. If you swap in a different state, you'll need to regenerate the outline path and the pin coordinates together.
 

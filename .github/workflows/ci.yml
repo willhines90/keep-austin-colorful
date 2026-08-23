@@ -22,14 +22,14 @@ jobs:
       - name: Run the suites
         run: npm test
 
-      # The JSON-LD and the CSP script hash are generated from index.html. If a
+      # The pages, JSON-LD, sitemap, llms.txt and _headers are all generated. If a
       # content change lands without running build:meta, the deployed CSP will
       # block the site's own script. Catch that here rather than in production.
       - name: Check generated metadata is in sync
         run: |
-          npm run build:meta > /dev/null
+          npm run build > /dev/null
           if ! git diff --quiet -- public/; then
-            echo "::error::Generated files are stale. Run 'npm run build:meta' and commit the result."
+            echo "::error::Generated files are stale. Run 'npm run build' and commit the result."
             git diff --stat -- public/
             git diff -- public/_headers | head -20
             exit 1
@@ -44,8 +44,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check every cited source still resolves
         run: |
-          grep -oE 'https://[^"<) ]+' public/index.html \
-            | grep -vE 'schema\.org|w3\.org|googleapis|gstatic|cloudflareinsights|census\.gov|data\.austintexas' \
+          grep -ohE 'https://[^"<) ]+' public/*.html public/site.js \
+            | grep -vE 'schema\.org|w3\.org|googleapis|gstatic|cloudflareinsights|census\.gov|data\.austintexas|keepaustincolorful\.com' \
             | sort -u > urls.txt
           echo "Checking $(wc -l < urls.txt) unique URLs"
           fail=0

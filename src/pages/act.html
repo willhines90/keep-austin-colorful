@@ -1,0 +1,99 @@
+  <div class="pagehead">
+    <h1>Take action</h1>
+    <p class="dek">Pick what you would like to see at 4th and Colorado, and it carries through into a letter in your own words. Nothing here takes longer than the coffee queue.</p>
+  </div>
+
+  <section id="asks">
+    <h2>What Austin can do next</h2>
+    <p class="note" style="margin-bottom:19px">Pick the ones you would like to see. They carry through to your letter. Every idea here sits outside the roadway, which is the one surface the state's order actually governs, so all of them are open to the city today.</p>
+    <div class="asks" id="askList"></div>
+  </section>
+
+  <div class="selbar">
+    <span id="selCount">5 asks selected</span>
+    <button class="go" id="toWrite">Write my letter →</button>
+  </div>
+
+  <section id="letter">
+    <h2>Your letter, in your own words</h2>
+    <div class="picked" id="pickedSummary"></div>
+    <div class="grid2">
+      <div class="field"><label for="f-name">Your name</label><input id="f-name" placeholder="Sam Rivera" autocomplete="name"></div>
+      <div class="field"><label for="f-addr">Street address</label>
+        <div class="addrrow">
+          <input id="f-addr" placeholder="1100 Congress Ave, Austin TX 78701" autocomplete="street-address" inputmode="text" enterkeyhint="search">
+          <button type="button" class="ghost sm" id="findDist">Find my district</button>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-dist">Council district</label>
+      <select id="f-dist"><option value="">Not sure</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option selected>9</option><option>10</option></select>
+      <div class="hint" id="distHint" role="status" aria-live="polite" hidden></div>
+    </div>
+    <div class="field">
+      <label>Your connection to the corner <span class="lnote">pick as many as apply</span></label>
+      <div class="chips" id="f-conn"></div>
+    </div>
+    <div class="field"><label for="f-tone">Tone</label>
+      <select id="f-tone">
+        <option>Measured and civic</option>
+        <option>Personal and warm</option>
+        <option>Direct and urgent</option>
+        <option>Plain-spoken Austin</option>
+      </select></div>
+    <div class="field"><label for="f-story">In your own words (optional, but it is what makes a letter land)</label>
+      <textarea id="f-story" placeholder="The first time I walked over that crosswalk I'd been in Texas about three weeks, and I remember thinking, oh, I can stay here."></textarea></div>
+
+    <div class="btnrow">
+      <button id="gen">Draft my letter</button>
+      <button class="ghost" id="regen" style="display:none">↻ Write it differently</button>
+    </div>
+
+    <div class="outwrap">
+      <div class="wc" id="wordCount" style="display:none">0 words</div>
+      <div class="out empty" id="letterOut" aria-live="polite" spellcheck="true"><span class="big">✉</span><span>Your letter will appear here</span></div>
+    </div>
+
+    <div class="btnrow" id="letterActions" style="display:none">
+      <button id="copyBtn">Copy letter</button>
+      <button class="ghost" id="openForm">Copy &amp; open the council form ↗</button>
+      <button class="ghost" id="dlLetter">Download .txt</button>
+    </div>
+    <div class="editnote" id="editNote" hidden><span>✎</span><span><b>This letter is editable.</b> Click into it and change anything. Council offices log identical letters as a single contact, so even one sentence of your own is worth more than everything above it.</span></div>
+    <p class="note" style="margin-top:14px">Austin routes council email through a web form rather than a plain address, so the flow is: copy, open the form, paste. Letters carrying a real name and street address are weighted more heavily than anonymous submissions.</p>
+  </section>
+
+  <section>
+    <h2>Your progress</h2>
+    <div class="track">
+      <div class="ring">
+        <svg width="104" height="104" viewBox="0 0 104 104">
+          <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e40303"/><stop offset="30%" stop-color="#ff8c00"/>
+            <stop offset="55%" stop-color="#008026"/><stop offset="100%" stop-color="#732982"/>
+          </linearGradient></defs>
+          <circle class="bgc" cx="52" cy="52" r="43" fill="none" stroke-width="9"/>
+          <circle class="fgc" id="ringFg" cx="52" cy="52" r="43" fill="none" stroke-width="9" stroke-dasharray="270.2" stroke-dashoffset="270.2"/>
+        </svg>
+        <div class="lbl"><b id="ringPct">0%</b><span id="ringCt">0 of 8</span></div>
+      </div>
+      <div style="flex:1;min-width:230px">
+        <p style="margin-bottom:7px">Tick things off as you go. This remembers where you got to.</p>
+        <p class="note">Saved on your device only. Nothing is sent anywhere.</p>
+        <div class="btnrow" style="margin-top:13px"><button class="ghost sm" id="resetTrack">Reset progress</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ways to help<span class="viewtog"><button class="vt" id="quickBtn">Only 5-minute actions</button></span></h2>
+    <div id="todoList"></div>
+  </section>
+
+  <section>
+    <h2>What is coming up</h2>
+    <div id="dateList"></div>
+    <p class="note" style="margin-top:var(--s5)">Budget week is the quickest route, and it is not the only one. A council member can bring a resolution at any regular meeting, and a cultural heritage district designation is not tied to the budget cycle at all. If one window closes, the next one is a few weeks away.</p>
+    <p class="note" style="margin-top:var(--s3)">Dates from the City of Austin's published 2026 council calendar and from Austin Pride, and subject to change. <a href="https://www.austintexas.gov/council/meetings" target="_blank" rel="noopener">Check the agenda</a> before you turn up.</p>
+  </section>

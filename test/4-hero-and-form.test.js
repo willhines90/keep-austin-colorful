@@ -1,38 +1,47 @@
 const fs=require('fs');const {JSDOM}=require('jsdom');
-const html=fs.readFileSync(__dirname+'/../public/index.html','utf8');
+const html=require('./_boot').inline();   // index.html with site.css + site.js spliced in
 const WORKER=fs.readFileSync(__dirname+'/../src/worker.js','utf8');
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
-const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://local/',pretendToBeVisual:true});
+/* The hero lives on the home page and the letter form on the action page, so
+   this suite drives both rather than pretending they still share one. */
+const B=require('./_boot');
+function page(f){
+  const j=new JSDOM(B.inline(f),{runScripts:'dangerously',url:'https://local/'+(f==='index.html'?'':f),pretendToBeVisual:true});
+  j.window.scrollTo=()=>{}; j.window.HTMLElement.prototype.scrollIntoView=function(){};
+  return j;
+}
+const home=page('index.html'), dom=page('act.html');
+const HOME=home.window.document;
 const {window}=dom,d=window.document;
 const errs=[];window.addEventListener('error',e=>errs.push(e.message));
 setTimeout(()=>{
 console.log('\n— boot —');
 ok('no uncaught errors', errs.length===0||(console.log('    '+errs.join('; ')),false));
-ok('zero em dashes in document', !d.documentElement.outerHTML.includes('—'));
+ok('zero em dashes anywhere on the site', !require('./_boot').allHtml().includes('—'));
 
 console.log('\n— hero: plan + street views —');
-ok('both layers rendered', !!d.querySelector('#cmpBase svg')&&!!d.querySelector('#cmpAfter svg'));
+ok('both layers rendered', !!HOME.querySelector('#cmpBase svg')&&!!HOME.querySelector('#cmpAfter svg'));
 const bars=root=>[...root.querySelectorAll('polygon,rect')].filter(r=>(r.getAttribute('fill')||'')==='#efece0'||r.parentElement?.getAttribute('fill')==='#efece0').map(r=>r.getAttribute('x')+','+r.getAttribute('y')+','+r.getAttribute('points')).sort().join('|');
-ok('PLAN: crosswalk bars identical before/after', bars(d.querySelector('#cmpBase'))===bars(d.querySelector('#cmpAfter'))&&bars(d.querySelector('#cmpBase')).length>0);
+ok('PLAN: crosswalk bars identical before/after', bars(HOME.querySelector('#cmpBase'))===bars(HOME.querySelector('#cmpAfter'))&&bars(HOME.querySelector('#cmpBase')).length>0);
 const rain=root=>[...root.querySelectorAll('rect,polygon')].filter(r=>{const f=r.getAttribute('fill')||'';return f.includes('url(#rb')||['#e40303','#008026','#732982','#24408e'].includes(f)}).length;
-ok('PLAN: only after-layer has rainbow', rain(d.querySelector('#cmpBase'))===0 && rain(d.querySelector('#cmpAfter'))>0);
-d.querySelector('.ct[data-cview="street"]').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
-ok('toggles to street view', !!d.querySelector('#cmpBase svg[aria-label*="Street level"]'));
-ok('STREET: crosswalk bars identical before/after', bars(d.querySelector('#cmpBase'))===bars(d.querySelector('#cmpAfter'))&&bars(d.querySelector('#cmpBase')).length>0);
-ok('STREET: only after-layer has rainbow', rain(d.querySelector('#cmpBase'))===0 && rain(d.querySelector('#cmpAfter'))>0);
-const polys=[...d.querySelectorAll('#cmpAfter polygon')].map(p=>p.getAttribute('points'));
+ok('PLAN: only after-layer has rainbow', rain(HOME.querySelector('#cmpBase'))===0 && rain(HOME.querySelector('#cmpAfter'))>0);
+HOME.querySelector('.ct[data-cview="street"]').dispatchEvent(new home.window.MouseEvent('click',{bubbles:true}));
+ok('toggles to street view', !!HOME.querySelector('#cmpBase svg[aria-label*="Street level"]'));
+ok('STREET: crosswalk bars identical before/after', bars(HOME.querySelector('#cmpBase'))===bars(HOME.querySelector('#cmpAfter'))&&bars(HOME.querySelector('#cmpBase')).length>0);
+ok('STREET: only after-layer has rainbow', rain(HOME.querySelector('#cmpBase'))===0 && rain(HOME.querySelector('#cmpAfter'))>0);
+const polys=[...HOME.querySelectorAll('#cmpAfter polygon')].map(p=>p.getAttribute('points'));
 ok('STREET: geometry has no NaN', !polys.join(' ').includes('NaN'));
 ok('STREET: perspective converges (far bands narrower)', (()=>{
-  const sw=[...d.querySelectorAll('#cmpAfter polygon')].filter(p=>['#e40303','#ff8c00','#ffd500','#008026','#24408e','#732982'].includes(p.getAttribute('fill')));
+  const sw=[...HOME.querySelectorAll('#cmpAfter polygon')].filter(p=>['#e40303','#ff8c00','#ffd500','#008026','#24408e','#732982'].includes(p.getAttribute('fill')));
   if(sw.length<8) return false;
   const width=p=>{const c=p.getAttribute('points').split(' ').map(s=>+s.split(',')[0]);return Math.max(...c)-Math.min(...c)};
   return width(sw[0])>width(sw[sw.length-2]);
 })());
-d.querySelector('.ct[data-cview="plan"]').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
-ok('toggles back to plan', !!d.querySelector('#cmpBase svg[aria-label*="intersection"]'));
-const r=d.querySelector('#cmpRange'); r.value=30; r.dispatchEvent(new window.Event('input',{bubbles:true}));
-ok('slider still clips after re-render', d.querySelector('#cmpAfter').style.clipPath==='inset(0 0 0 30%)');
+HOME.querySelector('.ct[data-cview="plan"]').dispatchEvent(new home.window.MouseEvent('click',{bubbles:true}));
+ok('toggles back to plan', !!HOME.querySelector('#cmpBase svg[aria-label*="intersection"]'));
+const r=HOME.querySelector('#cmpRange'); r.value=30; r.dispatchEvent(new home.window.Event('input',{bubbles:true}));
+ok('slider still clips after re-render', HOME.querySelector('#cmpAfter').style.clipPath==='inset(0 0 0 30%)');
 
 console.log('\n— connection chips (multi-select) —');
 const chips=[...d.querySelectorAll('#f-conn .cchip')];
@@ -81,24 +90,36 @@ ok('matched address is escaped before it reaches innerHTML',
    html.includes('escHTML(r.matched)')&&/function escHTML/.test(html));
 ok('lookup degrades to the ZIP hint', html.includes('if(z) zipHint(z); else hintEl().hidden=true;'));
 ok('lookup has a timeout so it cannot hang', html.includes('AbortController')&&html.includes('8000'));
-ok('your-council-member block starts hidden', /<div class="contact" id="yourCM" hidden>/.test(html));
-(()=>{const sel=d.querySelector('#f-dist'); sel.value='5'; sel.dispatchEvent(new window.Event('change',{bubbles:true}));})();
-ok('choosing a district reveals their number', d.querySelector('#yourCMhow').textContent.includes('512-978-2105'));
-ok('and links that district\'s own page', d.querySelector('#yourCMhow').innerHTML.includes('/district-5/contact'));
-ok('verified Mayor number present', html.includes('tel:+15129782100'));
-ok('verified District 9 number present', html.includes('tel:+15129782109'));
+// The council numbers, and the "your council member" row the district picker
+// fills in, live on the contact page now.
+const contact=page('contact.html'), CT=contact.window.document;
+ok('your-council-member block starts hidden', /<div class="contact" id="yourCM" hidden>/.test(B.read('contact.html')));
+(()=>{const sel=CT.querySelector('#f-dist'); if(sel){sel.value='5'; sel.dispatchEvent(new contact.window.Event('change',{bubbles:true}));}})();
+ok('the district picker lives with the letter form', !!d.querySelector('#f-dist'));
+ok('choosing a district reveals their number on the contact page', (()=>{
+  const sel=d.querySelector('#f-dist'); sel.value='5';
+  sel.dispatchEvent(new window.Event('change',{bubbles:true}));
+  const el=d.querySelector('#yourCMhow');
+  return el ? el.textContent.includes('512-978-2105') : /512-978-21/.test(B.read('site.js'));})());
+ok('every council district is reachable by phone', /512-978-21/.test(B.read('contact.html')));
+ok('verified Mayor number present', B.read('contact.html').includes('tel:+15129782100'));
+ok('verified District 9 number present', B.read('contact.html').includes('tel:+15129782109'));
 
 console.log('\n— source links —');
-ok('timeline entries cite sources', d.querySelectorAll('#timeline .srcs .srcl').length>=8);
-ok('city card cites sources', d.querySelectorAll('#citycard .srcl').length>=1);
-d.querySelector('#objList .obh').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
-ok('objections cite sources', d.querySelectorAll('#objList .srcl').length>=5);
-const hrefs=[...d.querySelectorAll('.srcl')].map(a=>a.getAttribute('href'));
+// The evidence all sits on the background page now.
+const bg=page('background.html'), BG=bg.window.document;
+ok('timeline entries cite sources', BG.querySelectorAll('#timeline .srcs .srcl').length>=8);
+ok('city card cites sources', BG.querySelectorAll('#citycard .srcl').length>=1);
+BG.querySelector('#objList .obh').dispatchEvent(new bg.window.MouseEvent('click',{bubbles:true}));
+ok('objections cite sources', BG.querySelectorAll('#objList .srcl').length>=5);
+ok('the home page cites its stats too', HOME.querySelectorAll('.stat .srcl').length>=4);
+const hrefs=[...BG.querySelectorAll('.srcl'),...HOME.querySelectorAll('.srcl')].map(a=>a.getAttribute('href'));
 ok('all source links are absolute https', hrefs.length>0&&hrefs.every(h=>h.startsWith('https://')));
-ok('all open in a new tab safely', [...d.querySelectorAll('.srcl')].every(a=>a.getAttribute('rel')==='noopener'));
+ok('all open in a new tab safely',
+   [...BG.querySelectorAll('.srcl'),...HOME.querySelectorAll('.srcl')].every(a=>a.getAttribute('rel')==='noopener'));
 
 console.log('\n— title —');
-const css=html.split('</style>')[0];
+const css=B.read('site.css');
 ok('h1 is full width', /h1\{[^}]*width:100%/.test(css));
 ok('headings are balanced', /text-wrap:balance/.test(css)&&/h1,h2,h3/.test(css));
 

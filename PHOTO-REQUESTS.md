@@ -22,7 +22,7 @@ The most valuable photograph on the internet for this campaign is San Antonio's 
 >
 > If there is a fee I would like to know it, and if licensing is not something you do for projects like this I completely understand.
 >
-> The site: [URL]
+> The site: https://keepaustincolorful.com
 > The article I am citing: https://sanantonioreport.org/san-antonio-installs-pride-district-sidewalk-art-after-crosswalk-removal/
 >
 > Thank you,
@@ -46,7 +46,7 @@ KUT is a public radio station licensed to UT Austin, so it has an educational mi
 >
 > If there is a fee, or if this is not something you licence, please just say and I will not press.
 >
-> The site: [URL]
+> The site: https://keepaustincolorful.com
 > The article: https://www.kut.org/transportation/2026-07-22/austin-tx-lgbtq-vigil-rainbow-crosswalks-4th-street
 >
 > Thank you,
@@ -70,7 +70,7 @@ Austin Pride has [a page about the crosswalk](https://austinpride.org/crosswalk/
 >
 > Second, and more importantly, if this is useful to you please take it. It is open source and free to adapt, and it would be far more effective coming from Austin Pride than from one neighbor.
 >
-> The site: [URL]
+> The site: https://keepaustincolorful.com
 >
 > Thank you,
 > [NAME]
@@ -79,7 +79,7 @@ Austin Pride has [a page about the crosswalk](https://austinpride.org/crosswalk/
 
 ## 4. City of Austin — free, and you already have the template
 
-Photographs taken by city staff are public records. The Take Action tab already has a Public Information Act request; this is a narrower version for images.
+Photographs taken by city staff are public records. The Take action page already has a Public Information Act request; this is a narrower version for images.
 
 > **Subject:** Public Information Act request, photographs of 4th and Colorado
 >
@@ -108,10 +108,10 @@ Shoot from the northeast so both crossings are in frame, mid-morning or late aft
 
 ## Once you have one
 
-Drop the file into `public/img/`, uncomment the entry in the `PHOTOS` array in `public/index.html`, fill in the alt text, caption and credit, then:
+Drop the file into `public/img/`, uncomment the entry in the `PHOTOS` array in `public/site.js` (not `public/index.html`, which is generated), fill in the alt text, caption and credit, then:
 
 ```bash
-npm run build:meta && npm test
+npm run build && npm test
 ```
 
 The slot is already built and hidden until an image exists. Self-hosted files need no CSP change.

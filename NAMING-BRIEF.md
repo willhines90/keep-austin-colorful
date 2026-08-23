@@ -1,3 +1,8 @@
+> **Resolved.** The name was kept. `keepaustincolorful.com` is registered and
+> live, the wordmark is asserted in NOTICE, and it appears in every page title
+> and in the share image. This brief is kept for the reasoning behind the
+> choice, not as an open question.
+
 # Naming brief
 
 Paste this into any AI tool, or hand it to a person. It is written to be used whole.
@@ -6,13 +11,13 @@ Paste this into any AI tool, or hand it to a person. It is written to be used wh
 
 ## The one-paragraph version
 
-We need a name for a civic campaign in Austin, Texas. In July 2026 the state forced the city to scrape the rainbow crosswalk off the corner of West 4th and Colorado, in the heart of Austin's LGBTQ+ district. San Antonio, facing the identical order, painted its **sidewalks** rainbow instead, because the state's order governs roadways and sidewalks belong to the city. It cost about $170,000, has stood since March, survived a legal challenge, and required no council vote. The campaign asks Austin to do the same. The working name is **Keep Austin Colorful**, which we may keep or replace.
+We need a name for a civic campaign in Austin, Texas. In July 2026 the state forced the city to scrape the rainbow crosswalk off the corner of West 4th and Colorado, in the heart of Austin's LGBTQ+ district. San Antonio, facing the identical order, painted its **sidewalks** rainbow instead, because the state's order governs roadways and sidewalks belong to the city. It cost about $170,000, has stood since March, survived a legal challenge, and required no council vote. The campaign asks Austin to do the same. The name chosen was **Keep Austin Colorful**.
 
 ---
 
 ## What the campaign actually is
 
-A one-page website plus a small identity. Not an organization, not a nonprofit, not a brand with a budget. One neighbor's project, built to be forked by other cities.
+A website plus a small identity. Not an organization, not a nonprofit, not a brand with a budget. One neighbor's project, built to be forked by other cities.
 
 It asks the Austin City Council for two specific things:
 
@@ -69,7 +74,7 @@ Aim for *municipal signage that happens to be joyful*. Not a picket sign.
 
 Keeping these here so you can go somewhere new, or tell us one of them was right.
 
-**Current working name:** Keep Austin Colorful
+**Name, as adopted:** Keep Austin Colorful
 
 **Place-anchored:** Fourth & Forever · Meet Me at Fourth · Hold This Corner · Our Corner · The Corner Remembers
 
