@@ -12,27 +12,53 @@ let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 
 console.log('\n— structured data —');
-const m=html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-ok('JSON-LD block present', !!m);
-let g=null;
-try{ g=JSON.parse(m[1]); ok('JSON-LD is valid JSON', true) }catch(e){ ok('JSON-LD is valid JSON', false) }
-if(g){
-  const byType=t=>g['@graph'].filter(n=>n['@type']===t);
-  ok('declares Organization, WebSite and WebPage',
-     byType('Organization').length===1&&byType('WebSite').length===1&&byType('WebPage').length===1);
-  const faq=byType('FAQPage')[0];
-  ok('objections published as an FAQPage', !!faq&&faq.mainEntity.length>=5);
-  ok('every FAQ answer has real text', faq.mainEntity.every(q=>q.acceptedAnswer.text.length>100));
-  const ev=byType('Event');
-  ok('calendar published as Events', ev.length>=10);
-  ok('events carry ISO dates', ev.every(e=>/^\d{4}-\d{2}-\d{2}$/.test(e.startDate)));
-  ok('Austin Pride is in the structured data', ev.some(e=>/Pride/i.test(e.name)));
-  ok('sources published as citations', byType('WebPage')[0].citation.length>=8);
-  const j=JSON.stringify(g);
-  ok('no raw HTML leaked into values', !/<[a-z\/]/i.test(j));
-  ok('no HTML entities leaked into values', !/&(amp|lt|gt|quot|nbsp|#\d+);/.test(j));
-  ok('absolute URLs throughout', byType('Organization')[0].url.startsWith('https://'));
-}
+/* Structured data must describe the page it sits on. The FAQ is on background,
+   the events and the HowTo are on act. Markup on the wrong page is not a
+   near-miss: it earns nothing and fails silently. */
+const graphOf=f=>{
+  const m=B.read(f).match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  if(!m) return null;
+  try{ return JSON.parse(m[1]) }catch(e){ return 'INVALID' }
+};
+const G={}; B.PAGES.forEach(f=>{ G[f]=graphOf(f) });
+ok('every page carries a JSON-LD block', B.PAGES.every(f=>G[f]&&G[f]!=='INVALID'));
+ok('every graph is valid JSON', B.PAGES.every(f=>G[f]!=='INVALID'));
+const types=f=>(G[f]&&G[f]['@graph']||[]).map(n=>n['@type']);
+const nodesOf=(f,t)=>(G[f]&&G[f]['@graph']||[]).filter(n=>n['@type']===t);
+
+ok('home declares Organization and WebSite exactly once',
+   nodesOf('index.html','Organization').length===1&&nodesOf('index.html','WebSite').length===1);
+ok('Organization and WebSite are declared on one page only',
+   B.PAGES.filter(f=>types(f).includes('Organization')).length===1);
+ok('every page has breadcrumbs', B.PAGES.every(f=>nodesOf(f,'BreadcrumbList').length===1));
+ok('inner pages breadcrumb back to home', B.PAGES.filter(f=>f!=='index.html').every(f=>{
+  const c=nodesOf(f,'BreadcrumbList')[0];
+  return c.itemListElement.length===2 && c.itemListElement[0].name==='Home';
+}));
+ok('every page declares a page-type node', B.PAGES.every(f=>
+  ['WebPage','AboutPage','ContactPage'].some(t=>types(f).includes(t))));
+
+const faq=nodesOf('background.html','FAQPage')[0];
+ok('objections published as an FAQPage, on the page that shows them', !!faq&&faq.mainEntity.length>=5);
+ok('the FAQ is not duplicated onto other pages',
+   B.PAGES.filter(f=>types(f).includes('FAQPage')).length===1);
+ok('every FAQ answer has real text', !!faq&&faq.mainEntity.every(q=>q.acceptedAnswer.text.length>100));
+
+const ev=nodesOf('act.html','Event');
+ok('calendar published as Events, on the page that lists them', ev.length>=10);
+ok('events carry ISO dates', ev.every(e=>/^\d{4}-\d{2}-\d{2}$/.test(e.startDate)));
+ok('Austin Pride is in the structured data', ev.some(e=>/Pride/i.test(e.name)));
+const ht=nodesOf('act.html','HowTo')[0];
+ok('the letter builder is published as a HowTo', !!ht&&ht.step.length>=4);
+ok('every HowTo step points somewhere real', !!ht&&ht.step.every(x=>/^https:\/\/[^#]+#?/.test(x.url)));
+ok('the HowTo is honest about the time it takes', !!ht&&ht.totalTime==='PT5M');
+
+ok('sources published as citations on the page that carries them',
+   (nodesOf('background.html','AboutPage')[0].citation||[]).length>=8);
+const j=B.PAGES.map(f=>JSON.stringify(G[f])).join(' ');
+ok('no raw HTML leaked into values', !/<[a-z\/]/i.test(j));
+ok('no HTML entities leaked into values', !/&(amp|lt|gt|quot|nbsp|#\d+);/.test(j));
+ok('absolute URLs throughout', nodesOf('index.html','Organization')[0].url.startsWith('https://'));
 
 console.log('\n— crawler files —');
 ok('sitemap.xml exists and is well formed', /<\?xml/.test(read('sitemap.xml'))&&/<loc>https:\/\//.test(read('sitemap.xml')));
@@ -42,7 +68,8 @@ const llms=read('llms.txt');
 ok('llms.txt states the mechanism', /sidewalk/i.test(llms)&&/roadway/i.test(llms));
 ok('llms.txt carries the verified figures', /5,330/.test(llms)&&/170,000/.test(llms));
 ok('llms.txt lists sources', /## Sources/.test(llms)&&/https:\/\//.test(llms));
-ok('llms.txt asks summarisers to keep the framing', /non-adversarial/i.test(llms));
+ok('llms.txt asks summarizers to keep the framing', /non-adversarial/i.test(llms));
+ok('llms.txt maps every page', B.PAGES.every(f=>llms.includes(f==='index.html'?'.com/)':'/'+f+')')));
 ok('404 page exists and is noindex', /noindex/.test(read('404.html')));
 ok('404 routes people back', /href="\/"/.test(read('404.html')));
 ok('favicon file exists for the 404 page', fs.existsSync(path.join(PUB,'favicon.svg')));

@@ -79,7 +79,7 @@ ok('map and table stay in sync', d.querySelector('#cmpTable tbody tr.hi').datase
 console.log('\n— regression —');
 // This page owns the timeline, the map and the objections. The regression to
 // guard against is the map quietly taking the rest of the page down with it.
-ok('nav survived the render', d.querySelectorAll('.mainnav a').length===5);
+ok('nav survived the render', d.querySelectorAll('.mainnav a:not(.ghlink)').length===5);
 ok('timeline intact', d.querySelectorAll('#timeline .tli').length===8);
 ok('objections intact', d.querySelectorAll('#objList .obj').length===5);
 ok('funding routes intact', d.querySelectorAll('#fundList .ask').length===4);

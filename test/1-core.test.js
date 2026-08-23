@@ -46,7 +46,7 @@ console.log('\n— navigation —');
    the same one, that it says where you are, and that no tabs survive. */
 const NAVS=B.PAGES.map(f=>{
   const j=new JSDOM(B.read(f),{url:'https://local/'});
-  return {f, links:[...j.window.document.querySelectorAll('.mainnav a')]};
+  return {f, links:[...j.window.document.querySelectorAll('.mainnav a:not(.ghlink)')]};
 });
 ok('every page carries the nav', NAVS.every(n=>n.links.length===5));
 ok('every page offers the same destinations',

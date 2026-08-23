@@ -27,17 +27,30 @@ ok('name in the header of every page',
 ok('tagline present', d.querySelector('.brandtext i').textContent.includes('Bringing the color back'));
 ok('the wordmark links home from every page',
    B.PAGES.every(f=>DOCS[f].querySelector('.brandlink').getAttribute('href')==='/'));
-ok('mark is the ATX monogram with a 6-stripe band', (()=>{
-  const g=d.querySelector('.topbar .brandmark svg');
-  if(!g) return false;
-  const letters=g.querySelector('path[fill-rule="evenodd"]');
-  const bands=[...g.querySelectorAll('rect')].filter(r=>['#e40303','#ff8c00','#ffd500','#008026','#24408e','#732982'].includes(r.getAttribute('fill')));
-  const clipped=!!g.querySelector('[clip-path]');
-  const subpaths=(letters?.getAttribute('d').match(/M/g)||[]).length;
-  return !!letters && bands.length===6 && clipped && subpaths===4;})());
-ok('band is clipped to the letterforms, not floating', !!d.querySelector('.brandmark clipPath path[clip-rule="evenodd"]'));
+const FLAG6=['#e40303','#ff8c00','#ffd500','#008026','#24408e','#732982'];
+ok('mark carries all six flag colors', (()=>{
+  const g=d.querySelector('.topbar .brandmark svg'); if(!g) return false;
+  const seen=new Set([...g.querySelectorAll('rect')].map(r=>r.getAttribute('fill')));
+  return FLAG6.every(c=>seen.has(c));})());
+ok('color is clipped or masked to the letterforms, not floating', (()=>{
+  const g=d.querySelector('.topbar .brandmark svg'); if(!g) return false;
+  return !!g.querySelector('[clip-path]') || !!g.querySelector('[mask]');})());
+ok('the letterforms are the ATX monogram', (()=>{
+  const g=d.querySelector('.topbar .brandmark svg'); if(!g) return false;
+  const letters=g.querySelector('clipPath path, mask path');
+  return !!letters && (letters.getAttribute('d').match(/M/g)||[]).length===4;})());
 ok('the header mark is the same one on every page',
-   B.PAGES.every(f=>DOCS[f].querySelectorAll('.topbar .brandmark svg path[fill-rule="evenodd"]').length===1));
+   new Set(B.PAGES.map(f=>DOCS[f].querySelector('.topbar .brandmark svg').outerHTML)).size===1);
+/* An SVG served as a file needs xmlns or it does not render as an <img> at all
+   - not degraded, not fallback, nothing. The press kit links these directly. */
+ok('every standalone logo declares xmlns',
+   ['band','flag','knockout','trans','progress','progress-knockout']
+     .every(v=>B.read('logo-'+v+'.svg').includes('xmlns="http://www.w3.org/2000/svg"')));
+ok('every standalone logo has a title for screen readers',
+   ['band','flag','knockout','trans','progress','progress-knockout']
+     .every(v=>/<title[^>]*>[^<]{20,}/.test(B.read('logo-'+v+'.svg'))));
+ok('the trans variant sits on a dark ground, because one of its stripes is white',
+   /fill="#15151D"/.test(B.read('logo-trans.svg')));
 // the favicon is a real file now rather than a data URI repeated on five pages
 ok('favicon is the ATX tile', /rx="11"/.test(B.read('favicon.svg'))&&/e40303/.test(B.read('favicon.svg')));
 ok('compare tags shrink-wrap', html.includes('width:max-content')&&html.includes('max-width:calc(50% - 22px)'));
@@ -160,7 +173,7 @@ ok('headline is an invitation, not a grievance', (()=>{
 ok('headline names what it is about', /pride|rainbow/i.test(d.querySelector('h1').textContent));
 // the tabs became the nav; the promise is the same, that it reads as an
 // invitation rather than a filing system
-ok('nav reads warmly', (()=>{const t=[...d.querySelectorAll('.mainnav a')].map(a=>a.textContent.trim());
+ok('nav reads warmly', (()=>{const t=[...d.querySelectorAll('.mainnav a:not(.ghlink)')].map(a=>a.textContent.trim());
   return t.join('|')==='Home|Background|Take action|Contact|Press'})());
 ok('stats lead with people and possibility', [...d.querySelectorAll('.stat span')].every(x=>!/exemptions granted|vigil on the corner/.test(x.textContent)));
 ok('caution box is guidance, not prohibition', (()=>{const t=DOCS['background.html'].body.textContent;
@@ -168,7 +181,7 @@ ok('caution box is guidance, not prohibition', (()=>{const t=DOCS['background.ht
 
 console.log('\n— regression —');
 ok('every page reachable from every page',
-   B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a').length===5));
+   B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a:not(.ghlink)').length===5));
 ok('the nav marks the current page exactly once',
    B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a[aria-current="page"]').length===1));
 ok('hero renders both layers', !!d.querySelector('#cmpBase svg')&&!!d.querySelector('#cmpAfter svg'));

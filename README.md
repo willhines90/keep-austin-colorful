@@ -116,6 +116,8 @@ That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which rewrit
 - [PHOTO-REQUESTS.md](PHOTO-REQUESTS.md) — four drafted licence requests, ready to send
 - [PHOTOS.md](PHOTOS.md) — the four photographs worth having, and where they can legally come from
 - [ANALYTICS.md](ANALYTICS.md) — off by default; how to switch it on
+- [LOGO-BRIEF.md](LOGO-BRIEF.md) — the mark, and the unsolved problem of
+  incorporating the trans flag, with a generation prompt for exploring it
 - [DEPLOY.md](DEPLOY.md) — Cloudflare Workers, and why the host has to run the worker
 
 ## Forking this for your city

@@ -2,7 +2,8 @@
 /**
  * Generates everything that has to agree with the page but cannot live inside it:
  *
- *   - JSON-LD structured data, injected into index.html
+ *   - JSON-LD structured data, a graph per page (the FAQ goes on the page
+ *     that shows the FAQ, the events on the page that lists them)
  *   - sitemap.xml
  *   - llms.txt
  *   - _headers, including the Content-Security-Policy
@@ -103,7 +104,7 @@ const events = D.DATES.map(d => {
   };
 });
 
-const page = {
+const legacyPage_unused = {
   '@type': 'WebPage',
   '@id': URL + '#page',
   url: URL,
@@ -117,12 +118,91 @@ const page = {
   citation: Object.values(D.SRC).map(([name, url]) => ({ '@type': 'CreativeWork', name, url }))
 };
 
-const jsonld = { '@context': 'https://schema.org', '@graph': [org, site, page, faq, ...events] };
-const block = '<script type="application/ld+json">\n' +
-  JSON.stringify(jsonld, null, 2) + '\n</script>';
+/* ── per-page graphs ────────────────────────────────────────────────────────
+   Structured data has to describe the page it sits on. When this was one page
+   that was trivially true; after the split it stopped being true and nobody
+   would have noticed, because invalid markup fails silently and just quietly
+   stops earning rich results. The FAQ is on background.html now, the events
+   are on act.html, and each page says so itself. */
+const PAGE_META = {
+  'index.html':      { name: 'Keep Austin Colorful', crumb: 'Home' },
+  'background.html': { name: 'How we got here, and what is actually allowed', crumb: 'Background' },
+  'act.html':        { name: 'Take action', crumb: 'Take action' },
+  'contact.html':    { name: 'Contact', crumb: 'Contact' },
+  'press.html':      { name: 'Press kit', crumb: 'Press' }
+};
+const urlFor = f => URL + (f === 'index.html' ? '/' : '/' + f);
 
-html = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\n?/g, '');
-html = html.replace('</head>', block + '\n</head>');
+const crumbs = f => ({
+  '@type': 'BreadcrumbList',
+  '@id': urlFor(f) + '#crumbs',
+  itemListElement: (f === 'index.html'
+    ? [{ n: 'Home', u: URL + '/' }]
+    : [{ n: 'Home', u: URL + '/' }, { n: PAGE_META[f].crumb, u: urlFor(f) }]
+  ).map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.n, item: x.u }))
+});
+
+const webPage = (f, extra) => Object.assign({
+  '@type': f === 'contact.html' ? 'ContactPage' : (f === 'background.html' ? 'AboutPage' : 'WebPage'),
+  '@id': urlFor(f) + '#page',
+  url: urlFor(f),
+  name: PAGE_META[f].name,
+  isPartOf: { '@id': URL + '#site' },
+  breadcrumb: { '@id': urlFor(f) + '#crumbs' },
+  inLanguage: 'en-US',
+  about: [
+    { '@type': 'Thing', name: 'Rainbow crosswalk removal in Texas' },
+    { '@type': 'Thing', name: 'LGBTQ+ cultural heritage districts' },
+    { '@type': 'Place', name: '4th Street and Colorado Street, Austin, Texas' }
+  ]
+}, extra || {});
+
+/* The letter builder is a procedure, and answer engines treat HowTo as one.
+   Steps mirror what the page actually asks someone to do, in order. */
+const howTo = {
+  '@type': 'HowTo',
+  '@id': urlFor('act.html') + '#howto',
+  name: 'Write to Austin City Council about 4th and Colorado',
+  description: 'Draft and send a letter asking the City of Austin for a rainbow sidewalk treatment at 4th and Colorado, on the model San Antonio already used lawfully.',
+  totalTime: 'PT5M',
+  estimatedCost: { '@type': 'MonetaryAmount', currency: 'USD', value: '0' },
+  supply: [], tool: [],
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Choose what to ask for',
+      text: 'Pick the treatments you would like to see. Every one of them sits outside the roadway, which is the only surface the state order governs.',
+      url: urlFor('act.html') + '#asks' },
+    { '@type': 'HowToStep', position: 2, name: 'Add your name and address',
+      text: 'Letters carrying a real name and street address are weighted more heavily than anonymous ones. The address also finds your council district.',
+      url: urlFor('act.html') + '#letter' },
+    { '@type': 'HowToStep', position: 3, name: 'Say why the corner matters to you',
+      text: 'One or two sentences in your own words. This is the part a council office actually reads.',
+      url: urlFor('act.html') + '#letter' },
+    { '@type': 'HowToStep', position: 4, name: 'Draft, edit and send',
+      text: 'Generate the letter, edit it freely, then copy it into the council contact form.',
+      url: urlFor('act.html') + '#letter' }
+  ]
+};
+
+const GRAPHS = {
+  'index.html':      [org, site, webPage('index.html'), crumbs('index.html')],
+  'background.html': [webPage('background.html', { citation: Object.values(D.SRC).map(([name, url]) => ({ '@type': 'CreativeWork', name, url })) }), crumbs('background.html'), faq],
+  'act.html':        [webPage('act.html'), crumbs('act.html'), howTo, ...events],
+  'contact.html':    [webPage('contact.html'), crumbs('contact.html')],
+  'press.html':      [webPage('press.html'), crumbs('press.html')]
+};
+
+let ldWritten = 0;
+for (const f of Object.keys(GRAPHS)) {
+  const file = path.join(PUB, f);
+  let h = fs.readFileSync(file, 'utf8');
+  const graph = { '@context': 'https://schema.org', '@graph': GRAPHS[f] };
+  const block = '<script type="application/ld+json">\n' + JSON.stringify(graph, null, 2) + '\n</script>';
+  h = h.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\n?/g, '');
+  h = h.replace('</head>', block + '\n</head>');
+  fs.writeFileSync(file, h);
+  ldWritten += GRAPHS[f].length;
+}
+html = fs.readFileSync(FILE, 'utf8');   // re-read: index now carries its graph
 
 // ── stamp the verification date, so nobody has to remember to ──────────────
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -168,6 +248,20 @@ fs.writeFileSync(path.join(PUB, 'llms.txt'),
 > A neighborhood campaign asking the City of Austin to restore rainbow visibility
 > at the corner of West 4th Street and Colorado Street by treating the sidewalk
 > rather than the roadway.
+
+## Pages
+
+- [Home](${URL}/): the ask in short, the before/after of the corner, and the
+  three things that have happened on this block.
+- [Background](${URL}/background.html): the timeline, what five Texas cities
+  each did, why the state order stops at the curb, who pays, and the honest
+  answers to the objections officials actually raise. All sources are here.
+- [Take action](${URL}/act.html): what can lawfully be asked for, a letter
+  builder, the five-minute actions, and the upcoming council dates.
+- [Contact](${URL}/contact.html): direct phone numbers for the Mayor and every
+  council district, a thirty-second phone script, and how to reach the project.
+- [Press kit](${URL}/press.html): verified figures with citations, quotes,
+  images and the angle most coverage has missed.
 
 ## The situation
 
@@ -292,11 +386,11 @@ fs.writeFileSync(path.join(PUB, '_headers'),
   Cache-Control: public, max-age=3600
 `);
 
-fs.writeFileSync(FILE, html);
-fs.writeFileSync(JS_FILE, js);
+fs.writeFileSync(JS_FILE, js);   // index.html was written above, with its graph
 
 console.log('domain      ', URL);
-console.log('json-ld     ', jsonld['@graph'].length, 'nodes (' + faq.mainEntity.length + ' FAQ, ' + events.length + ' events)');
+console.log('json-ld     ', ldWritten, 'nodes across', Object.keys(GRAPHS).length,
+  'pages (' + faq.mainEntity.length + ' FAQ on background, ' + events.length + ' events + 1 HowTo on act)');
 console.log('assets      ', 'site.css + site.js, no inline script, no CSP hash needed');
 console.log('analytics   ', [ga4 && 'GA4 ' + ga4, cf && 'Cloudflare (token)', !cf && cfAuto && 'Cloudflare (edge injection allowed)']
   .filter(Boolean).join(', ') || 'none configured, CSP left tight');

@@ -817,3 +817,22 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
 .nextcard span{font-size:var(--fs-sm); color:var(--ink-2); line-height:1.5}
 .nextcard.go-ish{background:linear-gradient(150deg,var(--accent-soft),var(--card) 65%);
   border-color:var(--accent-line)}
+
+/* ── the open-source link ────────────────────────────────────────────────
+   In the header it is an icon: the nav is already five items and a sixth word
+   would crowd it. In the footer it gets its word back, because that is where
+   someone reading to the end is deciding whether to fork it. */
+.ghlink{display:inline-flex; align-items:center; justify-content:center;
+  width:36px; height:36px; margin-left:var(--s2); border-radius:var(--r-pill);
+  color:var(--muted); padding:0}
+.ghlink:hover{background:var(--paper-2); color:var(--ink)}
+.ghlink svg{display:block}
+@media(pointer:coarse){ .ghlink{width:44px; height:44px} }
+
+.footlinks{display:flex; flex-wrap:wrap; gap:var(--s3) var(--s5);
+  align-items:center; margin-top:var(--s4)}
+.footlinks a{display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--display); font-size:var(--fs-sm); font-weight:var(--w-med);
+  color:var(--muted); text-decoration:none}
+.footlinks a:hover{color:var(--accent); text-decoration:underline; text-underline-offset:3px}
+.footlinks svg{flex:none}
