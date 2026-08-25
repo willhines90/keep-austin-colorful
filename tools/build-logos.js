@@ -78,11 +78,11 @@ const VARIANTS = {
       `<g mask="url(#atxknock)">${stripes(PRIDE, w, h)}</g>` };
   },
 
-  /* UNRESOLVED EXPERIMENT - not an approved mark, not offered on the press kit.
-     The trans flag's middle stripe is white, so on paper the heart of every
-     letter disappears and the mark needs a dark tile to exist at all. That is
-     a workaround, not a solution, and it makes the trans flag conditional on a
-     container the Pride version does not need. See LOGO-BRIEF.md. */
+  /* Alternate mark, not the primary. The trans flag's middle stripe is white,
+     so inside letterforms on a pale ground the heart of every letter vanishes;
+     the dark tile is structural, not decoration. That makes this variant
+     conditional on a container the Pride version does not need, which is why
+     it is not the default. */
   trans: () => {
     const px = 13, py = 7, w = W + px * 2, h = H + py * 2;
     return { vb: `0 0 ${w} ${h}`, body:
@@ -91,14 +91,13 @@ const VARIANTS = {
       `<g clip-path="url(#atxtrans)">${stripes(TRANS, w, h)}</g>` };
   },
 
-  /* UNRESOLVED EXPERIMENT. At header size the five chevron bands compress
-     into an unreadable smear, and the chevron fights the letterforms it is
-     clipped inside. See LOGO-BRIEF.md. */
+  /* Alternate mark. At header size the five chevron bands compress to under
+     two pixels each and read as a smear, so use this at larger sizes only. */
   progress: () => ({ vb: `0 0 ${W} ${H}`, body:
     clip('atxprog') + `<g clip-path="url(#atxprog)">${stripes(PRIDE)}${chevron()}</g>` }),
 
-  /* UNRESOLVED EXPERIMENT. The chevron reads here, but the tile is 40% wider
-     than the primary mark and the black band reads as a hole. See LOGO-BRIEF.md. */
+  /* Alternate mark. The tile gives the chevron room to read, at the cost of
+     being about 40% wider than the primary lockup. */
   'progress-knockout': () => {
     const px = 13, py = 7, w = W + px * 2, h = H + py * 2;
     const scale = w / W;

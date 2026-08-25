@@ -53,6 +53,49 @@ The first regenerates the pages from `src/pages/`, then the JSON-LD, sitemap, `r
 
 If you add or remove a page, it has to be declared in three places: `PAGES` in `tools/build-pages.js`, `SITEMAP` in `tools/build-meta.js`, and `PAGES` in `test/_boot.js`.
 
+## Photographs
+
+The site ships with none, and the slot is hidden until one exists. Everything
+visual is drawn in SVG, which scales and costs nothing, but a photograph of the
+actual corner will out-persuade all of it.
+
+You cannot use news photographs without permission, and on a site whose whole
+credibility rests on being scrupulous that is not a trade worth making. The
+routes that do work, roughly in order of value:
+
+1. **Photograph the corner yourself.** Free, uncomplicated, and you own it
+   outright. Shoot so both crossings are in frame, in low light so the asphalt
+   shows texture.
+2. **Ask the local newsroom.** Many will license a single frame to a
+   non-commercial community campaign for little or nothing, especially
+   nonprofit newsrooms, and especially if you credit prominently. Email the
+   photo desk and say exactly which frame and where it will appear.
+3. **Wikimedia Commons and Openverse.** Check the licence on each file, not the
+   category. Filter Openverse to "modification allowed".
+4. **A public records request.** Photographs taken by city staff are often
+   public records, and the site already carries a request template.
+
+To add one: drop the file in `public/img/`, uncomment the entry in the `PHOTOS`
+array in `public/site.js`, fill in alt text, caption and credit, then
+`npm run build`. Self-hosted images need no CSP change. Write real alt text —
+"the corner scraped back to grey asphalt" beats "photo of intersection", and on
+this site the alt text is part of the argument.
+
+## If you make your own mark
+
+The wordmark is not licensed, so a fork needs its own. Whatever you draw has to
+survive the same constraints:
+
+| | |
+|---|---|
+| **Renders at** | 52px wide in the header, 18px as a favicon, 1200px on the share card |
+| **Grounds** | Must work unmodified on both pale paper and near-black |
+| **Format** | Flat vector, no gradients or shadows, so it stays clean SVG |
+| **Built by** | `tools/build-logos.js`, from one path and a colour list |
+
+Shrink every candidate to 52px before deciding anything. Most fail there, and it
+is the only test that matters for a header mark.
+
 ## What to keep
 
 Two of the test suites encode decisions rather than mechanics, and they are the ones worth inheriting:

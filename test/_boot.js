@@ -24,11 +24,11 @@ const JS_TAG = '<script src="site.js" defer></script>';
 function inline(page) {
   const html = read(page || 'index.html');
   if (!html.includes(CSS_TAG)) throw new Error((page || 'index.html') + ' no longer links site.css');
-  // Replacement must be a function. site.js defines $$ for querySelectorAll,
-  // and '$$' in a string replacement means "a literal $" - so a plain string
-  // replace silently rewrites every $$ to $, which clobbers the $ helper with
-  // the querySelectorAll one and breaks the page in a way that looks like a
-  // DOM problem. Cost an hour once; never again.
+  // The replacement must be a function. site.js defines $$ as its
+  // querySelectorAll helper, and '$$' in a string replacement is the escape
+  // for a literal '$'. A plain string replace therefore rewrites every $$ to
+  // $, which silently replaces the $ helper with the querySelectorAll one and
+  // breaks the page in a way that looks like a DOM fault rather than a build one.
   return html
     .replace(CSS_TAG, () => '<style>\n' + read('site.css') + '\n</style>')
     .replace(JS_TAG, () => '<script>\n' + read('site.js') + '\n</script>');

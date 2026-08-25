@@ -8,10 +8,10 @@
   // else falls through to the assets via the ASSETS binding.
   "main": "src/worker.js",
 
-  // Only ./public ships. Everything else in the repo — tests, docs, the
-  // og-image source, node_modules — stays out of the deploy, which is what
-  // went wrong the first time: Wrangler defaulted to the repo root and tried
-  // to upload jsdom's 122 MiB workerd binary as a static asset.
+  // Only ./public ships. Everything else — tests, docs, the og-image source,
+  // node_modules — stays out of the deploy. Without this pin Wrangler defaults
+  // to the repo root and tries to upload jsdom's 122 MiB workerd binary as a
+  // static asset, against a 25 MiB limit.
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
@@ -28,8 +28,8 @@
 
   // Keep the *.workers.dev URL alive. It is not the public address, but it is
   // the only way to reach the Worker without going through the zone, which is
-  // exactly what was needed the day the custom domain was misrouted and the
-  // site looked broken. Wrangler disables it by default when it is unset.
+  // what you need when diagnosing a DNS or routing problem. Wrangler disables
+  // it by default whenever this key is absent.
   "workers_dev": true,
 
   "observability": { "enabled": true }

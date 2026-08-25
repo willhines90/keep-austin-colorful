@@ -113,11 +113,7 @@ That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which rewrit
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to run it, and the two house rules for copy
 - [FORKING.md](FORKING.md) — adapting it for another city, and what to check before you do
 - [SECURITY.md](SECURITY.md) — what the site does and does not send anywhere
-- [PHOTO-REQUESTS.md](PHOTO-REQUESTS.md) — four drafted licence requests, ready to send
-- [PHOTOS.md](PHOTOS.md) — the four photographs worth having, and where they can legally come from
 - [ANALYTICS.md](ANALYTICS.md) — off by default; how to switch it on
-- [LOGO-BRIEF.md](LOGO-BRIEF.md) — the mark, and the unsolved problem of
-  incorporating the trans flag, with a generation prompt for exploring it
 - [DEPLOY.md](DEPLOY.md) — Cloudflare Workers, and why the host has to run the worker
 
 ## Forking this for your city
@@ -147,14 +143,10 @@ The structure generalizes. Most of what you'd change lives in clearly-marked dat
 
 Map pin positions are projected latitude/longitude in a 100 × 94.4 viewBox. If you swap in a different state, you'll need to regenerate the outline path and the pin coordinates together.
 
-`og-source.svg` is the editable source for the share image.
-
-> **The share image lags the headline.** `og-source.svg` carries the current
-> wording; `public/og.png` still reads "Let's put the color back on 4th St."
-> Regenerate it with a real SVG renderer (`rsvg-convert -w 1200 -h 630
-> og-source.svg -o public/og.png`, or open the SVG in a browser and export).
-> ImageMagick's `convert` mangles the negative letter-spacing on the headline,
-> so don't use it.
+`og-source.svg` is the editable source for the share image. Regenerate the PNG
+with `rsvg-convert -w 1200 -h 630 og-source.svg -o public/og.png`, or by opening
+the SVG in a browser and exporting. ImageMagick's `convert` mangles the negative
+letter-spacing on the headline, so it is not a substitute.
 
 ## A note on tone
 
