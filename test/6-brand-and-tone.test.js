@@ -14,7 +14,7 @@ const html=B.allHtml();
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 const dom=DOMS['index.html'], {window}=dom, d=window.document;
-const BG=DOCS['background.html'], ACT=DOCS['act.html'];
+const BG=DOCS['background.html'], ACT=DOCS['act.html'], HELP=DOCS['help.html'];
 const errs=[];window.addEventListener('error',e=>errs.push(e.message));
 setTimeout(()=>{
 console.log('\n— brand —');
@@ -174,19 +174,19 @@ ok('headline names what it is about', /pride|rainbow/i.test(d.querySelector('h1'
 // the tabs became the nav; the promise is the same, that it reads as an
 // invitation rather than a filing system
 ok('nav reads warmly', (()=>{const t=[...d.querySelectorAll('.mainnav a:not(.ghlink)')].map(a=>a.textContent.trim());
-  return t.join('|')==='Home|Background|Take action|Contact|Press'})());
+  return t.join('|')==='Home|Background|Write a letter|Ways to help|Contact|Press'})());
 ok('stats lead with people and possibility', [...d.querySelectorAll('.stat span')].every(x=>!/exemptions granted|vigil on the corner/.test(x.textContent)));
 ok('caution box is guidance, not prohibition', (()=>{const t=DOCS['background.html'].body.textContent;
   return t.includes('A gentle word on how to help')&&t.includes('Let the city hold the brush')})());
 
 console.log('\n— regression —');
 ok('every page reachable from every page',
-   B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a:not(.ghlink)').length===5));
+   B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a:not(.ghlink)').length===6));
 ok('the nav marks the current page exactly once',
    B.PAGES.every(f=>DOCS[f].querySelectorAll('.mainnav a[aria-current="page"]').length===1));
 ok('hero renders both layers', !!d.querySelector('#cmpBase svg')&&!!d.querySelector('#cmpAfter svg'));
 ok('map pins render', BG.querySelectorAll('#txmap .pin').length===5);
-ok('12 actions', ACT.querySelectorAll('#todoList .todo').length===12);
+ok('12 actions', HELP.querySelectorAll('#todoList .todo').length===12);
 ok('9 connection chips', ACT.querySelectorAll('#f-conn .cchip').length===9);
 ok('source links present', BG.querySelectorAll('.srcl').length>10);
 console.log('\n'+(fail===0?'ALL '+pass+' PASSED':pass+' passed, '+fail+' FAILED'));

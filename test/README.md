@@ -18,7 +18,7 @@ Each suite loads *the page it is about* through the shared fixture `test/_boot.j
 | `5-actions` | Twelve actions in three tiers, copyable templates, the quick filter, progress ring and category counters |
 | `6-brand-and-tone` | Brand lockup and favicon, the type system, US spelling, no em dashes, and a list of phrases the tone pass removed that must not return |
 | `7-links-and-a11y` | External links open or fall back to copying, keyboard reach on every control, skip link, touch targets |
-| `9-seo-and-hardening` | JSON-LD validity and coverage, sitemap coverage across all five pages, llms.txt, 404, that no inline script survives and the CSP is `script-src 'self'` with no leftover hash, per-page canonicals and distinct titles, the press kit, and that the old tab hashes still redirect |
+| `9-seo-and-hardening` | JSON-LD validity and coverage, sitemap coverage across all six pages, llms.txt, 404, that no inline script survives and the CSP is `script-src 'self'` with no leftover hash, per-page canonicals and distinct titles, the press kit, and that the old tab hashes still redirect |
 | `8-letter-variation` | Two writers never get the same letter, one writer always gets the same one, tone and connection chips actually change the text, and no form-letter tells |
 
 ## Why these exist

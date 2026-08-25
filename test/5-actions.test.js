@@ -1,5 +1,5 @@
 const fs=require('fs');const {JSDOM}=require('jsdom');
-const html=require('./_boot').inline('act.html');   // the page this suite is about
+const html=require('./_boot').inline('help.html');   // the page this suite is about
 let pass=0,fail=0;
 const ok=(n,c)=>c?(pass++,console.log('  ✓ '+n)):(fail++,console.log('  ✗ '+n));
 const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://local/',pretendToBeVisual:true});
@@ -30,8 +30,9 @@ ok('no template contains an em dash', [...d.querySelectorAll('.tplbox')].every(p
 console.log('\n— jump + filter —');
 // The letter is on this same page now, so the jump scrolls rather than
 // switching a panel. What matters is that it still has somewhere to go.
-ok('jump button present and its target exists',
-   !!d.querySelector('[data-go="write"]') && !!d.querySelector('#letter'));
+// the letter is its own page now, so the jump is a cross-page link
+ok('jump button points at the letter page',
+   !!d.querySelector('[data-go="write"]') && /act\.html/.test(require('./_boot').read('site.js')));
 d.querySelector('#quickBtn').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
 const shown=[...d.querySelectorAll('#todoList .todo')].length;
 ok('quick filter narrows the list', shown===5);

@@ -23,7 +23,7 @@ window.addEventListener('error',function(){ document.documentElement.classList.a
    other host it fails silently. */
 /* Set these once the domain is live. The alias keeps a personal inbox off a
    public page and can be forwarded or shut off without touching the site. */
-var VERIFIED='23 August 2026';
+var VERIFIED='25 August 2026';
 var CONTACT={
   /* IMPORTANT: leave these empty until the aliases actually exist and you have
      sent yourself a test message. A published address that bounces is worse
@@ -664,11 +664,23 @@ function corridorSVG(c){
 function selectCity(id){
   if(!$('#pinLayer')) return;   // not on this page
   var layer=$('#pinLayer');
-  $$('#txmap .pin').forEach(function(p){
+  /* SVG has no z-index, so the selected pin has to be last in document order
+     to paint on top. Two bugs came out of doing that naively: moving a node
+     blurs it, so selecting with the keyboard lost focus, and repeated moves
+     permanently shuffled tab order away from the geographic one.
+     So: restore the original order first, then raise one pin, then put focus
+     back where the person left it. */
+  if(!layer._order) layer._order=$$('#txmap .pin');
+  var had=document.activeElement;
+  var sel=null;
+  layer._order.forEach(function(p){
     var on=p.dataset.id===id;
     p.classList.toggle('sel',on);
-    if(on) layer.appendChild(p);   // SVG paints in document order, so bring it to the front
+    p.setAttribute('aria-pressed',on?'true':'false');
+    if(on) sel=p; else layer.appendChild(p);
   });
+  if(sel) layer.appendChild(sel);
+  if(had && had.closest && had.closest('#pinLayer')) { try{ had.focus({preventScroll:true}) }catch(e){} }
   $$('#cmpTable tbody tr').forEach(function(r){r.classList.toggle('hi',r.dataset.id===id)});
   var c=CITIES.filter(function(x){return x.id===id})[0];
   var cls=c.status==='win'?'t-win':(c.status==='gap'?'t-gap':'t-none');
@@ -1123,7 +1135,7 @@ function generate(){
     typeOut(out,text,function(){ $('#letterActions').style.display='flex'; $('#editNote').hidden=false; });
     track('letter_generated',{tone:$('#f-tone').value, asks:chosen().asks.length});
   }
-  var api=(window.cowork&&typeof window.cowork.askClaude==='function')?window.cowork.askClaude:null;
+  var api=null;   // no model call: the letter is assembled locally, always
   if(!api){ var pk=$('#pickedSummary'); if(pk && !pk.dataset.noted){ pk.dataset.noted='1';
     pk.insertAdjacentHTML('beforeend','<span style="display:block;margin-top:6px;opacity:.75">Assembled from your answers on this page. Nothing you type is sent anywhere.</span>'); } }
   if(!api){setTimeout(function(){finish(fallbackLetter())},420); return}
@@ -1513,7 +1525,7 @@ loadAnalytics();
   if(!CONTACT.email && !CONTACT.formUrl){
     rows.unshift(['Message us','<a href="'+CONTACT.github+'/discussions" target="_blank" rel="noopener">Start a discussion on GitHub ↗</a>, which reaches us and is public']);
   }
-  rows.push(['Corrections','<a href="https://github.com/willhines90/keep-austin-colorful/issues/new?template=correction.yml" target="_blank" rel="noopener">Open an issue ↗</a>, or email. Every claim here is meant to be checkable.']);
+  rows.push(['Corrections','<a href="https://github.com/willhines90/keep-austin-colorful/issues/new/choose" target="_blank" rel="noopener">Open an issue ↗</a>, or email. Every claim here is meant to be checkable.']);
   rows.push(['Fork it','<a href="https://github.com/willhines90/keep-austin-colorful" target="_blank" rel="noopener">The whole thing is open source ↗</a>']);
   box.innerHTML=rows.map(function(r){return '<div class="contactrow"><b>'+r[0]+'</b><span>'+r[1]+'</span></div>'}).join('');
 })();
@@ -1542,5 +1554,5 @@ if($('#pickedSummary')) renderPicked();   // the letter page needs its summary o
 
 /* Read by tools/build-meta.js so the JSON-LD, sitemap and llms.txt are
    generated from this data rather than maintained separately. */
-window.__KAC__={OBJS:OBJS,DATES:DATES,STATS:STATS,SRC:SRC,ASKS:ASKS,TIMELINE:TIMELINE};
+window.__KAC__={OBJS:OBJS,DATES:DATES,STATS:STATS,SRC:SRC,ASKS:ASKS,TIMELINE:TIMELINE,TODOS:TODOS};
 })();

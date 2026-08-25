@@ -127,7 +127,8 @@ const legacyPage_unused = {
 const PAGE_META = {
   'index.html':      { name: 'Keep Austin Colorful', crumb: 'Home' },
   'background.html': { name: 'How we got here, and what is actually allowed', crumb: 'Background' },
-  'act.html':        { name: 'Take action', crumb: 'Take action' },
+  'act.html':        { name: 'Write to the council', crumb: 'Write a letter' },
+  'help.html':       { name: 'Ways to help', crumb: 'Ways to help' },
   'contact.html':    { name: 'Contact', crumb: 'Contact' },
   'press.html':      { name: 'Press kit', crumb: 'Press' }
 };
@@ -183,10 +184,25 @@ const howTo = {
   ]
 };
 
+/* The action list is exactly what an answer engine wants for "how can I help
+   with X": an ordered list of concrete, time-estimated steps. */
+const itemList = {
+  '@type': 'ItemList',
+  '@id': urlFor('help.html') + '#actions',
+  name: 'Ways to help restore rainbow color at 4th and Colorado',
+  numberOfItems: (D.TODOS || []).length,
+  itemListOrder: 'https://schema.org/ItemListOrderAscending',
+  itemListElement: (D.TODOS || []).map((t, i) => ({
+    '@type': 'ListItem', position: i + 1, name: strip(t.t),
+    description: strip(t.d).slice(0, 300)
+  }))
+};
+
 const GRAPHS = {
   'index.html':      [org, site, webPage('index.html'), crumbs('index.html')],
   'background.html': [webPage('background.html', { citation: Object.values(D.SRC).map(([name, url]) => ({ '@type': 'CreativeWork', name, url })) }), crumbs('background.html'), faq],
-  'act.html':        [webPage('act.html'), crumbs('act.html'), howTo, ...events],
+  'act.html':        [webPage('act.html'), crumbs('act.html'), howTo],
+  'help.html':       [webPage('help.html'), crumbs('help.html'), itemList, ...events],
   'contact.html':    [webPage('contact.html'), crumbs('contact.html')],
   'press.html':      [webPage('press.html'), crumbs('press.html')]
 };
@@ -216,6 +232,7 @@ const today = new Date().toISOString().slice(0, 10);
 const SITEMAP = [
   ['/',               'weekly',  '1.0'],
   ['/act.html',       'weekly',  '0.9'],
+  ['/help.html',      'weekly',  '0.85'],
   ['/background.html','monthly', '0.8'],
   ['/contact.html',   'monthly', '0.7'],
   ['/press.html',     'monthly', '0.6']
@@ -256,8 +273,11 @@ fs.writeFileSync(path.join(PUB, 'llms.txt'),
 - [Background](${URL}/background.html): the timeline, what five Texas cities
   each did, why the state order stops at the curb, who pays, and the honest
   answers to the objections officials actually raise. All sources are here.
-- [Take action](${URL}/act.html): what can lawfully be asked for, a letter
-  builder, the five-minute actions, and the upcoming council dates.
+- [Write a letter](${URL}/act.html): what can lawfully be asked for, where the
+  money could come from, and a letter builder that finds your council district
+  from your street address.
+- [Ways to help](${URL}/help.html): twelve concrete actions sorted by how long
+  they take, a progress tracker, and the upcoming council and commission dates.
 - [Contact](${URL}/contact.html): direct phone numbers for the Mayor and every
   council district, a thirty-second phone script, and how to reach the project.
 - [Press kit](${URL}/press.html): verified figures with citations, quotes,

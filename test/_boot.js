@@ -41,6 +41,6 @@ function allHtml() {
 }
 
 /** Every page that carries the shared chrome. */
-const PAGES = ['index.html', 'background.html', 'act.html', 'contact.html', 'press.html'];
+const PAGES = ['index.html', 'background.html', 'act.html', 'help.html', 'contact.html', 'press.html'];
 
 module.exports = { inline, read, allHtml, PUB, PAGES, CSS_TAG, JS_TAG };

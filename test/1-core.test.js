@@ -48,7 +48,7 @@ const NAVS=B.PAGES.map(f=>{
   const j=new JSDOM(B.read(f),{url:'https://local/'});
   return {f, links:[...j.window.document.querySelectorAll('.mainnav a:not(.ghlink)')]};
 });
-ok('every page carries the nav', NAVS.every(n=>n.links.length===5));
+ok('every page carries the nav', NAVS.every(n=>n.links.length===6));
 ok('every page offers the same destinations',
    new Set(NAVS.map(n=>n.links.map(a=>a.getAttribute('href')).join('|'))).size===1);
 ok('each page marks its own nav item current',
@@ -77,7 +77,9 @@ ok('exactly one selected', BG.querySelectorAll('#txmap .pin.sel').length===1);
 
 console.log('\n— playbook —');
 ok('8 asks on the action page', d.querySelectorAll('#askList .ask').length===8);
-ok('4 funding routes and 5 objections on background', BG.querySelectorAll('#fundList .ask').length===4&&BG.querySelectorAll('#objList .obj').length===5);
+ok('5 objections on background', BG.querySelectorAll('#objList .obj').length===5);
+// funding moved next to the asks it pays for, on the letter page
+ok('4 funding routes sit with the letter', d.querySelectorAll('#fundList .ask').length===4);
 ok('asks expose checkbox role', d.querySelector('#askList .ask').getAttribute('role')==='checkbox');
 // #askBadge lived on the tab label and went with the tabs; the selbar is the
 // only place the count needs to appear now.
@@ -89,14 +91,16 @@ ok('count updates live', d.querySelector('#selCount').textContent.includes('5 as
 ok('persisted', JSON.parse(window.localStorage.getItem('rcap-v2')).asks.furniture===true);
 ok('selbar CTA points at the letter on this page', !!d.querySelector('#toWrite')&&!!d.querySelector('#letter'));
 
-console.log('\n— tracker —');
-ok('8 todos', d.querySelectorAll('#todoList .todo').length===12);
-ok('ring at 0%', d.querySelector('#ringPct').textContent==='0%');
-d.querySelector('#todoList .todo .box').dispatchEvent(new window.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-ok('keyboard ticks a todo -> 13%', d.querySelector('#ringPct').textContent==='8%');
-ok('ring geometry matches r=43', Math.abs(parseFloat(d.querySelector('#ringFg').getAttribute('stroke-dasharray'))-2*Math.PI*43)<0.2);
-d.querySelector('#resetTrack').dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
-ok('reset works', d.querySelector('#ringPct').textContent==='0%');
+console.log('\n— tracker, on the Ways to help page —');
+const help=page('help.html'), HELP=help.window.document;
+ok('12 todos', HELP.querySelectorAll('#todoList .todo').length===12);
+ok('ring at 0%', HELP.querySelector('#ringPct').textContent==='0%');
+HELP.querySelector('#todoList .todo .box').dispatchEvent(new help.window.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+ok('keyboard ticks a todo -> 8%', HELP.querySelector('#ringPct').textContent==='8%');
+ok('ring geometry matches r=43', Math.abs(parseFloat(HELP.querySelector('#ringFg').getAttribute('stroke-dasharray'))-2*Math.PI*43)<0.2);
+HELP.querySelector('#resetTrack').dispatchEvent(new help.window.MouseEvent('click',{bubbles:true}));
+ok('reset works', HELP.querySelector('#ringPct').textContent==='0%');
+ok('the calendar came with it', HELP.querySelectorAll('#dateList .date').length>=8);
 
 console.log('\n— letter —');
 d.querySelector('#f-name').value='Sam Rivera';

@@ -44,8 +44,11 @@ ok('the FAQ is not duplicated onto other pages',
    B.PAGES.filter(f=>types(f).includes('FAQPage')).length===1);
 ok('every FAQ answer has real text', !!faq&&faq.mainEntity.every(q=>q.acceptedAnswer.text.length>100));
 
-const ev=nodesOf('act.html','Event');
+const ev=nodesOf('help.html','Event');
 ok('calendar published as Events, on the page that lists them', ev.length>=10);
+const il=nodesOf('help.html','ItemList')[0];
+ok('the action list is published as an ItemList', !!il&&il.itemListElement.length===12);
+ok('every action in the list is named', !!il&&il.itemListElement.every(x=>x.name&&x.name.length>5));
 ok('events carry ISO dates', ev.every(e=>/^\d{4}-\d{2}-\d{2}$/.test(e.startDate)));
 ok('Austin Pride is in the structured data', ev.some(e=>/Pride/i.test(e.name)));
 const ht=nodesOf('act.html','HowTo')[0];
@@ -150,7 +153,9 @@ const liveDoc=new JSDOM(B.inline('contact.html'),{runScripts:'dangerously',url:'
 ok('a contact section exists', !!liveDoc.querySelector('#contact'));
 ok('contact details render', liveDoc.querySelectorAll('.contactrow').length>=3);
 ok('a press route is offered', /press\.html/.test(liveDoc.querySelector('#contactBox').innerHTML));
-ok('corrections route to the issue template', /template=correction/.test(liveDoc.querySelector('#contactBox').innerHTML));
+// the chooser works whether or not a template parses; ?template= silently
+// falls back to a 404 if the YAML is ever malformed
+ok('corrections route to the issue chooser', /issues\/new\/choose/.test(liveDoc.querySelector('#contactBox').innerHTML));
 ok('every footer links to the contact page', B.PAGES.every(f=>/href="\/contact\.html"/.test(B.read(f))));
 // the liveness strip is part of the hero, so it lives on the home page.
 // it fills in on a timer, so these are asserted at the end of the run.

@@ -15,7 +15,7 @@ checkable, so a correction without a source cannot be applied.
 ```bash
 npm install
 npm run dev      # serves ./public on :8000
-npm test         # 404 checks, about 50 seconds
+npm test         # 420 checks, about 50 seconds
 ```
 
 ## Making a change
@@ -25,7 +25,7 @@ npm run build        # after ANY content edit
 npm test
 ```
 
-`npm run build` does two things: it regenerates the five pages from
+`npm run build` does two things: it regenerates the six pages from
 `src/pages/`, then regenerates the JSON-LD, sitemap, `robots.txt`, `llms.txt`
 and `_headers` from the data in `public/site.js`. Skip it and you ship a page
 that does not match its own source, or metadata that does not match the page.
@@ -55,5 +55,5 @@ Please open an issue first for: a redesign, a new framework, or anything that
 adds a runtime dependency. No framework and no runtime dependency is deliberate:
 the site is plain ES5 in one script file and plain CSS in one stylesheet, so it
 can be read, audited and hosted by anyone. The build step is 200 lines of Node
-with jsdom as the only devDependency, and it exists only so that five pages
+with jsdom as the only devDependency, and it exists only so that six pages
 cannot drift apart the way `press.html` once did.

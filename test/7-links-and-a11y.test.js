@@ -71,7 +71,7 @@ ok('every page offers a skip link', B.PAGES.every(f=>!!DOCS[f].querySelector('a.
 
 console.log('\n— actions —');
 // the tracker lives on the action page
-const actw=DOMS['act.html'].window, ACT=DOCS['act.html'];
+const actw=DOMS['help.html'].window, ACT=DOCS['help.html'];
 const before=ACT.querySelector('#ringCt').textContent;
 ACT.querySelector('#todoList .todo .tt').dispatchEvent(new actw.MouseEvent('click',{bubbles:true}));
 ok('tapping the action title also ticks it', ACT.querySelector('#ringCt').textContent!==before);

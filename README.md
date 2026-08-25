@@ -20,7 +20,7 @@ The state's order reaches the road. Sidewalks belong to the city. This site expl
 
 ## Running it
 
-Five pages that share one stylesheet and one script. No framework, no runtime dependency, plain ES5.
+Six pages that share one stylesheet and one script. No framework, no runtime dependency, plain ES5.
 
 **`public/*.html` is generated.** Page bodies are edited in `src/pages/*.html` and wrapped in shared chrome by `tools/build-pages.js`. Editing a file in `public/` works right up until the next build silently reverts it.
 
@@ -51,7 +51,7 @@ Off by default; beyond Google Fonts the site makes no third-party requests until
 
 ## Metadata is generated, not maintained
 
-`npm run build` generates the five pages from `src/pages/`, then derives the
+`npm run build` generates the six pages from `src/pages/`, then derives the
 JSON-LD, `sitemap.xml`, `robots.txt`, `llms.txt` and `_headers` from the data in
 `public/site.js`. Run it after any content edit and commit the result;
 `npm run deploy` runs it for you, and CI fails the PR if you forget.
@@ -87,7 +87,7 @@ npm install
 npm test
 ```
 
-404 checks across nine suites (about 50 seconds), run on every push by CI. They boot the real pages in jsdom through the shared fixture in `test/_boot.js` and drive the real interface: suite 3 boots the background page, suites 2, 5 and 8 the action page, suites 6 and 7 all five. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
+420 checks across nine suites (about 50 seconds), run on every push by CI. They boot the real pages in jsdom through the shared fixture in `test/_boot.js` and drive the real interface: suite 3 boots the background page, suites 2, 5 and 8 the action page, suites 6 and 7 all five. See [test/README.md](test/README.md) for what each one covers and why a few of them encode decisions rather than mechanics.
 
 ## Deploying
 
@@ -106,7 +106,7 @@ To move the site to a different domain:
 ./set-domain.sh your-domain.org
 ```
 
-That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which rewrites the canonical and Open Graph tags on all five pages and regenerates the sitemap, robots.txt and llms.txt to match.
+That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which rewrites the canonical and Open Graph tags on all six pages and regenerates the sitemap, robots.txt and llms.txt to match.
 
 ## Contributing and forking
 

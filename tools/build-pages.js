@@ -36,9 +36,13 @@ const PAGES = [
     title: 'Background: how five Texas cities answered the crosswalk order',
     desc: 'The timeline, what San Antonio, Dallas and El Paso did instead, why the state order stops at the curb, who pays for this kind of work, and honest answers to the objections officials actually raise.' },
 
-  { file: 'act.html',        nav: 'Take action',
-    title: 'Take action: write to Austin City Council in five minutes',
-    desc: 'Pick what you would like to see at 4th and Colorado, draft a letter in your own words, and find the five-minute actions that carry the most weight with a council office.' },
+  { file: 'act.html',        nav: 'Write a letter',
+    title: 'Write to Austin City Council about 4th & Colorado, in five minutes',
+    desc: 'Pick what you would like to see at 4th and Colorado, say where the money could come from, and draft a letter in your own words. Your address finds your council district automatically.' },
+
+  { file: 'help.html',       nav: 'Ways to help',
+    title: 'Ways to help: twelve things, sorted by how long they take',
+    desc: 'Twelve concrete actions for the rainbow sidewalk campaign at 4th and Colorado, from a five-minute phone call to speaking at a council meeting, plus the upcoming council and commission dates.' },
 
   { file: 'contact.html',    nav: 'Contact',
     title: 'Contact: who picks up the phone at Austin City Council',
@@ -58,13 +62,8 @@ const REPO = 'https://github.com/willhines90/keep-austin-colorful';
 
 /* Octicon mark-github, 16px grid. Inline rather than a font or an <img> so it
    inherits currentColor and costs no extra request. */
-const GH_ICON = '<svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true" focusable="false" fill="currentColor">'
-  + '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 '
-  + '0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 '
-  + '1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 '
-  + '0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 '
-  + '2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 '
-  + '3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>';
+const GH_ICON = '<svg class="gh" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true" focusable="false" fill="currentColor">'
+  + '<path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
 
 const nav = current => `<header class="topbar">
   <div class="wrap topbar-in">
@@ -83,6 +82,7 @@ ${PAGES.map(p => {
          aria-label="Source code on GitHub (opens in a new tab)">${GH_ICON}</a>
     </nav>
   </div>
+  <div class="topbar-flag" aria-hidden="true"></div>
 </header>`;
 
 const head = p => `<!DOCTYPE html>

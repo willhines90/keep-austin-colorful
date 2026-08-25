@@ -18,5 +18,13 @@
     "not_found_handling": "404-page"
   },
 
+  // The apex is bound here rather than only in the dashboard. A dashboard-only
+  // binding is invisible to the repo, and losing it takes the whole site down
+  // while the edge cache keeps serving stale HTML, so the failure looks like a
+  // CSS bug rather than an unrouted hostname.
+  "routes": [
+    { "pattern": "keepaustincolorful.com", "custom_domain": true }
+  ],
+
   "observability": { "enabled": true }
 }

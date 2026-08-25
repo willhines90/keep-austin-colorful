@@ -5,7 +5,7 @@ Live at **https://keepaustincolorful.com**, on Cloudflare Workers.
 ```bash
 npm install
 npm run build      # generates the pages, then the metadata
-npm test           # 404 checks
+npm test           # 420 checks
 npx wrangler deploy
 ```
 
@@ -14,7 +14,7 @@ npx wrangler deploy
 ## What ships
 
 ```
-public/            the site: five pages, site.css, site.js, og.png,
+public/            the site: six pages, site.css, site.js, og.png,
                    favicon.svg, robots.txt, sitemap.xml, llms.txt,
                    _headers, 404.html
 src/worker.js      the /api/district route
@@ -57,7 +57,7 @@ either accept that or port the worker to your host's equivalent.
 ```
 
 That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which
-rewrites the canonical and Open Graph tags on all five pages and regenerates
+rewrites the canonical and Open Graph tags on all six pages and regenerates
 the sitemap, robots.txt and llms.txt to match.
 
 ## Security headers

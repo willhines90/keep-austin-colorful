@@ -1,6 +1,6 @@
   <div class="pagehead">
-    <h1>Take action</h1>
-    <p class="dek">Pick what you would like to see at 4th and Colorado, and it carries through into a letter in your own words. Nothing here takes longer than the coffee queue.</p>
+    <h1>Write to the council</h1>
+    <p class="dek">Pick what you would like to see at 4th and Colorado, say where the money could come from, and it all carries through into a letter in your own words. About five minutes.</p>
   </div>
 
   <section id="asks">
@@ -9,9 +9,15 @@
     <div class="asks" id="askList"></div>
   </section>
 
+  <section id="funding">
+    <h2>Who pays, and how</h2>
+    <p class="note" style="margin-bottom:var(--s4)">Pick any that make sense to you. They carry through into the letter alongside your asks, because "where would the money come from" is the first question a council office will have.</p>
+    <div class="asks" id="fundList"></div>
+  </section>
+
   <div class="selbar">
     <span id="selCount">5 asks selected</span>
-    <button class="go" id="toWrite">Write my letter →</button>
+    <button class="go" id="toWrite">Take me to the letter →</button>
   </div>
 
   <section id="letter">
@@ -62,38 +68,4 @@
     </div>
     <div class="editnote" id="editNote" hidden><span>✎</span><span><b>This letter is editable.</b> Click into it and change anything. Council offices log identical letters as a single contact, so even one sentence of your own is worth more than everything above it.</span></div>
     <p class="note" style="margin-top:14px">Austin routes council email through a web form rather than a plain address, so the flow is: copy, open the form, paste. Letters carrying a real name and street address are weighted more heavily than anonymous submissions.</p>
-  </section>
-
-  <section>
-    <h2>Your progress</h2>
-    <div class="track">
-      <div class="ring">
-        <svg width="104" height="104" viewBox="0 0 104 104">
-          <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#e40303"/><stop offset="30%" stop-color="#ff8c00"/>
-            <stop offset="55%" stop-color="#008026"/><stop offset="100%" stop-color="#732982"/>
-          </linearGradient></defs>
-          <circle class="bgc" cx="52" cy="52" r="43" fill="none" stroke-width="9"/>
-          <circle class="fgc" id="ringFg" cx="52" cy="52" r="43" fill="none" stroke-width="9" stroke-dasharray="270.2" stroke-dashoffset="270.2"/>
-        </svg>
-        <div class="lbl"><b id="ringPct">0%</b><span id="ringCt">0 of 8</span></div>
-      </div>
-      <div style="flex:1;min-width:230px">
-        <p style="margin-bottom:7px">Tick things off as you go. This remembers where you got to.</p>
-        <p class="note">Saved on your device only. Nothing is sent anywhere.</p>
-        <div class="btnrow" style="margin-top:13px"><button class="ghost sm" id="resetTrack">Reset progress</button></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Ways to help<span class="viewtog"><button class="vt" id="quickBtn">Only 5-minute actions</button></span></h2>
-    <div id="todoList"></div>
-  </section>
-
-  <section>
-    <h2>What is coming up</h2>
-    <div id="dateList"></div>
-    <p class="note" style="margin-top:var(--s5)">Budget week is the quickest route, and it is not the only one. A council member can bring a resolution at any regular meeting, and a cultural heritage district designation is not tied to the budget cycle at all. If one window closes, the next one is a few weeks away.</p>
-    <p class="note" style="margin-top:var(--s3)">Dates from the City of Austin's published 2026 council calendar and from Austin Pride, and subject to change. <a href="https://www.austintexas.gov/council/meetings" target="_blank" rel="noopener">Check the agenda</a> before you turn up.</p>
   </section>

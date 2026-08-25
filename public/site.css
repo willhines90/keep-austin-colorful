@@ -823,8 +823,10 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
    would crowd it. In the footer it gets its word back, because that is where
    someone reading to the end is deciding whether to fork it. */
 .ghlink{display:inline-flex; align-items:center; justify-content:center;
-  width:36px; height:36px; margin-left:var(--s2); border-radius:var(--r-pill);
-  color:var(--muted); padding:0}
+  width:40px; height:40px; margin-left:var(--s2); border-radius:var(--r-pill);
+  color:var(--ink-2); padding:0; flex:none}
+.ghlink .gh{width:20px; height:20px; display:block}
+.footlinks .gh{width:17px; height:17px}
 .ghlink:hover{background:var(--paper-2); color:var(--ink)}
 .ghlink svg{display:block}
 @media(pointer:coarse){ .ghlink{width:44px; height:44px} }
@@ -836,3 +838,13 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
   color:var(--muted); text-decoration:none}
 .footlinks a:hover{color:var(--accent); text-decoration:underline; text-underline-offset:3px}
 .footlinks svg{flex:none}
+
+
+/* The flag bar at the very top scrolls away, and the sticky header that
+   replaces it was plain paper. The header carries its own flag now, so the
+   colors are on screen at every scroll position rather than only at the top. */
+.topbar-flag{height:3px; display:block;
+  background:linear-gradient(90deg,
+    var(--r1) 0 16.66%, var(--r2) 16.66% 33.33%, var(--r3) 33.33% 50%,
+    var(--r4) 50% 66.66%, var(--r5) 66.66% 83.33%, var(--r6) 83.33% 100%)}
+.topbar{border-bottom:none}

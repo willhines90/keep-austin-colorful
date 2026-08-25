@@ -11,8 +11,11 @@
 - [Background](https://keepaustincolorful.com/background.html): the timeline, what five Texas cities
   each did, why the state order stops at the curb, who pays, and the honest
   answers to the objections officials actually raise. All sources are here.
-- [Take action](https://keepaustincolorful.com/act.html): what can lawfully be asked for, a letter
-  builder, the five-minute actions, and the upcoming council dates.
+- [Write a letter](https://keepaustincolorful.com/act.html): what can lawfully be asked for, where the
+  money could come from, and a letter builder that finds your council district
+  from your street address.
+- [Ways to help](https://keepaustincolorful.com/help.html): twelve concrete actions sorted by how long
+  they take, a progress tracker, and the upcoming council and commission dates.
 - [Contact](https://keepaustincolorful.com/contact.html): direct phone numbers for the Mayor and every
   council district, a thirty-second phone script, and how to reach the project.
 - [Press kit](https://keepaustincolorful.com/press.html): verified figures with citations, quotes,
