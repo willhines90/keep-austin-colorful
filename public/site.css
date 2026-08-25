@@ -825,8 +825,11 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
 .ghlink{display:inline-flex; align-items:center; justify-content:center;
   width:40px; height:40px; margin-left:var(--s2); border-radius:var(--r-pill);
   color:var(--ink-2); padding:0; flex:none}
-.ghlink .gh{width:20px; height:20px; display:block}
-.footlinks .gh{width:17px; height:17px}
+/* flex:none matters more than the width here. Inside a flex row the svg was
+   being shrunk to 8px wide while keeping its 20px height, which reads as a
+   sliver rather than an icon. Width alone does not stop that; basis does. */
+.ghlink .gh{flex:0 0 20px; width:20px; height:20px; display:block}
+.footlinks .gh{flex:0 0 17px; width:17px; height:17px}
 .ghlink:hover{background:var(--paper-2); color:var(--ink)}
 .ghlink svg{display:block}
 @media(pointer:coarse){ .ghlink{width:44px; height:44px} }
@@ -848,3 +851,11 @@ a[href^="http"]:not(.srcl):not(.lnk):hover{text-decoration-color:var(--accent)}
     var(--r1) 0 16.66%, var(--r2) 16.66% 33.33%, var(--r3) 33.33% 50%,
     var(--r4) 50% 66.66%, var(--r5) 66.66% 83.33%, var(--r6) 83.33% 100%)}
 .topbar{border-bottom:none}
+
+
+/* The header is not prose and should not be held to the reading measure.
+   .wrap caps at 920px; brand (292) plus nav (648) needs 940, so the nav wrapped
+   onto a second row and the whole bar looked broken on wide screens. Give the
+   header its own, wider measure and let it stay on one line. */
+.topbar-in{max-width:1220px}
+@media(min-width:1100px){ .topbar-in{flex-wrap:nowrap} }

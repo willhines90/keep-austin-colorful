@@ -49,6 +49,13 @@ ok('every standalone logo declares xmlns',
 ok('every standalone logo has a title for screen readers',
    ['band','flag','knockout','trans','progress','progress-knockout']
      .every(v=>/<title[^>]*>[^<]{20,}/.test(B.read('logo-'+v+'.svg'))));
+/* Two header regressions worth locking: the GitHub mark being shrunk to a
+   sliver by flexbox, and the nav wrapping to a second row because the header
+   was capped at the prose measure. Both looked like "the header is broken". */
+ok('the GitHub mark cannot be shrunk by flex', /\.ghlink \.gh\{flex:0 0 20px/.test(B.read('site.css')));
+ok('the header has its own measure, wider than the prose column',
+   /\.topbar-in\{max-width:1220px\}/.test(B.read('site.css')) && /\.topbar-in\{flex-wrap:nowrap\}/.test(B.read('site.css')));
+ok('the header flag is a real gradient, not a border', /\.topbar-flag\{height:3px/.test(B.read('site.css')));
 ok('the trans variant sits on a dark ground, because one of its stripes is white',
    /fill="#15151D"/.test(B.read('logo-trans.svg')));
 // the favicon is a real file now rather than a data URI repeated on five pages
