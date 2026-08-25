@@ -56,6 +56,10 @@ ok('the GitHub mark cannot be shrunk by flex', /\.ghlink \.gh\{flex:0 0 20px/.te
 ok('the header has its own measure, wider than the prose column',
    /\.topbar-in\{max-width:1220px\}/.test(B.read('site.css')) && /\.topbar-in\{flex-wrap:nowrap\}/.test(B.read('site.css')));
 ok('the header flag is a real gradient, not a border', /\.topbar-flag\{height:3px/.test(B.read('site.css')));
+ok('exactly one flag bar above the fold', B.PAGES.every(f=>{
+  const h=B.read(f); const head=h.slice(0, h.indexOf('</header>'));
+  return (head.match(/class="rbar"/g)||[]).length===0 && head.includes('topbar-flag');}));
+ok('the closing flag bar is still there', B.PAGES.every(f=>B.read(f).includes('class="rbar"')));
 ok('the trans variant sits on a dark ground, because one of its stripes is white',
    /fill="#15151D"/.test(B.read('logo-trans.svg')));
 // the favicon is a real file now rather than a data URI repeated on five pages

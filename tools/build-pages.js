@@ -138,7 +138,8 @@ for (const p of PAGES) {
     '<body>',
     '<a class="skip" href="#main">Skip to content</a>',
     NOSCRIPT,
-    RBAR,
+    // No flag bar above the header: the header carries its own, and that one
+    // stays on screen when you scroll. Two of them was just two of them.
     nav(p.nav),
     '',
     '<div class="wrap">',
