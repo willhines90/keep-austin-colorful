@@ -1,14 +1,21 @@
-# Keep Austin Colorful
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/media/banner-dark.svg">
+  <img alt="Keep Austin Colorful — bringing the color back to 4th &amp; Colorado" src=".github/media/banner-light.svg">
+</picture>
 
 [![CI](https://github.com/willhines90/keep-austin-colorful/actions/workflows/ci.yml/badge.svg)](https://github.com/willhines90/keep-austin-colorful/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-425%20checks-e40303)](test/README.md)
+[![Code](https://img.shields.io/badge/code-Apache--2.0-ff8c00)](LICENSE)
+[![Content](https://img.shields.io/badge/content-CC%20BY--SA%204.0-008026)](LICENSE-CONTENT)
+[![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-24408e)](package.json)
+[![Host](https://img.shields.io/badge/host-Cloudflare%20Workers-732982)](DEPLOY.md)
+
+**Live at [keepaustincolorful.com](https://keepaustincolorful.com).**
 
 An advocacy pack for putting the color back on 4th &amp; Colorado in Austin, Texas.
-
 The name is a play on Keep Austin Weird. The color in it is paint.
 
-**Live:** https://keepaustincolorful.com
-
----
+![](.github/media/flag-rule.svg)
 
 ## What this is
 
@@ -116,6 +123,8 @@ That edits `DEFAULT_DOMAIN` in `tools/build-pages.js` and rebuilds, which rewrit
 - [ANALYTICS.md](ANALYTICS.md) — off by default; how to switch it on
 - [DEPLOY.md](DEPLOY.md) — Cloudflare Workers, and why the host has to run the worker
 
+![](.github/media/flag-rule.svg)
+
 ## Forking this for your city
 
 The structure generalizes. Most of what you'd change lives in clearly-marked data objects near the top of `public/site.js`, and the page prose in `src/pages/*.html`:
@@ -147,6 +156,8 @@ Map pin positions are projected latitude/longitude in a 100 × 94.4 viewBox. If 
 with `rsvg-convert -w 1200 -h 630 og-source.svg -o public/og.png`, or by opening
 the SVG in a browser and exporting. ImageMagick's `convert` mangles the negative
 letter-spacing on the headline, so it is not a substitute.
+
+![](.github/media/flag-rule.svg)
 
 ## A note on tone
 

@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# A plain-text summary of the whole site, for answer engines and LLM crawlers.
+# Same facts as the pages, same sources, same framing.
+# https://keepaustincolorful.com/llms.txt
+
 Sitemap: https://keepaustincolorful.com/sitemap.xml

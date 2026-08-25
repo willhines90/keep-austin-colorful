@@ -60,7 +60,14 @@ const org = {
   url: URL,
   logo: URL + '/og.png',
   description: 'A neighborhood campaign to restore rainbow visibility at 4th and Colorado in Austin, Texas, by treating the sidewalk rather than the roadway.',
-  areaServed: { '@type': 'City', name: 'Austin', address: { '@type': 'PostalAddress', addressLocality: 'Austin', addressRegion: 'TX', addressCountry: 'US' } }
+  areaServed: { '@type': 'City', name: 'Austin', address: { '@type': 'PostalAddress', addressLocality: 'Austin', addressRegion: 'TX', addressCountry: 'US' } },
+  sameAs: ['https://github.com/willhines90/keep-austin-colorful'],
+  knowsAbout: [
+    'Rainbow crosswalk removal in Texas',
+    'Pride Cultural Heritage District designation',
+    'Austin City Council public comment',
+    'Sidewalk art and state roadway jurisdiction'
+  ]
 };
 
 const site = {
@@ -151,6 +158,8 @@ const webPage = (f, extra) => Object.assign({
   isPartOf: { '@id': URL + '#site' },
   breadcrumb: { '@id': urlFor(f) + '#crumbs' },
   inLanguage: 'en-US',
+  datePublished: '2026-08-08',
+  dateModified: new Date().toISOString().slice(0, 10),
   about: [
     { '@type': 'Thing', name: 'Rainbow crosswalk removal in Texas' },
     { '@type': 'Thing', name: 'LGBTQ+ cultural heritage districts' },
@@ -253,6 +262,10 @@ ${SITEMAP.map(([loc, freq, pri]) => `  <url>
 fs.writeFileSync(path.join(PUB, 'robots.txt'),
 `User-agent: *
 Allow: /
+
+# A plain-text summary of the whole site, for answer engines and LLM crawlers.
+# Same facts as the pages, same sources, same framing.
+# ${URL}/llms.txt
 
 Sitemap: ${URL}/sitemap.xml
 `);

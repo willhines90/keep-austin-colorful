@@ -141,5 +141,38 @@ for (const [name, make] of Object.entries(VARIANTS)) {
 // the default lockup, whichever variant the header uses
 fs.copyFileSync(path.join(SRC, '_logo-flag.svg'), path.join(SRC, '_logo.svg'));
 
+/* ── README artwork ───────────────────────────────────────────────────────
+   GitHub renders <picture> with prefers-color-scheme, so the banner ships in
+   two grounds and swaps with the reader's theme. Generated rather than drawn
+   so it cannot drift from the letterforms above. */
+const MEDIA = path.join(ROOT, '.github', 'media');
+fs.mkdirSync(MEDIA, { recursive: true });
+
+const banner = dark => {
+  const BW = 1280, BH = 260;
+  const ink = dark ? '#F7F5F0' : '#15151D';
+  const sub = dark ? '#A9A2B4' : '#635d6b';
+  const bg  = dark ? '#15151D' : '#F8F7F4';
+  const lx = 96, ly = 82, ls = 1.45;                 // wordmark placement
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${BW} ${BH}" width="${BW}" height="${BH}" role="img" aria-labelledby="bt">`
+    + `<title id="bt">Keep Austin Colorful: bringing the color back to 4th and Colorado, Austin, Texas.</title>`
+    + `<rect width="${BW}" height="${BH}" fill="${bg}"/>`
+    + `<defs><clipPath id="bclip"><path transform="translate(${lx},${ly}) scale(${ls})" clip-rule="evenodd" d="${ATX}"/></clipPath></defs>`
+    + `<g clip-path="url(#bclip)">${stripes(PRIDE, BW, 48 * ls, ly)}</g>`
+    + `<text x="${lx}" y="${ly + 48 * ls + 46}" font-family="Poppins,Trebuchet MS,sans-serif" font-size="34" font-weight="600" fill="${ink}" letter-spacing="-0.7">Keep Austin Colorful</text>`
+    + `<text x="${lx}" y="${ly + 48 * ls + 80}" font-family="Figtree,Segoe UI,sans-serif" font-size="19" fill="${sub}">Bringing the color back to 4th &amp; Colorado</text>`
+    + stripes(PRIDE, BW, 8, BH - 8)
+    + `</svg>\n`;
+};
+fs.writeFileSync(path.join(MEDIA, 'banner-light.svg'), banner(false));
+fs.writeFileSync(path.join(MEDIA, 'banner-dark.svg'), banner(true));
+
+// a hairline flag rule, the same motif the site uses at the top of each section
+fs.writeFileSync(path.join(MEDIA, 'flag-rule.svg'),
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 6" width="1280" height="6" role="presentation">`
+  + stripes(PRIDE, 1280, 6) + `</svg>\n`);
+
+console.log('readme art  ', 'banner-light.svg, banner-dark.svg, flag-rule.svg');
+
 console.log('logos       ', Object.keys(VARIANTS).join(', '));
 console.log('written     ', n * 2, 'files (inline in src/pages, standalone with xmlns in public)');
