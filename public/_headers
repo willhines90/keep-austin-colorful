@@ -13,6 +13,15 @@
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
 
+# The HTML and its two shared assets must revalidate together. Without this the
+# browser happily pairs a fresh page with a cached stylesheet from a previous
+# deploy, which renders as an unstyled or half-styled site and looks exactly
+# like a CSS bug. Caught in the wild on 24 Aug 2026.
+/site.css
+  Cache-Control: public, max-age=0, must-revalidate
+/site.js
+  Cache-Control: public, max-age=0, must-revalidate
+
 /llms.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=3600
