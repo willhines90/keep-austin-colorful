@@ -38,8 +38,10 @@ var CONTACT={
 var ANALYTICS={
   ga4:'',            // 'G-XXXXXXXXXX' from Google Analytics. Unused; Cloudflare is the chosen provider.
   cfToken:'',        // ← THE ONE TO FILL IN. Token from Cloudflare Web Analytics (cookieless, no banner).
-  cfAuto:false,      // edge injection. Only works on a custom domain proxied through Cloudflare;
-                     // it cannot work on a *.workers.dev URL, which is why the dashboard stayed empty.
+  cfAuto:true,       // edge injection: Cloudflare adds the beacon itself, no token in the repo.
+                     // Requires the hostname to be proxied through Cloudflare, which the apex now
+                     // is. The CSP below has to allow static.cloudflareinsights.com or the browser
+                     // drops the injected script and the dashboard stays empty with no error.
   respectDNT:true    // skip analytics for visitors who ask not to be tracked
 };
 

@@ -6,62 +6,41 @@ no consent banner, and it runs on the host the site already sits on.
 Nothing is enabled yet. With `cfToken` empty the site makes **no third-party
 requests at all** beyond Google Fonts, and the CSP stays as tight as it can be.
 
-## Status, as of 15 August 2026
+## How it is set up
 
-Checked against the live deployment: **no beacon is loading and nothing is being
-collected.** The code is wired and waiting; the switch has never been flipped.
+**Edge injection, no token in the repo.** In the Cloudflare dashboard, Web
+Analytics is enabled for `keepaustincolorful.com` with *"Enable, excluding
+visitor data in the EU"*. Cloudflare adds the beacon itself at the edge, so
+there is nothing to paste into the code and nothing to rotate.
 
-## Why the current setting cannot work
+This only works because the apex is proxied through Cloudflare (orange cloud in
+DNS). On a `*.workers.dev` URL it cannot work at all, which is why an earlier
+attempt at this produced an empty dashboard and no error.
 
-The config used to say `cfAuto:true`, meaning "Cloudflare injects the beacon at
-the edge, no code change needed." That is a real feature, but it only works when
-traffic to the domain is **proxied through Cloudflare** (orange-clouded DNS).
-A `*.workers.dev` URL is not a zone you control DNS for, so edge injection never
-fires. That is why the dashboard has stayed empty.
+`cfAuto: true` in `public/site.js` is what makes the CSP allow the injected
+script. **That flag is not cosmetic.** With it false, `script-src` stays
+`'self'`, the browser drops the beacon Cloudflare inserted, and you get silence:
+no console error, no dashboard data, nothing obviously wrong. A test asserts the
+CSP and the config cannot disagree.
 
-`cfAuto` is now `false`, which matches reality. Use the token instead.
+Excluding EU visitors sidesteps the consent question entirely. The trade is that
+EU traffic goes uncounted, which for a campaign about one Austin street corner
+is not a meaningful loss.
 
-## Turning it on, the way that actually works
+## If you would rather use a token
 
-1. Cloudflare dashboard → **Analytics & Logs → Web Analytics → Add a site**.
-   Enter `keepaustincolorful.com`.
-2. Choose **manual / JS snippet** setup. Copy the token it gives you.
-3. Put it in `public/site.js` (near the top; **not** `public/index.html`, which is generated):
-
-```js
-var ANALYTICS={
-  ga4:'',            // unused; Cloudflare is the provider
-  cfToken:'PASTE_THE_TOKEN_HERE',
-  cfAuto:false,      // leave false unless you are on a proxied custom domain
-  respectDNT:true
-};
-```
-
-4. Regenerate the CSP and redeploy:
-
-```bash
-npm run build && npm test && npx wrangler deploy
-```
-
-Step 4 is not optional. `build:meta` adds `static.cloudflareinsights.com` to
-`script-src` only when a token is present. Skip it and the browser silently
-drops the beacon, with no error anywhere obvious, and the dashboard stays empty
-exactly as it does now. A test asserts the CSP and the config cannot disagree.
+Choose *"Enable with JS Snippet installation"* in the dashboard instead, put the
+token in `cfToken`, set `cfAuto` back to `false`, and run `npm run build`. The
+beacon then ships in the page rather than being injected, which makes it visible
+in version control and portable if you ever move hosts.
 
 ## Verifying it works
 
-Load the site, open DevTools → Network, filter `beacon`. You want a request to
-`static.cloudflareinsights.com/beacon.min.js` returning 200. No request means
-the token is missing; a blocked request means you skipped `build:meta`.
+Load the site, open DevTools, filter the Network tab for `beacon`. You want
+`static.cloudflareinsights.com/beacon.min.js` returning 200. Nothing at all
+means injection is off; a blocked request means the CSP does not allow it.
 
-Data takes a few minutes to appear in the dashboard.
-
-## Google Analytics
-
-Left in the code as an unused hook (`ga4`). If you ever fill it in, `build:meta`
-opens the Google origins in the CSP automatically. Worth knowing that GA4 sets
-first-party cookies (`_ga`) even with `anonymize_ip`, which is the main reason
-Cloudflare was chosen instead.
+Data takes a few minutes to appear.
 
 ## What is measured
 
